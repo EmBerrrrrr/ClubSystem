@@ -5,4 +5,5 @@
     public string Status { get; set; }
     public DateTime RequestDate { get; set; }
     public string? Note { get; set; }
+    public string? Reason { get; set; }
 }

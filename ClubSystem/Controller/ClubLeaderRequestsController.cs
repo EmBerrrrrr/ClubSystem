@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Helper;
 using Service.Service.Interfaces;
-using Service.Helper;
 
 namespace ClubSystem.Controller
 {
@@ -18,16 +16,23 @@ namespace ClubSystem.Controller
             _service = service;
         }
 
+        // STUDENT SEND REQUEST
         [Authorize(Roles = "student")]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateLeaderRequestDto _)
+        public async Task<IActionResult> Create(
+            [FromBody] CreateLeaderRequestDto dto)
         {
             var studentId = User.GetAccountId();
-            await _service.CreateRequestAsync(studentId);
+
+            await _service.CreateRequestAsync(
+                studentId,
+                dto.Reason
+            );
+
             return Ok("Request submitted");
         }
 
-
+        // ADMIN VIEW PENDING
         [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> GetPending()
@@ -36,25 +41,34 @@ namespace ClubSystem.Controller
             return Ok(data);
         }
 
+        // ADMIN APPROVE
         [Authorize(Roles = "admin")]
         [HttpPut("{id}/approve")]
         public async Task<IActionResult> Approve(int id)
         {
             int adminId = User.GetAccountId();
+
             await _service.ApproveAsync(id, adminId);
+
             return Ok("Approved");
         }
 
+        // ADMIN REJECT
         [Authorize(Roles = "admin")]
         [HttpPut("{id}/reject")]
         public async Task<IActionResult> Reject(
-        int id,
-        [FromBody] ProcessLeaderRequestDto dto)
+            int id,
+            [FromBody] ProcessLeaderRequestDto dto)
         {
             int adminId = User.GetAccountId();
-            await _service.RejectAsync(id, adminId, dto.RejectReason ?? "");
+
+            await _service.RejectAsync(
+                id,
+                adminId,
+                dto.RejectReason ?? ""
+            );
+
             return Ok("Rejected");
         }
     }
-
 }

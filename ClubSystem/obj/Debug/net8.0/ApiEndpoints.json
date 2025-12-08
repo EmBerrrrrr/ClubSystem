@@ -112,7 +112,7 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "_",
+        "Name": "dto",
         "Type": "CreateLeaderRequestDto",
         "IsRequired": true
       }
