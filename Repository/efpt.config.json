@@ -1,0 +1,89 @@
+﻿{
+   "CodeGenerationMode": 4,
+   "ContextClassName": "StudentClubManagementContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": true,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "Repository",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[account_roles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[accounts]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[activities]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[activity_participants]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[club_leader_requests]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[club_leaders]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[clubs]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[membership_requests]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[memberships]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[payments]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[roles]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false,
+   "UseT4Split": false
+}
