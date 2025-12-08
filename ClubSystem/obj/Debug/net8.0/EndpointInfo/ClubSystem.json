@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "ClubSystem",
-    "version": "1.0"
+    "version": "v1"
   },
   "paths": {
     "/api/Activities/club/{clubId}": {
@@ -992,6 +992,19 @@
         },
         "additionalProperties": false
       }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "description": "Nhập token theo dạng: Bearer {token}",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
     }
-  }
+  },
+  "security": [
+    {
+      "bearerAuth": [ ]
+    }
+  ]
 }
