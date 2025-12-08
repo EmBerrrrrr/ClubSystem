@@ -15,7 +15,7 @@ public class AuthRepository : IAuthRepository
 
     public async Task<Account?> GetAccountByUsernameAsync(string username)
         => await _context.Accounts
-            .FirstOrDefaultAsync(a => a.Username == username);
+            .SingleOrDefaultAsync(a => a.Username == username);
 
     public async Task<List<string>> GetRolesByAccountIdAsync(int accountId)
     {
@@ -31,4 +31,21 @@ public class AuthRepository : IAuthRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<int> GetRoleIdByNameAsync(string roleName)
+    {
+        var role = await _context.Roles
+            .SingleAsync(r => r.Name == roleName);
+        return role.Id;
+    }
+
+    public async Task AddAccountRoleAsync(int accountId, int roleId)
+    {
+        var ar = new AccountRole
+        {
+            AccountId = accountId,
+            RoleId = roleId
+        };
+        _context.AccountRoles.Add(ar);
+        await _context.SaveChangesAsync();
+    }
 }

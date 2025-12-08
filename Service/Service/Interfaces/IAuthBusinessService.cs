@@ -15,7 +15,7 @@ public interface IAuthBusinessService
 public class AuthBusinessService : IAuthBusinessService
 {
     private readonly IAuthRepository _repo;
-    private readonly IAuthService _authService; 
+    private readonly IAuthService _authService;
 
     public AuthBusinessService(IAuthRepository repo, IAuthService authService)
     {
@@ -47,9 +47,11 @@ public class AuthBusinessService : IAuthBusinessService
 
     public async Task<LoginResponseDTO?> RegisterAsync(RegisterRequestDTO request)
     {
+        // 1. Check username trùng
         var existing = await _repo.GetAccountByUsernameAsync(request.Username);
         if (existing != null) return null;
 
+        // 2. Tạo account mới
         var account = new Account
         {
             Username = request.Username,
@@ -62,9 +64,21 @@ public class AuthBusinessService : IAuthBusinessService
 
         await _repo.AddAccountAsync(account);
 
-        var roles = new List<string> { "User" };
+        // 3. Gán role mặc định "User" trong bảng roles + account_roles
+        const string defaultRoleName = "Student";
+
+        // lấy roleId theo tên
+        var roleId = await _repo.GetRoleIdByNameAsync(defaultRoleName);
+
+        // thêm vào bảng account_roles
+        await _repo.AddAccountRoleAsync(account.Id, roleId);
+
+        var roles = new List<string> { defaultRoleName };
+
+        // 4. Tạo token
         var token = _authService.GenerateToken(account, roles);
 
+        // 5. Trả response
         return new LoginResponseDTO
         {
             Token = token,
@@ -75,7 +89,4 @@ public class AuthBusinessService : IAuthBusinessService
             Roles = roles
         };
     }
-
 }
-
-
