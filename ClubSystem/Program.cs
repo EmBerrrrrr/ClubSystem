@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Repository.Models;
 using Repository.Repo.Implements;
 using Repository.Repo.Interfaces;
@@ -7,108 +9,141 @@ using Service.Service.Implements;
 using Service.Service.Interfaces;
 using Service.Services;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 
-namespace ClubSystem
+namespace ClubSystem;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var builder = WebApplication.CreateBuilder(args);
+
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+        // DB
+        builder.Services.AddDbContext<StudentClubManagementContext>(options =>
+            options.UseSqlServer(connectionString));
+
+        // REPOSITORIES
+        builder.Services.AddScoped<IClubRepository, ClubRepository>();
+        builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
+        builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+        builder.Services.AddScoped<IClubLeaderRequestRepository, ClubLeaderRequestRepository>();
+
+        // SERVICES
+        builder.Services.AddScoped<IClubService, ClubService>();
+        builder.Services.AddScoped<IActivityService, ActivityService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<IAuthBusinessService, AuthBusinessService>();
+        builder.Services.AddScoped<IClubLeaderRequestService, ClubLeaderRequestService>();
+
+        builder.Services.AddControllers();
+
+        // SWAGGER
+        builder.Services.AddEndpointsApiExplorer();
+
+        builder.Services.AddSwaggerGen(c =>
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-            builder.Services.AddDbContext<StudentClubManagementContext>(options =>
-                options.UseSqlServer(connectionString));
-            // Add services to the container.
-            //var config = builder.Configuration;
-
-            // Repositories
-            builder.Services.AddScoped<IClubRepository, ClubRepository>();
-            builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
-            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
-
-            // Services
-            builder.Services.AddScoped<IClubService, ClubService>();
-            builder.Services.AddScoped<IActivityService, ActivityService>();
-            builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddScoped<IAuthBusinessService, AuthBusinessService>();
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c =>
+            c.SwaggerDoc("v1", new OpenApiInfo
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "ClubSystem",
-                    Version = "v1"
-                });
+                Title = "ClubSystem",
+                Version = "v1"
+            });
 
-                c.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Nhập token theo dạng: Bearer {token}"
-                });
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Nhập token theo dạng: Bearer {token}"
+            });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
                 {
+                    new OpenApiSecurityScheme
                     {
-                        new OpenApiSecurityScheme
+                        Reference = new OpenApiReference
                         {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "bearerAuth"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
-             });
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
 
-            // JWT
-            var jwt = builder.Configuration.GetSection("Jwt");
-            var keyString = jwt["Key"] ?? throw new InvalidOperationException("JWT Key not configured. Please set Jwt:Key in appsettings.");
-            var key = Encoding.UTF8.GetBytes(keyString);
+        // JWT
+        var jwt = builder.Configuration.GetSection("Jwt");
 
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer("Bearer", options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwt["Issuer"],
-                        ValidAudience = jwt["Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(key)
-                    };
-                });
+        var keyString = jwt["Key"]
+            ?? throw new InvalidOperationException("JWT Key not configured in appsettings.");
 
-            var app = builder.Build();
+        var key = Encoding.UTF8.GetBytes(keyString);
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+        builder.Services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+
+                    ValidIssuer = jwt["Issuer"],
+                    ValidAudience = jwt["Audience"],
+
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(2)
+                };
+            });
+
+        builder.Services.AddAuthorization();
+
+
+        // APP BUILD
+        var app = builder.Build();
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<StudentClubManagementContext>();
+
+            string[] baseRoles =
+            {
+                "admin",
+                "student",
+                "CLUB_LEADER"
+            };
+
+            foreach (var r in baseRoles)
+            {
+                if (!db.Roles.Any(x => x.Name == r))
+                    db.Roles.Add(new Role { Name = r });
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.Run();
+            db.SaveChanges();
         }
+
+        // MIDDLEWARE PIPELINE
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
     }
 }

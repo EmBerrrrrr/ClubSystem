@@ -1701,6 +1701,7 @@
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
           "BCrypt.Net-Next": "4.0.3",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.1",
           "Microsoft.EntityFrameworkCore": "9.0.1",
           "Microsoft.EntityFrameworkCore.SqlServer": "9.0.1",
           "Repository": "1.0.0"
