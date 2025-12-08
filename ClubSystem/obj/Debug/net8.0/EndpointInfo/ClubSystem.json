@@ -190,6 +190,112 @@
         }
       }
     },
+    "/api/club-leader-requests": {
+      "post": {
+        "tags": [
+          "ClubLeaderRequests"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLeaderRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLeaderRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLeaderRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "ClubLeaderRequests"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/club-leader-requests/{id}/approve": {
+      "put": {
+        "tags": [
+          "ClubLeaderRequests"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/club-leader-requests/{id}/reject": {
+      "put": {
+        "tags": [
+          "ClubLeaderRequests"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessLeaderRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessLeaderRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessLeaderRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Clubs": {
       "get": {
         "tags": [
@@ -761,6 +867,10 @@
         },
         "additionalProperties": false
       },
+      "CreateLeaderRequestDto": {
+        "type": "object",
+        "additionalProperties": false
+      },
       "LoginRequestDTO": {
         "type": "object",
         "properties": {
@@ -945,6 +1055,16 @@
         },
         "additionalProperties": false
       },
+      "ProcessLeaderRequestDto": {
+        "type": "object",
+        "properties": {
+          "rejectReason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "RegisterRequestDTO": {
         "type": "object",
         "properties": {
@@ -994,17 +1114,17 @@
       }
     },
     "securitySchemes": {
-      "bearerAuth": {
+      "Bearer": {
         "type": "http",
         "description": "Nhập token theo dạng: Bearer {token}",
-        "scheme": "bearer",
+        "scheme": "Bearer",
         "bearerFormat": "JWT"
       }
     }
   },
   "security": [
     {
-      "bearerAuth": [ ]
+      "Bearer": [ ]
     }
   ]
 }

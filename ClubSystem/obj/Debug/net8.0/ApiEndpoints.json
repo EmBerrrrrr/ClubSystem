@@ -104,6 +104,69 @@
     ]
   },
   {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderRequestsController",
+    "Method": "Create",
+    "RelativePath": "api/club-leader-requests",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "_",
+        "Type": "CreateLeaderRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderRequestsController",
+    "Method": "GetPending",
+    "RelativePath": "api/club-leader-requests",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderRequestsController",
+    "Method": "Approve",
+    "RelativePath": "api/club-leader-requests/{id}/approve",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderRequestsController",
+    "Method": "Reject",
+    "RelativePath": "api/club-leader-requests/{id}/reject",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "ProcessLeaderRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "StudentClubAPI.Controllers.ClubsController",
     "Method": "GetAll",
     "RelativePath": "api/Clubs",
