@@ -8,10 +8,9 @@ namespace Service.Service.Interfaces
 {
     public interface IClubLeaderRequestService
     {
-        Task CreateRequestAsync(int accountId);
+        Task CreateRequestAsync(int accountId, string reason);
         Task<List<LeaderRequestDto>> GetPendingAsync();
         Task ApproveAsync(int requestId, int adminId);
         Task RejectAsync(int requestId, int adminId, string reason);
     }
-
 }

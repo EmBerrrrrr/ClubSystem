@@ -18,7 +18,7 @@ public partial class ClubLeaderRequest
     public int? ProcessedBy { get; set; }
 
     public DateTime? ProcessedAt { get; set; }
-
+    public string? Reason { get; set; }
     public string Note { get; set; }
 
     public virtual Account Account { get; set; }

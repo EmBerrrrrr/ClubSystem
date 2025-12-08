@@ -3,10 +3,6 @@ using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.Service.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Service.Implements
 {
@@ -23,7 +19,7 @@ namespace Service.Service.Implements
         }
 
         // Student gửi request
-        public async Task CreateRequestAsync(int accountId)
+        public async Task CreateRequestAsync(int accountId, string reason)
         {
             var exists = await _db.ClubLeaderRequests
                 .AnyAsync(x =>
@@ -35,7 +31,10 @@ namespace Service.Service.Implements
             {
                 AccountId = accountId,
                 RequestDate = DateTime.UtcNow,
-                Status = "Pending"
+                Status = "Pending",
+                Reason = string.IsNullOrWhiteSpace(reason)
+                    ? "No reason provided"
+                    : reason.Trim()
             };
             await _repo.CreateAsync(request);
             await _repo.SaveAsync();
@@ -53,6 +52,7 @@ namespace Service.Service.Implements
                 AccountId = x.AccountId,
                 RequestDate = x.RequestDate,
                 Status = x.Status,
+                Reason = x.Reason,
                 Note = x.Note
             }).ToList();
         }
@@ -64,30 +64,27 @@ namespace Service.Service.Implements
             if (request == null)
                 throw new Exception("Request không tồn tại");
 
-            request.Status = "APPROVED";
+            request.Status = "Approved";
             request.ProcessedBy = adminId;
             request.ProcessedAt = DateTime.UtcNow;
             request.Note = "Approved";
 
             var leaderRole = await _db.Roles
-                .FirstOrDefaultAsync(x => x.Name == "CLUB_LEADER");
-
+                .FirstOrDefaultAsync(x => x.Name == "clubleader");
             if (leaderRole == null)
             {
                 leaderRole = new Role
                 {
-                    Name = "CLUB_LEADER",
+                    Name = "clubleader",
                     Description = "Club leader role"
                 };
 
                 _db.Roles.Add(leaderRole);
                 await _db.SaveChangesAsync();
             }
-
             bool existsRole = await _db.AccountRoles.AnyAsync(x =>
                 x.AccountId == request.AccountId &&
                 x.RoleId == leaderRole.Id);
-
             if (!existsRole)
             {
                 _db.AccountRoles.Add(new AccountRole
@@ -96,26 +93,21 @@ namespace Service.Service.Implements
                     RoleId = leaderRole.Id
                 });
             }
-
             await _repo.SaveAsync();
         }
-
 
         // REJECT
         public async Task RejectAsync(int requestId, int adminId, string reason)
         {
             var request = await _repo.GetByIdAsync(requestId);
-
             if (request == null)
                 throw new Exception("Request không tồn tại");
-
-            request.Status = "REJECTED";
+            request.Status = "Rejected";
             request.ProcessedBy = adminId;
             request.ProcessedAt = DateTime.UtcNow;
             request.Note = string.IsNullOrWhiteSpace(reason)
                 ? "Rejected"
-                : reason;
-
+                : reason.Trim();
             await _repo.SaveAsync();
         }
     }

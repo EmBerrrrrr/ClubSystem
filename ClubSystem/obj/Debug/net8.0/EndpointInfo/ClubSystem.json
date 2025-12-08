@@ -854,6 +854,10 @@
             "format": "date-time",
             "nullable": true
           },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
           "note": {
             "type": "string",
             "nullable": true
@@ -869,6 +873,12 @@
       },
       "CreateLeaderRequestDto": {
         "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
         "additionalProperties": false
       },
       "LoginRequestDTO": {
