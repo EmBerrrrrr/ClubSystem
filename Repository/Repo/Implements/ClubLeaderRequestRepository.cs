@@ -21,7 +21,7 @@ namespace Repository.Repo.Implements
         public async Task<List<ClubLeaderRequest>> GetPendingAsync()
         {
             return await _context.ClubLeaderRequests
-                .Where(x => x.Status == "PENDING")
+                .Where(x => x.Status == "pending")
                 .ToListAsync();
         }
 

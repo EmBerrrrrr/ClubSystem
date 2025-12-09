@@ -9,6 +9,9 @@ using Service.Service.Implements;
 using Service.Service.Interfaces;
 using Service.Services;
 using System.Text;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Http;
 
 namespace ClubSystem;
 
@@ -36,8 +39,37 @@ public class Program
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IAuthBusinessService, AuthBusinessService>();
         builder.Services.AddScoped<IClubLeaderRequestService, ClubLeaderRequestService>();
+        builder.Services.AddScoped<IStudentMembershipService, StudentMembershipService>();
 
         builder.Services.AddControllers();
+
+        // CORS - read from configuration
+        var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new string[0];
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFE", policy =>
+            {
+                policy.WithOrigins(corsOrigins)
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
+            });
+        });
+
+        // Rate limiting (simple token bucket)
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+            {
+                return RateLimitPartition.GetFixedWindowLimiter("global", _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 100,
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    QueueLimit = 0
+                });
+            });
+        });
 
         // SWAGGER
         builder.Services.AddEndpointsApiExplorer();
@@ -110,24 +142,34 @@ public class Program
         // APP BUILD
         var app = builder.Build();
 
-        using (var scope = app.Services.CreateScope())
+        app.UseRateLimiter();
+
+        try
         {
-            var db = scope.ServiceProvider.GetRequiredService<StudentClubManagementContext>();
-
-            string[] baseRoles =
+            using (var scope = app.Services.CreateScope())
             {
-                "admin",
-                "student",
-                "CLUB_LEADER"
-            };
+                var db = scope.ServiceProvider.GetRequiredService<StudentClubManagementContext>();
 
-            foreach (var r in baseRoles)
-            {
-                if (!db.Roles.Any(x => x.Name == r))
-                    db.Roles.Add(new Role { Name = r });
+                string[] baseRoles =
+                {
+                    "admin",
+                    "student",
+                    "clubleader"
+                };
+
+                foreach (var r in baseRoles)
+                {
+                    if (!db.Roles.Any(x => x.Name == r))
+                        db.Roles.Add(new Role { Name = r });
+                }
+
+                db.SaveChanges();
             }
-
-            db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            // If DB is unavailable or migration not applied, don't crash -- log and continue so Swagger can be used for development.
+            Console.WriteLine("Warning: failed to initialize DB roles: " + ex.Message);
         }
 
         // MIDDLEWARE PIPELINE
@@ -141,6 +183,7 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseCors("AllowFE");
 
         app.MapControllers();
 

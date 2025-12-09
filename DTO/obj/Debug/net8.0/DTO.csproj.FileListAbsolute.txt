@@ -10,3 +10,15 @@ D:\SWP391\ClubSystem\DTO\obj\Debug\net8.0\DTO.dll
 D:\SWP391\ClubSystem\DTO\obj\Debug\net8.0\refint\DTO.dll
 D:\SWP391\ClubSystem\DTO\obj\Debug\net8.0\DTO.pdb
 D:\SWP391\ClubSystem\DTO\obj\Debug\net8.0\ref\DTO.dll
+C:\MyCode\StudentClub\ClubSystem\DTO\bin\Debug\net8.0\DTO.deps.json
+C:\MyCode\StudentClub\ClubSystem\DTO\bin\Debug\net8.0\DTO.dll
+C:\MyCode\StudentClub\ClubSystem\DTO\bin\Debug\net8.0\DTO.pdb
+C:\MyCode\StudentClub\ClubSystem\DTO\obj\Debug\net8.0\DTO.GeneratedMSBuildEditorConfig.editorconfig
+C:\MyCode\StudentClub\ClubSystem\DTO\obj\Debug\net8.0\DTO.AssemblyInfoInputs.cache
+C:\MyCode\StudentClub\ClubSystem\DTO\obj\Debug\net8.0\DTO.AssemblyInfo.cs
+C:\MyCode\StudentClub\ClubSystem\DTO\obj\Debug\net8.0\DTO.csproj.CoreCompileInputs.cache
+C:\MyCode\StudentClub\ClubSystem\DTO\obj\Debug\net8.0\DTO.sourcelink.json
+C:\MyCode\StudentClub\ClubSystem\DTO\obj\Debug\net8.0\DTO.dll
+C:\MyCode\StudentClub\ClubSystem\DTO\obj\Debug\net8.0\refint\DTO.dll
+C:\MyCode\StudentClub\ClubSystem\DTO\obj\Debug\net8.0\DTO.pdb
+C:\MyCode\StudentClub\ClubSystem\DTO\obj\Debug\net8.0\ref\DTO.dll
