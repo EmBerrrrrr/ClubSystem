@@ -30,7 +30,7 @@ namespace StudentClubAPI.Controllers
         }
 
         // ADMIN - view all
-        [Authorize(Roles = "admin")]
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
