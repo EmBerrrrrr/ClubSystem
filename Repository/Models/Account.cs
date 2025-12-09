@@ -21,15 +21,13 @@ public partial class Account
 
     public string ImageAccountUrl { get; set; }
 
-    public bool? IsActive { get; set; } = true;
+    public bool? IsActive { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
     public virtual ICollection<AccountRole> AccountRoles { get; set; } = new List<AccountRole>();
 
-    public virtual ICollection<Activity> ActivityApprovedByNavigations { get; set; } = new List<Activity>();
-
-    public virtual ICollection<Activity> ActivityCreatedByNavigations { get; set; } = new List<Activity>();
+    public virtual ICollection<Activity> Activities { get; set; } = new List<Activity>();
 
     public virtual ICollection<ClubLeaderRequest> ClubLeaderRequestAccounts { get; set; } = new List<ClubLeaderRequest>();
 

@@ -21,5 +21,5 @@ public partial class ClubLeader
 
     public virtual Account Account { get; set; }
 
-    public virtual Club Club { get; set; } = null!;
+    public virtual Club Club { get; set; }
 }

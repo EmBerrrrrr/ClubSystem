@@ -15,4 +15,3 @@ namespace Service.DTO.ClubLeader
         public DateTime? ProcessedAt { get; set; }
     }
 }
-

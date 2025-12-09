@@ -58,14 +58,10 @@ public partial class StudentClubManagementContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
             entity.Property(e => e.Email)
-                .IsRequired()
-                .HasMaxLength(100)
-                .IsUnicode(false)
+                .HasMaxLength(255)
                 .HasColumnName("email");
             entity.Property(e => e.FullName)
-                .IsRequired()
-                .HasMaxLength(100)
-                .IsUnicode(false)
+                .HasMaxLength(255)
                 .HasColumnName("full_name");
             entity.Property(e => e.ImageAccountUrl)
                 .HasMaxLength(255)
@@ -78,8 +74,7 @@ public partial class StudentClubManagementContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("password_hash");
             entity.Property(e => e.Phone)
-                .HasMaxLength(20)
-                .IsUnicode(false)
+                .HasMaxLength(50)
                 .HasColumnName("phone");
             entity.Property(e => e.Username)
                 .IsRequired()
@@ -116,7 +111,6 @@ public partial class StudentClubManagementContext : DbContext
             entity.ToTable("activities");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ApprovedBy).HasColumnName("approved_by");
             entity.Property(e => e.ClubId).HasColumnName("club_id");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.Description)
@@ -142,16 +136,12 @@ public partial class StudentClubManagementContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("title");
 
-            entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.ActivityApprovedByNavigations)
-                .HasForeignKey(d => d.ApprovedBy)
-                .HasConstraintName("FK_activities_approved_by");
-
             entity.HasOne(d => d.Club).WithMany(p => p.Activities)
                 .HasForeignKey(d => d.ClubId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_activities_club");
 
-            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.ActivityCreatedByNavigations)
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Activities)
                 .HasForeignKey(d => d.CreatedBy)
                 .HasConstraintName("FK_activities_created_by");
         });
@@ -249,6 +239,7 @@ public partial class StudentClubManagementContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("processed_at");
             entity.Property(e => e.ProcessedBy).HasColumnName("processed_by");
+            entity.Property(e => e.Reason).HasColumnName("reason");
             entity.Property(e => e.RequestDate)
                 .HasColumnType("datetime")
                 .HasColumnName("request_date");
@@ -374,7 +365,7 @@ public partial class StudentClubManagementContext : DbContext
 
             entity.ToTable("roles");
 
-            entity.HasIndex(e => e.Name, "UQ__roles__72E12F1B6D696FB9").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ_roles_name").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Description)
@@ -383,7 +374,6 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(50)
-                .IsUnicode(false)
                 .HasColumnName("name");
         });
 

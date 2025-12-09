@@ -3,54 +3,68 @@ using DTO;
 using Repository.Models;
 using Repository.Repo.Interfaces;
 
-namespace Repository.Repo.Implements;
-
-public class ClubRepository : IClubRepository
+namespace Repository.Repo.Implements
 {
-    private readonly StudentClubManagementContext _context;
-
-    public ClubRepository(StudentClubManagementContext context)
+    public class ClubRepository : IClubRepository
     {
-        _context = context;
-    }
+        private readonly StudentClubManagementContext _context;
 
-    public async Task<List<ClubDTO>> GetAllClubsAsync()
-        => await _context.Clubs
-            .Select(c => new ClubDTO
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Description = c.Description,
-                ImageClubsUrl = c.ImageClubsUrl,
-                MembershipFee = c.MembershipFee,
-                Status = c.Status
-            })
-            .ToListAsync();
-
-    public async Task<Club?> GetClubDetailAsync(int id)
-        => await _context.Clubs
-            .Include(c => c.ClubLeaders)
-            .Include(c => c.Activities)
-            .Include(c => c.Memberships)
-            .FirstOrDefaultAsync(c => c.Id == id);
-
-    public async Task<bool> SendJoinRequestAsync(int accountId, int clubId)
-    {
-        var exists = await _context.MembershipRequests
-            .AnyAsync(r => r.AccountId == accountId && r.ClubId == clubId && r.Status == "pending");
-
-        if (exists) return false;
-
-        var request = new MembershipRequest
+        public ClubRepository(StudentClubManagementContext context)
         {
-            AccountId = accountId,
-            ClubId = clubId,
-            RequestDate = DateTime.Now,
-            Status = "pending"
-        };
+            _context = context;
+        }
 
-        _context.MembershipRequests.Add(request);
-        await _context.SaveChangesAsync();
-        return true;
+        public async Task AddAsync(Club club)
+        {
+            _context.Clubs.Add(club);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(Club club)
+        {
+            _context.Clubs.Update(club);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<Club?> GetDetailWithActivitiesAsync(int id)
+        {
+            return await _context.Clubs
+                .Include(x => x.Activities)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task DeleteAsync(Club club)
+        {
+            _context.Clubs.Remove(club);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Club?> GetByIdAsync(int id)
+        {
+            return await _context.Clubs.FindAsync(id);
+        }
+
+        public async Task<List<Club>> GetAllAsync()
+        {
+            return await _context.Clubs.ToListAsync();
+        }
+
+        public async Task<List<Club>> GetByLeaderIdAsync(int leaderId)
+        {
+            return await _context.ClubLeaders
+                .Where(x => x.AccountId == leaderId && x.IsActive == true)
+                .Include(x => x.Club)
+                .Select(x => x.Club)
+                .ToListAsync();
+        }
+
+        public async Task<bool> IsLeaderOfClubAsync(int clubId, int accountId)
+        {
+            return await _context.ClubLeaders.AnyAsync(x =>
+                x.ClubId == clubId &&
+                x.AccountId == accountId &&
+                x.IsActive == true);
+        }
     }
+
 }
+
