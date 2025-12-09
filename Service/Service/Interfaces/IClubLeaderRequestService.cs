@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Service.DTO.ClubLeader;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +13,7 @@ namespace Service.Service.Interfaces
         Task<List<LeaderRequestDto>> GetPendingAsync();
         Task ApproveAsync(int requestId, int adminId);
         Task RejectAsync(int requestId, int adminId, string reason);
+        Task<MyLeaderRequestDto?> GetMyRequestAsync(int accountId);
+
     }
 }

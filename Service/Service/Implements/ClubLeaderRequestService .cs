@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Repository.Repo.Interfaces;
+using Service.DTO.ClubLeader;
 using Service.Service.Interfaces;
 using System;
 
@@ -40,6 +41,27 @@ namespace Service.Service.Implements
             await _repo.SaveAsync();
         }
 
+        // Student xem list của bản thân
+        public async Task<MyLeaderRequestDto?> GetMyRequestAsync(int accountId)
+        {
+            var req = await _db.ClubLeaderRequests
+                .Where(x => x.AccountId == accountId)
+                .OrderByDescending(x => x.RequestDate)
+                .FirstOrDefaultAsync();
+
+            if (req == null) return null;
+
+            return new MyLeaderRequestDto
+            {
+                Id = req.Id,
+                RequestDate = req.RequestDate,
+                Status = req.Status,
+                Reason = req.Reason,
+                Note = req.Note,
+                ProcessedBy = req.ProcessedBy,
+                ProcessedAt = req.ProcessedAt
+            };
+        }
 
         // Admin xem list
         public async Task<List<LeaderRequestDto>> GetPendingAsync()

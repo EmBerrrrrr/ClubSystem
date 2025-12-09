@@ -43,6 +43,8 @@ public class Program
         builder.Services.AddScoped<IStudentMembershipService, StudentMembershipService>();
         builder.Services.AddScoped<ILeaderClubService, LeaderClubService>();
         builder.Services.AddScoped<IClubService, ClubService>();
+        builder.Services.AddScoped<IAdminAccountService, AdminAccountService>();
+
 
         builder.Services.AddControllers();
 
