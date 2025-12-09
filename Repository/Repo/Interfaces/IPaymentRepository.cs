@@ -8,6 +8,7 @@ namespace Repository.Repo.Interfaces
     {
         Task<Payment?> GetByIdAsync(int id);
         Task<List<Payment>> GetPaymentsByAccountIdAsync(int accountId);
+        Task<List<Payment>> GetPaymentsByClubIdAsync(int clubId);
         Task<Payment?> GetPaymentByMembershipRequestIdAsync(int membershipRequestId);
         Task AddPaymentAsync(Payment payment);
         Task UpdatePaymentAsync(Payment payment);

@@ -9,7 +9,7 @@ namespace DTO.DTO.Payment
     public class CreatePaymentDto
     {
         public int MembershipRequestId { get; set; }
-        public string Method { get; set; } // Ví dụ: "cash", "bank_transfer", "momo", etc.
+        public string Method { get; set; } = string.Empty; // Ví dụ: "cash", "bank_transfer", "momo", etc.
     }
 }
 

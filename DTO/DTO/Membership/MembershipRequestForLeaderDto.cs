@@ -11,7 +11,7 @@ namespace DTO.DTO.Membership
         public int Id { get; set; }
         public int AccountId { get; set; }
         public int ClubId { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public string? Note { get; set; }
         public DateTime RequestDate { get; set; }
     }

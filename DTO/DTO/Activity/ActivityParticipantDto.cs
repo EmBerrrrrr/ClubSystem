@@ -4,15 +4,15 @@ namespace DTO.DTO.Activity
     {
         public int Id { get; set; }
         public int ActivityId { get; set; }
-        public string ActivityTitle { get; set; }
+        public string ActivityTitle { get; set; } = string.Empty;
         public int ClubId { get; set; }
-        public string ClubName { get; set; }
+        public string ClubName { get; set; } = string.Empty;
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
-        public string Location { get; set; }
+        public string Location { get; set; } = string.Empty;
         public DateTime? RegisterTime { get; set; }
         public bool? Attended { get; set; }
-        public string ActivityStatus { get; set; }
+        public string ActivityStatus { get; set; } = string.Empty;
     }
 }
 

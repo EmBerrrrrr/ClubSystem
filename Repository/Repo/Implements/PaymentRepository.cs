@@ -31,6 +31,17 @@ namespace Repository.Repo.Implements
                 .ToListAsync();
         }
 
+        public async Task<List<Payment>> GetPaymentsByClubIdAsync(int clubId)
+        {
+            return await _db.Payments
+                .Include(p => p.Club)
+                .Include(p => p.Membership)
+                    .ThenInclude(m => m.Account)
+                .Where(p => p.ClubId == clubId)
+                .OrderByDescending(p => p.PaidDate)
+                .ToListAsync();
+        }
+
         public async Task<Payment?> GetPaymentByMembershipRequestIdAsync(int membershipRequestId)
         {
             // Lấy membership request để có accountId và clubId

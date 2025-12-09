@@ -38,6 +38,15 @@ namespace Repository.Repo.Implements
                 .ToListAsync();
         }
 
+        public async Task<List<Membership>> GetMembershipsByClubIdAsync(int clubId)
+        {
+            return await _db.Memberships
+                .Where(x => x.ClubId == clubId)
+                .Include(x => x.Account)
+                .Include(x => x.Club)
+                .ToListAsync();
+        }
+
         public async Task<Membership?> GetMembershipByAccountAndClubAsync(int accountId, int clubId)
         {
             return await _db.Memberships
