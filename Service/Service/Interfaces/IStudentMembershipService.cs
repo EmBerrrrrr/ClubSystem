@@ -9,7 +9,9 @@ namespace Service.Service.Interfaces
 {
     public interface IStudentMembershipService
     {
-        Task<List<MembershipRequestDTO>> GetMyRequestsAsync(int accountId);
-        Task<List<MembershipDTO>> GetMyClubsAsync(int accountId);
+        Task SendMembershipRequestAsync(int accountId, int clubId);
+        Task<List<MembershipRequestDto>> GetMyRequestsAsync(int accountId);
+        Task<List<MyMembershipDto>> GetMyMembershipsAsync(int accountId);
     }
+
 }

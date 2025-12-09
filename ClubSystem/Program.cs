@@ -34,6 +34,8 @@ public class Program
         builder.Services.AddScoped<IAuthRepository, AuthRepository>();
         builder.Services.AddScoped<IClubLeaderRequestRepository, ClubLeaderRequestRepository>();
         builder.Services.AddScoped<IClubRepository, ClubRepository>();
+        builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
+        builder.Services.AddScoped<IMembershipRequestRepository, MembershipRequestRepository>();
 
         // SERVICES
         builder.Services.AddScoped<IClubService, ClubService>();
@@ -41,8 +43,9 @@ public class Program
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IAuthBusinessService, AuthBusinessService>();
         builder.Services.AddScoped<IClubLeaderRequestService, ClubLeaderRequestService>();
-        builder.Services.AddScoped<IStudentMembershipService, StudentMembershipService>();
         builder.Services.AddScoped<IAdminAccountService, AdminAccountService>();
+        builder.Services.AddScoped<IStudentMembershipService, StudentMembershipService>();
+        builder.Services.AddScoped<IClubLeaderMembershipService, ClubLeaderMembershipService>();
 
 
         builder.Services.AddControllers();

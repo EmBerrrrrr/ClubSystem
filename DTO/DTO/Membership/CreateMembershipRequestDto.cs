@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace DTO.DTO.Membership
 {
-    public class RejectRequestDTO
+    public class CreateMembershipRequestDto
     {
-        public string Reason { get; set; } = null!;
+        public int ClubId { get; set; }
     }
+
+
 }

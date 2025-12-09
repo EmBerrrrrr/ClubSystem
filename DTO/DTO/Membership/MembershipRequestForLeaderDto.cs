@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace DTO.DTO.Membership
 {
-    public class MembershipDTO
+    public class MembershipRequestForLeaderDto
     {
         public int Id { get; set; }
         public int AccountId { get; set; }
-        public string AccountName { get; set; } = null!;
-        public DateTime? JoinDate { get; set; }
-        public string Status { get; set; } = null!;
+        public int ClubId { get; set; }
+        public string Status { get; set; }
+        public string? Note { get; set; }
+        public DateTime RequestDate { get; set; }
     }
+
 }

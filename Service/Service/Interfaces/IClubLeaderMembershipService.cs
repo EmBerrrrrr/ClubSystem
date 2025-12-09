@@ -1,0 +1,17 @@
+﻿using DTO.DTO.Membership;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Service.Service.Interfaces
+{
+    public interface IClubLeaderMembershipService
+    {
+        Task<List<MembershipRequestForLeaderDto>> GetPendingRequestsAsync(int leaderId);
+        Task ApproveAsync(int leaderId, int requestId, string? note);
+        Task RejectAsync(int leaderId, int requestId, string? note);
+    }
+
+}
