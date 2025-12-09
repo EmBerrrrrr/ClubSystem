@@ -1,4 +1,5 @@
 ﻿using DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Models;
 using Service.Services;
@@ -7,6 +8,7 @@ namespace StudentClubAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ClubsController : ControllerBase
 {
     private readonly IClubService _service;
@@ -35,6 +37,7 @@ public class ClubsController : ControllerBase
 
     // POST: api/clubs/{clubId}/join
     [HttpPost("{clubId:int}/join")]
+    [Authorize(Roles = "student")]
     public async Task<IActionResult> Join(int clubId, [FromQuery] int accountId)
     {
         var ok = await _service.SendJoinRequestAsync(accountId, clubId);

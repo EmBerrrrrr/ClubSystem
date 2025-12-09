@@ -24,14 +24,14 @@ namespace Service.Service.Implements
             var exists = await _db.ClubLeaderRequests
                 .AnyAsync(x =>
                     x.AccountId == accountId &&
-                    x.Status == "Pending");
+                    x.Status.ToLower() == "pending");
             if (exists)
                 throw new Exception("Bạn đã gửi request và đang chờ duyệt");
             var request = new ClubLeaderRequest
             {
                 AccountId = accountId,
                 RequestDate = DateTime.UtcNow,
-                Status = "Pending",
+                Status = "pending",
                 Reason = string.IsNullOrWhiteSpace(reason)
                     ? "No reason provided"
                     : reason.Trim()
@@ -64,7 +64,7 @@ namespace Service.Service.Implements
             if (request == null)
                 throw new Exception("Request không tồn tại");
 
-            request.Status = "Approved";
+            request.Status = "approved";
             request.ProcessedBy = adminId;
             request.ProcessedAt = DateTime.UtcNow;
             request.Note = "Approved";
@@ -102,7 +102,7 @@ namespace Service.Service.Implements
             var request = await _repo.GetByIdAsync(requestId);
             if (request == null)
                 throw new Exception("Request không tồn tại");
-            request.Status = "Rejected";
+            request.Status = "rejected";
             request.ProcessedBy = adminId;
             request.ProcessedAt = DateTime.UtcNow;
             request.Note = string.IsNullOrWhiteSpace(reason)

@@ -2,6 +2,7 @@
 using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.Services;
+
 public class ClubService : IClubService
 {
     private readonly IClubRepository _repo;
@@ -14,8 +15,17 @@ public class ClubService : IClubService
     public Task<List<ClubDTO>> GetAllClubsAsync()
         => _repo.GetAllClubsAsync();
 
-    public Task<Club?> GetClubDetailAsync(int id)
-        => _repo.GetClubDetailAsync(id);
+    public async Task<ClubDTO?> GetClubDetailAsync(int id)
+    {
+        var club = await _repo.GetClubDetailAsync(id);
+        if (club == null) return null;
+        return new ClubDTO
+        {
+            Id = club.Id,
+            Name = club.Name,
+            // Map other properties as needed
+        };
+    }
 
     public Task<bool> SendJoinRequestAsync(int accountId, int clubId)
         => _repo.SendJoinRequestAsync(accountId, clubId);
