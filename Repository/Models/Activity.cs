@@ -25,11 +25,7 @@ public partial class Activity
 
     public int? CreatedBy { get; set; }
 
-    public int? ApprovedBy { get; set; }
-
     public virtual ICollection<ActivityParticipant> ActivityParticipants { get; set; } = new List<ActivityParticipant>();
-
-    public virtual Account ApprovedByNavigation { get; set; }
 
     public virtual Club Club { get; set; }
 

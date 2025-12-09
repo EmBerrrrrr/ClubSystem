@@ -1,10 +1,14 @@
-﻿using DTO;
-using Repository.Repo.Interfaces;
+﻿using DTO.DTO.Activity;
 
-namespace Service.Services;
-
-public interface IActivityService
+namespace Service.Services
 {
-    Task<List<ActivityDTO>> GetActivitiesByClubIdAsync(int clubId);
-    Task<ActivityDTO?> GetActivityByIdAsync(int id);
+    public interface IActivityService
+    {
+        Task<List<ActivityDto>> GetAllAsync();
+        Task<List<ActivityDto>> GetByClubAsync(int clubId);
+        Task<ActivityDto?> GetDetailAsync(int id);
+        Task<ActivityDto> CreateAsync(CreateActivityDto dto, int accountId, bool isAdmin);
+        Task UpdateAsync(int id, UpdateActivityDto dto, int accountId, bool isAdmin);
+        Task DeleteAsync(int id, int accountId, bool isAdmin);
+    }
 }

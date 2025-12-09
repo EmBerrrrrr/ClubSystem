@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -8,10 +10,9 @@ using Repository.Repo.Interfaces;
 using Service.Service.Implements;
 using Service.Service.Interfaces;
 using Service.Services;
+using Service.Services.Interfaces;
 using System.Text;
-using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
-using Microsoft.AspNetCore.Http;
 
 namespace ClubSystem;
 
@@ -41,8 +42,6 @@ public class Program
         builder.Services.AddScoped<IAuthBusinessService, AuthBusinessService>();
         builder.Services.AddScoped<IClubLeaderRequestService, ClubLeaderRequestService>();
         builder.Services.AddScoped<IStudentMembershipService, StudentMembershipService>();
-        builder.Services.AddScoped<ILeaderClubService, LeaderClubService>();
-        builder.Services.AddScoped<IClubService, ClubService>();
         builder.Services.AddScoped<IAdminAccountService, AdminAccountService>();
 
 

@@ -210,7 +210,48 @@
         }
       }
     },
-    "/api/Activities/club/{clubId}": {
+    "/api/activities": {
+      "get": {
+        "tags": [
+          "Activities"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Activities"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateActivityDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateActivityDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateActivityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/activities/club/{clubId}": {
       "get": {
         "tags": [
           "Activities"
@@ -228,38 +269,12 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ActivityDTO"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ActivityDTO"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ActivityDTO"
-                  }
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
     },
-    "/api/Activities/{id}": {
+    "/api/activities/{id}": {
       "get": {
         "tags": [
           "Activities"
@@ -277,24 +292,68 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ActivityDTO"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ActivityDTO"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ActivityDTO"
-                }
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Activities"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateActivityDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateActivityDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateActivityDto"
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Activities"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -513,45 +572,60 @@
         }
       }
     },
-    "/api/Clubs": {
+    "/api/clubs/my": {
       "get": {
         "tags": [
           "Clubs"
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ClubDTO"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ClubDTO"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ClubDTO"
-                  }
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
     },
-    "/api/Clubs/{id}": {
+    "/api/clubs": {
+      "get": {
+        "tags": [
+          "Clubs"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Clubs"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClubDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClubDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClubDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/clubs/{id}": {
       "get": {
         "tags": [
           "Clubs"
@@ -569,151 +643,17 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Club"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Club"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Club"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
-      }
-    },
-    "/api/Clubs/{clubId}/join": {
-      "post": {
+      },
+      "put": {
         "tags": [
           "Clubs"
         ],
         "parameters": [
           {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "accountId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/leader/clubs": {
-      "get": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LeaderClubDTO"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LeaderClubDTO"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LeaderClubDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LeaderClubCreateDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LeaderClubCreateDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/LeaderClubCreateDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeaderClubDTO"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeaderClubDTO"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeaderClubDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/leader/clubs/{clubId}": {
-      "put": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -726,17 +666,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LeaderClubUpdateDTO"
+                "$ref": "#/components/schemas/UpdateClubDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/LeaderClubUpdateDTO"
+                "$ref": "#/components/schemas/UpdateClubDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/LeaderClubUpdateDTO"
+                "$ref": "#/components/schemas/UpdateClubDto"
               }
             }
           }
@@ -749,11 +689,11 @@
       },
       "delete": {
         "tags": [
-          "LeaderClubs"
+          "Clubs"
         ],
         "parameters": [
           {
-            "name": "clubId",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -765,579 +705,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeaderClubDTO"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeaderClubDTO"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeaderClubDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/leader/clubs/{clubId}/membership-requests": {
-      "get": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "status",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "default": "pending"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipRequestDTO"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipRequestDTO"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipRequestDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/leader/clubs/{clubId}/membership-requests/{requestId}/approve": {
-      "post": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "requestId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/leader/clubs/{clubId}/membership-requests/{requestId}/reject": {
-      "post": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "requestId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RejectRequestDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RejectRequestDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RejectRequestDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/leader/clubs/{clubId}/members": {
-      "get": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipDTO"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipDTO"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/leader/clubs/{clubId}/members/{membershipId}/status": {
-      "put": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "membershipId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateStatusDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateStatusDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateStatusDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/leader/clubs/{clubId}/members/{membershipId}": {
-      "delete": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "membershipId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/leader/clubs/{clubId}/activities": {
-      "get": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ActivityDTO"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ActivityDTO"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ActivityDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ActivityCreateDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ActivityCreateDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ActivityCreateDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ActivityDTO"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ActivityDTO"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ActivityDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/leader/clubs/{clubId}/activities/{activityId}": {
-      "put": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "activityId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ActivityUpdateDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ActivityUpdateDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ActivityUpdateDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "LeaderClubs"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "activityId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/student/memberships/requests": {
-      "get": {
-        "tags": [
-          "StudentMemberships"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipRequestDTO"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipRequestDTO"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipRequestDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/student/memberships/my-clubs": {
-      "get": {
-        "tags": [
-          "StudentMemberships"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipDTO"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipDTO"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MembershipDTO"
-                  }
-                }
-              }
-            }
           }
         }
       }
@@ -1345,143 +712,9 @@
   },
   "components": {
     "schemas": {
-      "Account": {
+      "CreateActivityDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "username": {
-            "type": "string",
-            "nullable": true
-          },
-          "passwordHash": {
-            "type": "string",
-            "nullable": true
-          },
-          "fullName": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "phone": {
-            "type": "string",
-            "nullable": true
-          },
-          "imageAccountUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "isActive": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "accountRoles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AccountRole"
-            },
-            "nullable": true
-          },
-          "activityApprovedByNavigations": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Activity"
-            },
-            "nullable": true
-          },
-          "activityCreatedByNavigations": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Activity"
-            },
-            "nullable": true
-          },
-          "clubLeaderRequestAccounts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ClubLeaderRequest"
-            },
-            "nullable": true
-          },
-          "clubLeaderRequestProcessedByNavigations": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ClubLeaderRequest"
-            },
-            "nullable": true
-          },
-          "clubLeaders": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ClubLeader"
-            },
-            "nullable": true
-          },
-          "membershipRequestAccounts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/MembershipRequest"
-            },
-            "nullable": true
-          },
-          "membershipRequestProcessedByNavigations": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/MembershipRequest"
-            },
-            "nullable": true
-          },
-          "memberships": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Membership"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "AccountRole": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "accountId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "roleId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "account": {
-            "$ref": "#/components/schemas/Account"
-          },
-          "role": {
-            "$ref": "#/components/schemas/Role"
-          }
-        },
-        "additionalProperties": false
-      },
-      "Activity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
           "clubId": {
             "type": "integer",
             "format": "int32"
@@ -1507,190 +740,13 @@
           "location": {
             "type": "string",
             "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdBy": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "approvedBy": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "activityParticipants": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ActivityParticipant"
-            },
-            "nullable": true
-          },
-          "approvedByNavigation": {
-            "$ref": "#/components/schemas/Account"
-          },
-          "club": {
-            "$ref": "#/components/schemas/Club"
-          },
-          "createdByNavigation": {
-            "$ref": "#/components/schemas/Account"
           }
         },
         "additionalProperties": false
       },
-      "ActivityCreateDTO": {
+      "CreateClubDto": {
         "type": "object",
         "properties": {
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "startTime": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "endTime": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "location": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ActivityDTO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "clubId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "startTime": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "endTime": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "location": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdBy": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "approvedBy": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ActivityParticipant": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "activityId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "membershipId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "registerTime": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "attended": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "activity": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "membership": {
-            "$ref": "#/components/schemas/Membership"
-          }
-        },
-        "additionalProperties": false
-      },
-      "ActivityUpdateDTO": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "startTime": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "endTime": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "location": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Club": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
           "name": {
             "type": "string",
             "nullable": true
@@ -1701,171 +757,17 @@
           },
           "establishedDate": {
             "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "imageClubsUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "membershipFee": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "activities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Activity"
-            },
-            "nullable": true
-          },
-          "clubLeaders": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ClubLeader"
-            },
-            "nullable": true
-          },
-          "membershipRequests": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/MembershipRequest"
-            },
-            "nullable": true
-          },
-          "memberships": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Membership"
-            },
-            "nullable": true
-          },
-          "payments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Payment"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ClubDTO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "imageClubsUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "membershipFee": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ClubLeader": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "clubId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "accountId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "endDate": {
-            "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "isActive": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "account": {
-            "$ref": "#/components/schemas/Account"
-          },
-          "club": {
-            "$ref": "#/components/schemas/Club"
-          }
-        },
-        "additionalProperties": false
-      },
-      "ClubLeaderRequest": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "accountId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "requestDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "processedBy": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "processedAt": {
-            "type": "string",
             "format": "date-time",
             "nullable": true
           },
-          "reason": {
+          "imageClubsUrl": {
             "type": "string",
             "nullable": true
           },
-          "note": {
-            "type": "string",
+          "membershipFee": {
+            "type": "number",
+            "format": "double",
             "nullable": true
-          },
-          "account": {
-            "$ref": "#/components/schemas/Account"
-          },
-          "processedByNavigation": {
-            "$ref": "#/components/schemas/Account"
           }
         },
         "additionalProperties": false
@@ -1874,93 +776,6 @@
         "type": "object",
         "properties": {
           "reason": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "LeaderClubCreateDTO": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "establishedDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "imageClubsUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "membershipFee": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "LeaderClubDTO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "membershipFee": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "LeaderClubUpdateDTO": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "establishedDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "imageClubsUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "membershipFee": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "status": {
             "type": "string",
             "nullable": true
           }
@@ -2014,202 +829,12 @@
         },
         "additionalProperties": false
       },
-      "Membership": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "accountId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "clubId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "joinDate": {
-            "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "account": {
-            "$ref": "#/components/schemas/Account"
-          },
-          "activityParticipants": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ActivityParticipant"
-            },
-            "nullable": true
-          },
-          "club": {
-            "$ref": "#/components/schemas/Club"
-          },
-          "payments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Payment"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "MembershipDTO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "accountId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "accountName": {
-            "type": "string",
-            "nullable": true
-          },
-          "joinDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "MembershipRequest": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "accountId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "clubId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "requestDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "processedBy": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "processedAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          },
-          "account": {
-            "$ref": "#/components/schemas/Account"
-          },
-          "club": {
-            "$ref": "#/components/schemas/Club"
-          },
-          "processedByNavigation": {
-            "$ref": "#/components/schemas/Account"
-          }
-        },
-        "additionalProperties": false
-      },
-      "MembershipRequestDTO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "accountId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "accountName": {
-            "type": "string",
-            "nullable": true
-          },
-          "requestDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "ModifyRoleDto": {
         "type": "object",
         "properties": {
           "roleName": {
             "type": "string",
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Payment": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "membershipId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "clubId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "paidDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "method": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "club": {
-            "$ref": "#/components/schemas/Club"
-          },
-          "membership": {
-            "$ref": "#/components/schemas/Membership"
           }
         },
         "additionalProperties": false
@@ -2246,16 +871,6 @@
         },
         "additionalProperties": false
       },
-      "RejectRequestDTO": {
-        "type": "object",
-        "properties": {
-          "reason": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "ResetPasswordDto": {
         "type": "object",
         "properties": {
@@ -2266,13 +881,41 @@
         },
         "additionalProperties": false
       },
-      "Role": {
+      "UpdateActivityDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
+          "title": {
+            "type": "string",
+            "nullable": true
           },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateClubDto": {
+        "type": "object",
+        "properties": {
           "name": {
             "type": "string",
             "nullable": true
@@ -2281,19 +924,20 @@
             "type": "string",
             "nullable": true
           },
-          "accountRoles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AccountRole"
-            },
+          "establishedDate": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "UpdateStatusDTO": {
-        "type": "object",
-        "properties": {
+          },
+          "imageClubsUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "membershipFee": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
           "status": {
             "type": "string",
             "nullable": true
