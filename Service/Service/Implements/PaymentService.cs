@@ -340,6 +340,91 @@ namespace Service.Service.Implements
 
             return result;
         }
+
+        public async Task<List<PaymentStatusDto>> GetMyPaymentStatusAsync(int accountId)
+        {
+            // Lấy tất cả memberships của student (bao gồm cả active và pending_payment)
+            var allMemberships = await _membershipRepo.GetAllMembershipsAsync(accountId);
+            var result = new List<PaymentStatusDto>();
+
+            // Lấy danh sách CLB từ memberships
+            var clubIds = allMemberships.Select(m => m.ClubId).Distinct().ToList();
+
+            foreach (var clubId in clubIds)
+            {
+                var membership = allMemberships.FirstOrDefault(m => m.ClubId == clubId);
+                if (membership == null) continue;
+
+                var club = membership.Club ?? await _clubRepo.GetByIdAsync(clubId);
+                if (club == null) continue;
+
+                var statusDto = new PaymentStatusDto
+                {
+                    ClubId = clubId,
+                    ClubName = club.Name ?? "",
+                    MembershipFee = club.MembershipFee ?? 0,
+                    IsMember = membership.Status == "active"
+                };
+
+                // Nếu CLB không có phí thành viên
+                if (club.MembershipFee == null || club.MembershipFee == 0)
+                {
+                    statusDto.PaymentStatus = "no_fee";
+                    result.Add(statusDto);
+                    continue;
+                }
+
+                // Tìm payment gần nhất cho CLB này
+                var payments = await _paymentRepo.GetPaymentsByAccountIdAsync(accountId);
+                var clubPayment = payments
+                    .Where(p => p.ClubId == clubId)
+                    .OrderByDescending(p => p.PaidDate ?? DateTime.MinValue)
+                    .FirstOrDefault();
+
+                if (clubPayment == null)
+                {
+                    // Chưa có payment nào - kiểm tra xem có membership request đã approve chưa
+                    var requests = await _membershipRequestRepo.GetRequestsOfAccountAsync(accountId);
+                    var approvedRequest = requests.FirstOrDefault(r => 
+                        r.ClubId == clubId && r.Status == "approved_pending_payment");
+                    
+                    if (approvedRequest != null)
+                    {
+                        statusDto.PaymentStatus = "not_paid"; // Cần thanh toán
+                    }
+                    else if (membership.Status == "active")
+                    {
+                        statusDto.PaymentStatus = "paid"; // Đã là member active mà không có payment record
+                    }
+                    else
+                    {
+                        statusDto.PaymentStatus = "not_paid";
+                    }
+                }
+                else
+                {
+                    statusDto.PaymentId = clubPayment.Id;
+                    statusDto.PaidDate = clubPayment.PaidDate;
+
+                    if (clubPayment.Status == "paid")
+                    {
+                        statusDto.PaymentStatus = "paid";
+                    }
+                    else if (clubPayment.Status == "pending")
+                    {
+                        statusDto.PaymentStatus = "pending";
+                    }
+                    else
+                    {
+                        statusDto.PaymentStatus = "not_paid";
+                    }
+                }
+
+                result.Add(statusDto);
+            }
+
+            return result;
+        }
     }
 }
 

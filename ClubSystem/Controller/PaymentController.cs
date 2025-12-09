@@ -114,6 +114,22 @@ namespace ClubSystem.Controller
             var result = await _paymentService.GetMyPaymentHistoryAsync(accountId);
             return Ok(result);
         }
+
+        [HttpGet("status")]
+        [Authorize(Roles = "student")]
+        public async Task<IActionResult> GetPaymentStatus()
+        {
+            var accountId = User.GetAccountId();
+            try
+            {
+                var result = await _paymentService.GetMyPaymentStatusAsync(accountId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
 

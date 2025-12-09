@@ -11,6 +11,7 @@ namespace Service.Service.Interfaces
         Task<bool> ProcessVNPayCallbackAsync(Dictionary<string, string> vnpayData);
         Task<PaymentDto> CompletePaymentAsync(int accountId, int paymentId);
         Task<List<PaymentDto>> GetMyPaymentHistoryAsync(int accountId);
+        Task<List<PaymentStatusDto>> GetMyPaymentStatusAsync(int accountId);
     }
 }
 
