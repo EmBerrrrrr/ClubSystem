@@ -48,4 +48,34 @@ public class AuthRepository : IAuthRepository
         _context.AccountRoles.Add(ar);
         await _context.SaveChangesAsync();
     }
+    public async Task<List<Account>> GetAllAccountsAsync()     
+    {
+        return await _context.Accounts
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<Account?> GetAccountByIdAsync(int id)    
+    {
+        return await _context.Accounts
+            .SingleOrDefaultAsync(a => a.Id == id);
+    }
+
+    public async Task UpdateAccountAsync(Account account)  
+    {
+        _context.Accounts.Update(account);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task RemoveAccountRoleAsync(int accountId, int roleId) 
+    {
+        var ar = await _context.AccountRoles
+            .SingleOrDefaultAsync(x => x.AccountId == accountId && x.RoleId == roleId);
+
+        if (ar != null)
+        {
+            _context.AccountRoles.Remove(ar);
+            await _context.SaveChangesAsync();
+        }
+    }
 }

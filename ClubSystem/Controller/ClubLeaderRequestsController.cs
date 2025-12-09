@@ -31,6 +31,20 @@ namespace ClubSystem.Controller
 
             return Ok("Request submitted");
         }
+        // STUDENT VIEW OUR PENDING
+        [Authorize(Roles = "student")]
+        [HttpGet("my-request")]
+        public async Task<IActionResult> GetMyRequest()
+        {
+            int studentId = User.GetAccountId();
+
+            var data = await _service.GetMyRequestAsync(studentId);
+
+            if (data == null)
+                return NotFound("Bạn chưa gửi request nào");
+
+            return Ok(data);
+        }
 
         // ADMIN VIEW PENDING
         [Authorize(Roles = "admin")]
