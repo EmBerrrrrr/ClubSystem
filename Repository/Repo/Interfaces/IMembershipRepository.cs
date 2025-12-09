@@ -8,6 +8,7 @@ namespace Repository.Repo.Interfaces
     {
         Task<bool> IsMemberAsync(int accountId, int clubId);
         Task<List<Membership>> GetMembershipsAsync(int accountId);
+        Task<Membership?> GetMembershipByAccountAndClubAsync(int accountId, int clubId);
         Task AddMembershipAsync(Membership member);
         Task SaveAsync();
     }

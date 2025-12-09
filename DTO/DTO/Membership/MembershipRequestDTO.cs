@@ -13,6 +13,8 @@ namespace DTO.DTO.Membership
         public string Status { get; set; }
         public string Note { get; set; }
         public DateTime RequestDate { get; set; }
+        public int? PaymentId { get; set; } // Payment ID nếu đã tạo payment
+        public decimal? Amount { get; set; } // Số tiền cần thanh toán (nếu status = approved_pending_payment)
     }
 
 }

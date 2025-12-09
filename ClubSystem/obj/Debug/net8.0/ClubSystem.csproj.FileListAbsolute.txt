@@ -177,7 +177,6 @@ C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\refint\ClubSystem.d
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.pdb
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.genruntimeconfig.cache
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ref\ClubSystem.dll
-C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\SWP391\ClubSystem\ClubSystem\bin\Debug\net8.0\appsettings.Development.json
 D:\SWP391\ClubSystem\ClubSystem\bin\Debug\net8.0\appsettings.json
 D:\SWP391\ClubSystem\ClubSystem\bin\Debug\net8.0\ClubSystem.staticwebassets.endpoints.json

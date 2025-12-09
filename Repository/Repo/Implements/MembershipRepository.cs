@@ -30,6 +30,12 @@ namespace Repository.Repo.Implements
                 .ToListAsync();
         }
 
+        public async Task<Membership?> GetMembershipByAccountAndClubAsync(int accountId, int clubId)
+        {
+            return await _db.Memberships
+                .FirstOrDefaultAsync(x => x.AccountId == accountId && x.ClubId == clubId);
+        }
+
         public async Task AddMembershipAsync(Membership member)
         {
             await _db.Memberships.AddAsync(member);

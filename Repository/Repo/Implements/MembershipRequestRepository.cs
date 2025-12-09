@@ -32,6 +32,7 @@ namespace Repository.Repo.Implements
         {
             return await _db.MembershipRequests
                 .Where(x => x.AccountId == accountId)
+                .Include(x => x.Club)
                 .OrderByDescending(x => x.RequestDate)
                 .ToListAsync();
         }
