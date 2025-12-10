@@ -25,8 +25,17 @@ namespace Service.Helper
             _ipnUrl = ipnUrl;
         }
 
-        public string CreatePaymentUrl(int paymentId, decimal amount, string orderInfo, string orderId)
+        public string CreatePaymentUrl(int paymentId, decimal amount, string orderInfo, string orderId, string? ipAddress = null)
         {
+            // Kiểm tra số tiền tối thiểu (10,000 VND)
+            if (amount < 10000)
+            {
+                throw new ArgumentException("Số tiền thanh toán tối thiểu là 10,000 VND", nameof(amount));
+            }
+
+            // Lấy IP address, nếu không có thì dùng IP mặc định
+            string clientIp = ipAddress ?? "127.0.0.1";
+            
             var vnpay = new VnPayLibrary();
             vnpay.AddRequestData("vnp_Version", "2.1.0");
             vnpay.AddRequestData("vnp_Command", "pay");
@@ -34,7 +43,7 @@ namespace Service.Helper
             vnpay.AddRequestData("vnp_Amount", ((long)(amount * 100)).ToString()); // VNPay yêu cầu số tiền nhân 100
             vnpay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData("vnp_CurrCode", "VND");
-            vnpay.AddRequestData("vnp_IpAddr", "127.0.0.1"); // Có thể lấy từ HttpContext
+            vnpay.AddRequestData("vnp_IpAddr", clientIp);
             vnpay.AddRequestData("vnp_Locale", "vn");
             vnpay.AddRequestData("vnp_OrderInfo", orderInfo);
             vnpay.AddRequestData("vnp_OrderType", "other");

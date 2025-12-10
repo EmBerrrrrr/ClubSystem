@@ -26,13 +26,46 @@ namespace ClubSystem.Controller
             var accountId = User.GetAccountId();
             try
             {
-                var result = await _paymentService.CreateVNPayPaymentAsync(accountId, dto.MembershipRequestId);
+                // Lấy IP address từ request
+                string? clientIp = GetClientIpAddress();
+                var result = await _paymentService.CreateVNPayPaymentAsync(accountId, dto.MembershipRequestId, clientIp);
                 return Ok(result);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        private string? GetClientIpAddress()
+        {
+            // Lấy IP từ X-Forwarded-For header (nếu có proxy/load balancer)
+            string? ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(ipAddress))
+            {
+                // X-Forwarded-For có thể chứa nhiều IP, lấy IP đầu tiên
+                ipAddress = ipAddress.Split(',')[0].Trim();
+            }
+
+            // Nếu không có, lấy từ X-Real-IP
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                ipAddress = Request.Headers["X-Real-IP"].FirstOrDefault();
+            }
+
+            // Nếu vẫn không có, lấy từ RemoteIpAddress
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            }
+
+            // Nếu vẫn không có, dùng localhost (cho development)
+            if (string.IsNullOrEmpty(ipAddress) || ipAddress == "::1")
+            {
+                ipAddress = "127.0.0.1";
+            }
+
+            return ipAddress;
         }
 
         [HttpGet("vnpay-return")]

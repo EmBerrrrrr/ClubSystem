@@ -84,7 +84,7 @@ namespace Service.Service.Implements
             return result;
         }
 
-        public async Task<VNPayPaymentResponseDto> CreateVNPayPaymentAsync(int accountId, int membershipRequestId)
+        public async Task<VNPayPaymentResponseDto> CreateVNPayPaymentAsync(int accountId, int membershipRequestId, string? ipAddress = null)
         {
             // Kiểm tra membership request
             var request = await _membershipRequestRepo.GetByIdAsync(membershipRequestId);
@@ -111,7 +111,8 @@ namespace Service.Service.Implements
                     existingPayment.Id,
                     existingPayment.Amount,
                     existingOrderInfo,
-                    existingOrderId
+                    existingOrderId,
+                    ipAddress
                 );
 
                 return new VNPayPaymentResponseDto
@@ -170,7 +171,8 @@ namespace Service.Service.Implements
                 payment.Id,
                 payment.Amount,
                 orderInfo,
-                orderId
+                orderId,
+                ipAddress
             );
 
             return new VNPayPaymentResponseDto

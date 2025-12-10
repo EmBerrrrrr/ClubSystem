@@ -1,6 +1,112 @@
 @ClubSystem_HostAddress = http://localhost:5168
 
-GET {{ClubSystem_HostAddress}}/weatherforecast/
-Accept: application/json
+### Variables - Thay đổi các giá trị này
+@student_token = YOUR_STUDENT_TOKEN_HERE
+@clubleader_token = YOUR_CLUBLEADER_TOKEN_HERE
+@membership_request_id = 1
+@payment_id = 1
+@club_id = 1
+@account_id = 1
+@activity_id = 1
+
+###
+### ============================================
+### VNPAY PAYMENT TEST FLOW
+### ============================================
+
+### 1. Student: Gửi Membership Request
+POST {{ClubSystem_HostAddress}}/api/student/membership/request
+Authorization: Bearer {{student_token}}
+Content-Type: application/json
+
+{
+  "clubId": {{club_id}},
+  "reason": "Tôi muốn tham gia CLB để học hỏi và phát triển kỹ năng"
+}
+
+### 2. Club Leader: Approve Membership Request
+POST {{ClubSystem_HostAddress}}/api/leader/membership/{{membership_request_id}}/approve
+Authorization: Bearer {{clubleader_token}}
+Content-Type: application/json
+
+{
+  "note": "Chấp nhận yêu cầu"
+}
+
+### 3. Student: Tạo VNPay Payment URL
+POST {{ClubSystem_HostAddress}}/api/payment/vnpay/create
+Authorization: Bearer {{student_token}}
+Content-Type: application/json
+
+{
+  "membershipRequestId": {{membership_request_id}}
+}
+
+### 4. Student: Kiểm tra Payment Status (tất cả CLB)
+GET {{ClubSystem_HostAddress}}/api/payment/status
+Authorization: Bearer {{student_token}}
+
+### 5. Student: Xem Payment History
+GET {{ClubSystem_HostAddress}}/api/payment/history
+Authorization: Bearer {{student_token}}
+
+### 6. VNPay ReturnUrl Callback (sau khi thanh toán)
+# VNPay sẽ tự động gọi endpoint này với query parameters
+# GET {{ClubSystem_HostAddress}}/api/payment/vnpay-return?vnp_Amount=...&vnp_ResponseCode=00&...
+
+### 7. VNPay IPN Callback (xác nhận thanh toán)
+# VNPay sẽ tự động gọi endpoint này
+# POST {{ClubSystem_HostAddress}}/api/payment/vnpay-ipn
+
+###
+### ============================================
+### STUDENT ACTIVITY TEST
+### ============================================
+
+### 1. Student: Xem Activities có thể đăng ký
+GET {{ClubSystem_HostAddress}}/api/student/activities/available
+Authorization: Bearer {{student_token}}
+
+### 2. Student: Đăng ký tham gia Activity
+POST {{ClubSystem_HostAddress}}/api/student/activities/{{activity_id}}/register
+Authorization: Bearer {{student_token}}
+
+### 3. Student: Xem lịch sử tham gia Activities
+GET {{ClubSystem_HostAddress}}/api/student/activities/history
+Authorization: Bearer {{student_token}}
+
+### 4. Student: Hủy đăng ký Activity
+DELETE {{ClubSystem_HostAddress}}/api/student/activities/{{activity_id}}/cancel
+Authorization: Bearer {{student_token}}
+
+###
+### ============================================
+### CLUB LEADER PAYMENT MANAGEMENT
+### ============================================
+
+### 1. Club Leader: Xem tất cả payments của CLB
+GET {{ClubSystem_HostAddress}}/api/leader/payment/club/{{club_id}}
+Authorization: Bearer {{clubleader_token}}
+
+### 2. Club Leader: Xem payment history của một member
+GET {{ClubSystem_HostAddress}}/api/leader/payment/club/{{club_id}}/member/{{account_id}}
+Authorization: Bearer {{clubleader_token}}
+
+### 3. Club Leader: Xem danh sách members còn nợ phí
+GET {{ClubSystem_HostAddress}}/api/leader/payment/club/{{club_id}}/debt
+Authorization: Bearer {{clubleader_token}}
+
+###
+### ============================================
+### OTHER ENDPOINTS
+### ============================================
+
+### Student: Xem thông tin account (để pre-fill form)
+GET {{ClubSystem_HostAddress}}/api/student/membership/account-info
+Authorization: Bearer {{student_token}}
+
+### Student: Xem các membership requests của mình
+GET {{ClubSystem_HostAddress}}/api/student/membership/requests
+Authorization: Bearer {{student_token}}
 
 ###

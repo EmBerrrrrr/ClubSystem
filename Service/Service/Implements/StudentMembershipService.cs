@@ -123,10 +123,12 @@ namespace Service.Service.Implements
                     RequestDate = x.RequestDate
                 };
 
-                // Nếu status là approved_pending_payment, thêm thông tin payment
+                // Luôn hiển thị Amount (MembershipFee) để biết trước số tiền cần thanh toán
+                dto.Amount = x.Club?.MembershipFee;
+
+                // Nếu status là approved_pending_payment, tìm payment nếu có
                 if (x.Status == "approved_pending_payment")
                 {
-                    dto.Amount = x.Club?.MembershipFee ?? 0;
                     // Tìm payment nếu có
                     var payment = await _paymentRepo.GetPaymentByMembershipRequestIdAsync(x.Id);
                     if (payment != null)

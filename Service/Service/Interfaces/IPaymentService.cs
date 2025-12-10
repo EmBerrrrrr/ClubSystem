@@ -7,7 +7,7 @@ namespace Service.Service.Interfaces
     public interface IPaymentService
     {
         Task<List<PaymentDto>> GetMyPendingPaymentsAsync(int accountId);
-        Task<VNPayPaymentResponseDto> CreateVNPayPaymentAsync(int accountId, int membershipRequestId);
+        Task<VNPayPaymentResponseDto> CreateVNPayPaymentAsync(int accountId, int membershipRequestId, string? ipAddress = null);
         Task<bool> ProcessVNPayCallbackAsync(Dictionary<string, string> vnpayData);
         Task<PaymentDto> CompletePaymentAsync(int accountId, int paymentId);
         Task<List<PaymentDto>> GetMyPaymentHistoryAsync(int accountId);
