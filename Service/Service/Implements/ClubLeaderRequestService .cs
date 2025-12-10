@@ -45,11 +45,10 @@ namespace Service.Service.Implements
         public async Task<MyLeaderRequestDto?> GetMyRequestAsync(int accountId)
         {
             var req = await _db.ClubLeaderRequests
+                .Include(x => x.Account)
                 .Where(x => x.AccountId == accountId)
                 .OrderByDescending(x => x.RequestDate)
                 .FirstOrDefaultAsync();
-
-            if (req == null) return null;
 
             return new MyLeaderRequestDto
             {
@@ -58,20 +57,30 @@ namespace Service.Service.Implements
                 Status = req.Status,
                 Reason = req.Reason,
                 Note = req.Note,
-                ProcessedBy = req.ProcessedBy,
-                ProcessedAt = req.ProcessedAt
+                Phone = req.Account.Phone
             };
+
         }
 
         // Admin xem list
         public async Task<List<LeaderRequestDto>> GetPendingAsync()
         {
-            var requests = await _repo.GetPendingAsync();
+            var requests = await _db.ClubLeaderRequests
+                .Include(x => x.Account) // JOIN ACCOUNT
+                .Where(x => x.Status.ToLower() == "pending")
+                .OrderByDescending(x => x.RequestDate)
+                .ToListAsync();
 
             return requests.Select(x => new LeaderRequestDto
             {
                 Id = x.Id,
                 AccountId = x.AccountId,
+
+                Username = x.Account.Username,
+                FullName = x.Account.FullName,
+                Email = x.Account.Email,
+                Phone = x.Account.Phone,
+
                 RequestDate = x.RequestDate,
                 Status = x.Status,
                 Reason = x.Reason,

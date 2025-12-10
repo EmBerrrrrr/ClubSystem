@@ -4,9 +4,14 @@
     {
         public int Id { get; set; }
         public int AccountId { get; set; }
-        public string Status { get; set; } = string.Empty;
+        public string Username { get; set; }
+        public string? FullName { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
         public DateTime RequestDate { get; set; }
-        public string? Note { get; set; }
+        public string Status { get; set; }
         public string? Reason { get; set; }
+        public string? Note { get; set; }
     }
+
 }
