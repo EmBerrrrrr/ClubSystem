@@ -2,6 +2,7 @@
 using DTO.DTO.Activity;
 using DTO.DTO.Club;
 using DTO.DTO.Clubs;
+using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.Services.Interfaces;
@@ -88,7 +89,6 @@ namespace Service.Service.Implements
 
             await _repo.UpdateAsync(club);
         }
-
         public async Task DeleteAsync(int clubId, int accountId, bool isAdmin)
         {
             if (!isAdmin)
@@ -98,11 +98,42 @@ namespace Service.Service.Implements
                     throw new UnauthorizedAccessException("Không phải leader club.");
             }
 
-            var club = await _repo.GetByIdAsync(clubId)
+            var club = await _context.Clubs
+                .Include(c => c.Activities)
+                .Include(c => c.Memberships)
+                .Include(c => c.MembershipRequests)
+                .Include(c => c.ClubLeaders)
+                .FirstOrDefaultAsync(c => c.Id == clubId)
                 ?? throw new Exception("Club không tồn tại");
 
-            await _repo.DeleteAsync(club);
+            var activityIds = club.Activities.Select(a => a.Id).ToList();
+            var membershipIds = club.Memberships.Select(m => m.Id).ToList();
+
+            var activityParticipants = _context.ActivityParticipants
+                .Where(x =>
+                    activityIds.Contains(x.ActivityId) ||
+                    membershipIds.Contains(x.MembershipId));
+
+            _context.ActivityParticipants.RemoveRange(activityParticipants);
+
+            var payments = _context.Payments
+                .Where(p => p.ClubId == clubId);
+
+            _context.Payments.RemoveRange(payments);
+
+            _context.MembershipRequests.RemoveRange(club.MembershipRequests);
+
+            _context.Memberships.RemoveRange(club.Memberships);
+
+            _context.Activities.RemoveRange(club.Activities);
+
+            _context.ClubLeaders.RemoveRange(club.ClubLeaders);
+
+            _context.Clubs.Remove(club);
+
+            await _context.SaveChangesAsync();
         }
+
         public async Task<ClubDetailDto?> GetDetailAsync(int id)
         {
             var club = await _repo.GetDetailWithActivitiesAsync(id);

@@ -1,62 +1,22 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\MyCode\\StudentClub\\ClubSystem\\",
+  "WorkspaceRootPath": "D:\\SWP391\\ClubSystem\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{FC422591-45E3-4583-8CAE-490C0CC104EA}|Service\\Service.csproj|c:\\mycode\\studentclub\\clubsystem\\service\\service\\implements\\clubleadermembershipservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FC422591-45E3-4583-8CAE-490C0CC104EA}|Service\\Service.csproj|solutionrelative:service\\service\\implements\\clubleadermembershipservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FC422591-45E3-4583-8CAE-490C0CC104EA}|Service\\Service.csproj|c:\\mycode\\studentclub\\clubsystem\\service\\service\\interfaces\\iclubleadermembershipservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FC422591-45E3-4583-8CAE-490C0CC104EA}|Service\\Service.csproj|solutionrelative:service\\service\\interfaces\\iclubleadermembershipservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|c:\\mycode\\studentclub\\clubsystem\\repository\\repo\\implements\\membershiprequestrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|solutionrelative:repository\\repo\\implements\\membershiprequestrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F248225B-F7B7-497D-A094-933A9C43459B}|DTO\\DTO.csproj|c:\\mycode\\studentclub\\clubsystem\\dto\\dto\\membership\\membershiprequestforleaderdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F248225B-F7B7-497D-A094-933A9C43459B}|DTO\\DTO.csproj|solutionrelative:dto\\dto\\membership\\membershiprequestforleaderdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|c:\\mycode\\studentclub\\clubsystem\\repository\\repo\\interfaces\\imembershiprequestrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|solutionrelative:repository\\repo\\interfaces\\imembershiprequestrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F248225B-F7B7-497D-A094-933A9C43459B}|DTO\\DTO.csproj|c:\\mycode\\studentclub\\clubsystem\\dto\\dto\\membership\\membershiprequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F248225B-F7B7-497D-A094-933A9C43459B}|DTO\\DTO.csproj|solutionrelative:dto\\dto\\membership\\membershiprequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|c:\\mycode\\studentclub\\clubsystem\\repository\\models\\membershiprequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|solutionrelative:repository\\models\\membershiprequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|c:\\mycode\\studentclub\\clubsystem\\repository\\repo\\implements\\clubrepository .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|solutionrelative:repository\\repo\\implements\\clubrepository .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|c:\\mycode\\studentclub\\clubsystem\\repository\\repo\\implements\\membershiprepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|solutionrelative:repository\\repo\\implements\\membershiprepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F51DF0AE-E083-4F3E-A7E5-D5F5C2734A5A}|ClubSystem\\ClubSystem.csproj|c:\\mycode\\studentclub\\clubsystem\\clubsystem\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F51DF0AE-E083-4F3E-A7E5-D5F5C2734A5A}|ClubSystem\\ClubSystem.csproj|solutionrelative:clubsystem\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|c:\\mycode\\studentclub\\clubsystem\\repository\\repo\\interfaces\\imembershiprepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|solutionrelative:repository\\repo\\interfaces\\imembershiprepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|c:\\mycode\\studentclub\\clubsystem\\repository\\repo\\interfaces\\iclubrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{17FD6CA3-AE30-451E-B1B5-2C72AC5807B7}|Repository\\Repository.csproj|solutionrelative:repository\\repo\\interfaces\\iclubrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F51DF0AE-E083-4F3E-A7E5-D5F5C2734A5A}|ClubSystem\\ClubSystem.csproj|c:\\mycode\\studentclub\\clubsystem\\clubsystem\\controller\\clubleadermembershipcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F51DF0AE-E083-4F3E-A7E5-D5F5C2734A5A}|ClubSystem\\ClubSystem.csproj|solutionrelative:clubsystem\\controller\\clubleadermembershipcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FC422591-45E3-4583-8CAE-490C0CC104EA}|Service\\Service.csproj|c:\\mycode\\studentclub\\clubsystem\\service\\service\\implements\\clubservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{FC422591-45E3-4583-8CAE-490C0CC104EA}|Service\\Service.csproj|d:\\swp391\\clubsystem\\service\\service\\implements\\clubservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{FC422591-45E3-4583-8CAE-490C0CC104EA}|Service\\Service.csproj|solutionrelative:service\\service\\implements\\clubservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FC422591-45E3-4583-8CAE-490C0CC104EA}|Service\\Service.csproj|d:\\swp391\\clubsystem\\service\\service\\interfaces\\iclubservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FC422591-45E3-4583-8CAE-490C0CC104EA}|Service\\Service.csproj|solutionrelative:service\\service\\interfaces\\iclubservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F51DF0AE-E083-4F3E-A7E5-D5F5C2734A5A}|ClubSystem\\ClubSystem.csproj|d:\\swp391\\clubsystem\\clubsystem\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{F51DF0AE-E083-4F3E-A7E5-D5F5C2734A5A}|ClubSystem\\ClubSystem.csproj|solutionrelative:clubsystem\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FC422591-45E3-4583-8CAE-490C0CC104EA}|Service\\Service.csproj|d:\\swp391\\clubsystem\\service\\service\\implements\\studentactivityservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FC422591-45E3-4583-8CAE-490C0CC104EA}|Service\\Service.csproj|solutionrelative:service\\service\\implements\\studentactivityservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -66,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -74,172 +34,55 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "MembershipRequestRepository.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Implements\\MembershipRequestRepository.cs",
-              "RelativeDocumentMoniker": "Repository\\Repo\\Implements\\MembershipRequestRepository.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Implements\\MembershipRequestRepository.cs",
-              "RelativeToolTip": "Repository\\Repo\\Implements\\MembershipRequestRepository.cs",
-              "ViewState": "AgIAACoAAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:38:43.47Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "MembershipRequestForLeaderDto.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\DTO\\DTO\\Membership\\MembershipRequestForLeaderDto.cs",
-              "RelativeDocumentMoniker": "DTO\\DTO\\Membership\\MembershipRequestForLeaderDto.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\DTO\\DTO\\Membership\\MembershipRequestForLeaderDto.cs",
-              "RelativeToolTip": "DTO\\DTO\\Membership\\MembershipRequestForLeaderDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:38:26.102Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "IMembershipRequestRepository.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Interfaces\\IMembershipRequestRepository.cs",
-              "RelativeDocumentMoniker": "Repository\\Repo\\Interfaces\\IMembershipRequestRepository.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Interfaces\\IMembershipRequestRepository.cs",
-              "RelativeToolTip": "Repository\\Repo\\Interfaces\\IMembershipRequestRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:11:25.148Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "ClubLeaderMembershipService.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\Service\\Service\\Implements\\ClubLeaderMembershipService.cs",
-              "RelativeDocumentMoniker": "Service\\Service\\Implements\\ClubLeaderMembershipService.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\Service\\Service\\Implements\\ClubLeaderMembershipService.cs",
-              "RelativeToolTip": "Service\\Service\\Implements\\ClubLeaderMembershipService.cs",
-              "ViewState": "AgIAAEAAAAAAODMzMzMmwEwAAAAAAAAAAAAAAA==",
+              "Title": "ClubService.cs",
+              "DocumentMoniker": "D:\\SWP391\\ClubSystem\\Service\\Service\\Implements\\ClubService.cs",
+              "RelativeDocumentMoniker": "Service\\Service\\Implements\\ClubService.cs",
+              "ToolTip": "D:\\SWP391\\ClubSystem\\Service\\Service\\Implements\\ClubService.cs",
+              "RelativeToolTip": "Service\\Service\\Implements\\ClubService.cs",
+              "ViewState": "AgIAAF8AAAAAAAAAAAAcwHYAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:18:38.007Z",
+              "WhenOpened": "2025-12-10T01:43:18.486Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "IClubLeaderMembershipService.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\Service\\Service\\Interfaces\\IClubLeaderMembershipService.cs",
-              "RelativeDocumentMoniker": "Service\\Service\\Interfaces\\IClubLeaderMembershipService.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\Service\\Service\\Interfaces\\IClubLeaderMembershipService.cs",
-              "RelativeToolTip": "Service\\Service\\Interfaces\\IClubLeaderMembershipService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:18:16.004Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "MembershipRequestDto.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\DTO\\DTO\\Membership\\MembershipRequestDto.cs",
-              "RelativeDocumentMoniker": "DTO\\DTO\\Membership\\MembershipRequestDto.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\DTO\\DTO\\Membership\\MembershipRequestDto.cs",
-              "RelativeToolTip": "DTO\\DTO\\Membership\\MembershipRequestDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAsAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:35:23.073Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "MembershipRequest.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Models\\MembershipRequest.cs",
-              "RelativeDocumentMoniker": "Repository\\Models\\MembershipRequest.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Models\\MembershipRequest.cs",
-              "RelativeToolTip": "Repository\\Models\\MembershipRequest.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAowAUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:35:10.299Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "ClubRepository .cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Implements\\ClubRepository .cs",
-              "RelativeDocumentMoniker": "Repository\\Repo\\Implements\\ClubRepository .cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Implements\\ClubRepository .cs",
-              "RelativeToolTip": "Repository\\Repo\\Implements\\ClubRepository .cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAQwAcAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:17:10.021Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "MembershipRepository.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Implements\\MembershipRepository.cs",
-              "RelativeDocumentMoniker": "Repository\\Repo\\Implements\\MembershipRepository.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Implements\\MembershipRepository.cs",
-              "RelativeToolTip": "Repository\\Repo\\Implements\\MembershipRepository.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:31:35.286Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "IMembershipRepository.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Interfaces\\IMembershipRepository.cs",
-              "RelativeDocumentMoniker": "Repository\\Repo\\Interfaces\\IMembershipRepository.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Interfaces\\IMembershipRepository.cs",
-              "RelativeToolTip": "Repository\\Repo\\Interfaces\\IMembershipRepository.cs",
+              "Title": "IClubService.cs",
+              "DocumentMoniker": "D:\\SWP391\\ClubSystem\\Service\\Service\\Interfaces\\IClubService.cs",
+              "RelativeDocumentMoniker": "Service\\Service\\Interfaces\\IClubService.cs",
+              "ToolTip": "D:\\SWP391\\ClubSystem\\Service\\Service\\Interfaces\\IClubService.cs",
+              "RelativeToolTip": "Service\\Service\\Interfaces\\IClubService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:23:06.614Z"
+              "WhenOpened": "2025-12-10T01:43:17.464Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\ClubSystem\\Program.cs",
-              "RelativeDocumentMoniker": "ClubSystem\\Program.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\ClubSystem\\Program.cs",
-              "RelativeToolTip": "ClubSystem\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:19:47.616Z"
+              "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\SWP391\\ClubSystem\\ClubSystem\\appsettings.json",
+              "RelativeDocumentMoniker": "ClubSystem\\appsettings.json",
+              "ToolTip": "D:\\SWP391\\ClubSystem\\ClubSystem\\appsettings.json",
+              "RelativeToolTip": "ClubSystem\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-12-10T00:35:25.81Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "IClubRepository.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Interfaces\\IClubRepository.cs",
-              "RelativeDocumentMoniker": "Repository\\Repo\\Interfaces\\IClubRepository.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\Repository\\Repo\\Interfaces\\IClubRepository.cs",
-              "RelativeToolTip": "Repository\\Repo\\Interfaces\\IClubRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAkAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "StudentActivityService.cs",
+              "DocumentMoniker": "D:\\SWP391\\ClubSystem\\Service\\Service\\Implements\\StudentActivityService.cs",
+              "RelativeDocumentMoniker": "Service\\Service\\Implements\\StudentActivityService.cs",
+              "ToolTip": "D:\\SWP391\\ClubSystem\\Service\\Service\\Implements\\StudentActivityService.cs",
+              "RelativeToolTip": "Service\\Service\\Implements\\StudentActivityService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:16:36.652Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "ClubLeaderMembershipController.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\ClubSystem\\Controller\\ClubLeaderMembershipController.cs",
-              "RelativeDocumentMoniker": "ClubSystem\\Controller\\ClubLeaderMembershipController.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\ClubSystem\\Controller\\ClubLeaderMembershipController.cs",
-              "RelativeToolTip": "ClubSystem\\Controller\\ClubLeaderMembershipController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAACYAAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:19:14.48Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "ClubService.cs",
-              "DocumentMoniker": "C:\\MyCode\\StudentClub\\ClubSystem\\Service\\Service\\Implements\\ClubService.cs",
-              "RelativeDocumentMoniker": "Service\\Service\\Implements\\ClubService.cs",
-              "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\Service\\Service\\Implements\\ClubService.cs",
-              "RelativeToolTip": "Service\\Service\\Implements\\ClubService.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:07:37.534Z"
+              "WhenOpened": "2025-12-10T00:31:00.83Z",
+              "EditorCaption": ""
             }
           ]
         }

@@ -482,6 +482,59 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderPaymentController",
+    "Method": "GetClubPayments",
+    "RelativePath": "api/leader/payment/club/{clubId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "clubId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderPaymentController",
+    "Method": "GetDebtMembers",
+    "RelativePath": "api/leader/payment/club/{clubId}/debt",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "clubId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderPaymentController",
+    "Method": "GetMemberPayments",
+    "RelativePath": "api/leader/payment/club/{clubId}/member/{accountId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "clubId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "accountId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "ClubSystem.Controller.PaymentController",
     "Method": "GetPaymentHistory",
     "RelativePath": "api/payment/history",
