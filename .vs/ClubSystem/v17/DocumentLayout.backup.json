@@ -82,8 +82,7 @@
               "RelativeToolTip": "Repository\\Repo\\Implements\\MembershipRequestRepository.cs",
               "ViewState": "AgIAACoAAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:38:43.47Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:38:43.47Z"
             },
             {
               "$type": "Document",
@@ -95,8 +94,7 @@
               "RelativeToolTip": "DTO\\DTO\\Membership\\MembershipRequestForLeaderDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:38:26.102Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:38:26.102Z"
             },
             {
               "$type": "Document",
@@ -108,8 +106,7 @@
               "RelativeToolTip": "Repository\\Repo\\Interfaces\\IMembershipRequestRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:11:25.148Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:11:25.148Z"
             },
             {
               "$type": "Document",
@@ -119,7 +116,7 @@
               "RelativeDocumentMoniker": "Service\\Service\\Implements\\ClubLeaderMembershipService.cs",
               "ToolTip": "C:\\MyCode\\StudentClub\\ClubSystem\\Service\\Service\\Implements\\ClubLeaderMembershipService.cs",
               "RelativeToolTip": "Service\\Service\\Implements\\ClubLeaderMembershipService.cs",
-              "ViewState": "AgIAAEsAAAAAODMzMzMqwC8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAEAAAAAAODMzMzMmwEwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-09T15:18:38.007Z",
               "EditorCaption": ""
@@ -134,8 +131,7 @@
               "RelativeToolTip": "Service\\Service\\Interfaces\\IClubLeaderMembershipService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:18:16.004Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:18:16.004Z"
             },
             {
               "$type": "Document",
@@ -147,8 +143,7 @@
               "RelativeToolTip": "DTO\\DTO\\Membership\\MembershipRequestDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAuwAsAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:35:23.073Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:35:23.073Z"
             },
             {
               "$type": "Document",
@@ -160,8 +155,7 @@
               "RelativeToolTip": "Repository\\Models\\MembershipRequest.cs",
               "ViewState": "AgIAABIAAAAAAAAAAAAowAUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:35:10.299Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:35:10.299Z"
             },
             {
               "$type": "Document",
@@ -173,8 +167,7 @@
               "RelativeToolTip": "Repository\\Repo\\Implements\\ClubRepository .cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAQwAcAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:17:10.021Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:17:10.021Z"
             },
             {
               "$type": "Document",
@@ -186,8 +179,7 @@
               "RelativeToolTip": "Repository\\Repo\\Implements\\MembershipRepository.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:31:35.286Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:31:35.286Z"
             },
             {
               "$type": "Document",
@@ -199,8 +191,7 @@
               "RelativeToolTip": "Repository\\Repo\\Interfaces\\IMembershipRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:23:06.614Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:23:06.614Z"
             },
             {
               "$type": "Document",
@@ -212,8 +203,7 @@
               "RelativeToolTip": "ClubSystem\\Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:19:47.616Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:19:47.616Z"
             },
             {
               "$type": "Document",
@@ -225,8 +215,7 @@
               "RelativeToolTip": "Repository\\Repo\\Interfaces\\IClubRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:16:36.652Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:16:36.652Z"
             },
             {
               "$type": "Document",
@@ -238,8 +227,7 @@
               "RelativeToolTip": "ClubSystem\\Controller\\ClubLeaderMembershipController.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAACYAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:19:14.48Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:19:14.48Z"
             },
             {
               "$type": "Document",
@@ -251,8 +239,7 @@
               "RelativeToolTip": "Service\\Service\\Implements\\ClubService.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T15:07:37.534Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T15:07:37.534Z"
             }
           ]
         }

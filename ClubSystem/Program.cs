@@ -36,6 +36,22 @@ public class Program
         builder.Services.AddScoped<IClubRepository, ClubRepository>();
         builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
         builder.Services.AddScoped<IMembershipRequestRepository, MembershipRequestRepository>();
+        builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+        builder.Services.AddScoped<IActivityParticipantRepository, ActivityParticipantRepository>();
+
+        // VNPay Helper
+        builder.Services.AddSingleton<Service.Helper.VNPayHelper>(sp =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            var vnpaySection = config.GetSection("VNPay");
+            return new Service.Helper.VNPayHelper(
+                vnpaySection["TmnCode"] ?? "",
+                vnpaySection["HashSecret"] ?? "",
+                vnpaySection["PaymentUrl"] ?? "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
+                vnpaySection["ReturnUrl"] ?? "",
+                vnpaySection["IpnUrl"] ?? ""
+            );
+        });
 
         // SERVICES
         builder.Services.AddScoped<IClubService, ClubService>();
@@ -46,6 +62,9 @@ public class Program
         builder.Services.AddScoped<IAdminAccountService, AdminAccountService>();
         builder.Services.AddScoped<IStudentMembershipService, StudentMembershipService>();
         builder.Services.AddScoped<IClubLeaderMembershipService, ClubLeaderMembershipService>();
+        builder.Services.AddScoped<IPaymentService, PaymentService>();
+        builder.Services.AddScoped<IStudentActivityService, StudentActivityService>();
+        builder.Services.AddScoped<IClubLeaderPaymentService, ClubLeaderPaymentService>();
 
 
         builder.Services.AddControllers();
