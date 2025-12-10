@@ -14,13 +14,16 @@ namespace Service.Service.Implements
     {
         private readonly IMembershipRequestRepository _reqRepo;
         private readonly IClubRepository _clubRepo;
+        private readonly IMembershipRepository _membershipRepo;
 
         public ClubLeaderMembershipService(
             IMembershipRequestRepository reqRepo,
-            IClubRepository clubRepo)
+            IClubRepository clubRepo,
+            IMembershipRepository membershipRepo)
         {
             _reqRepo = reqRepo;
             _clubRepo = clubRepo;
+            _membershipRepo = membershipRepo;
         }
 
         // Lấy các request pending của tất cả CLB mà leader này quản lý
@@ -50,6 +53,52 @@ namespace Service.Service.Implements
             }).ToList();
         }
 
+        // Lấy danh sách thành viên của tất cả CLB mà leader này quản lý
+        public async Task<List<ClubMemberDto>> GetClubMembersAsync(int leaderId)
+        {
+            var myClubs = await _clubRepo.GetByLeaderIdAsync(leaderId);
+            var allMembers = new List<Membership>();
+
+            foreach (var club in myClubs)
+            {
+                var members = await _membershipRepo.GetMembershipsByClubIdAsync(club.Id);
+                allMembers.AddRange(members);
+            }
+
+            return allMembers.Select(m => new ClubMemberDto
+            {
+                MembershipId = m.Id,
+                AccountId = m.AccountId,
+                ClubId = m.ClubId,
+                FullName = m.Account?.FullName,
+                Email = m.Account?.Email,
+                Phone = m.Account?.Phone,
+                JoinDate = m.JoinDate,
+                Status = m.Status
+            }).ToList();
+        }
+
+        // Lấy danh sách thành viên của một CLB cụ thể mà leader quản lý
+        public async Task<List<ClubMemberDto>> GetClubMembersByClubIdAsync(int leaderId, int clubId)
+        {
+            // Kiểm tra leader có quyền với CLB này không
+            if (!await _clubRepo.IsLeaderOfClubAsync(clubId, leaderId))
+                throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
+
+            var members = await _membershipRepo.GetMembershipsByClubIdAsync(clubId);
+
+            return members.Select(m => new ClubMemberDto
+            {
+                MembershipId = m.Id,
+                AccountId = m.AccountId,
+                ClubId = m.ClubId,
+                FullName = m.Account?.FullName,
+                Email = m.Account?.Email,
+                Phone = m.Account?.Phone,
+                JoinDate = m.JoinDate,
+                Status = m.Status
+            }).ToList();
+        }
 
         public async Task ApproveAsync(int leaderId, int requestId, string? note)
         {

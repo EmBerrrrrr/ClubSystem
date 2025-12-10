@@ -25,20 +25,69 @@ namespace ClubSystem.Controller
             return Ok(result);
         }
 
+        [HttpGet("members")]
+        public async Task<IActionResult> GetClubMembers()
+        {
+            var leaderId = User.GetAccountId();
+            var result = await _service.GetClubMembersAsync(leaderId);
+            return Ok(result);
+        }
+
+        [HttpGet("clubs/{clubId}/members")]
+        public async Task<IActionResult> GetClubMembersByClubId(int clubId)
+        {
+            try
+            {
+                var leaderId = User.GetAccountId();
+                var result = await _service.GetClubMembersByClubIdAsync(leaderId, clubId);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(403, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("{id}/approve")]
         public async Task<IActionResult> Approve(int id, [FromBody] LeaderDecisionDto dto)
         {
-            var leaderId = User.GetAccountId();
-            await _service.ApproveAsync(leaderId, id, dto.Note);
-            return Ok("Approved. Waiting payment.");
+            try
+            {
+                var leaderId = User.GetAccountId();
+                await _service.ApproveAsync(leaderId, id, dto.Note);
+                return Ok("Approved. Waiting payment.");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(403, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("{id}/reject")]
         public async Task<IActionResult> Reject(int id, [FromBody] LeaderDecisionDto dto)
         {
-            var leaderId = User.GetAccountId();
-            await _service.RejectAsync(leaderId, id, dto.Note);
-            return Ok("Rejected.");
+            try
+            {
+                var leaderId = User.GetAccountId();
+                await _service.RejectAsync(leaderId, id, dto.Note);
+                return Ok("Rejected.");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(403, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 
