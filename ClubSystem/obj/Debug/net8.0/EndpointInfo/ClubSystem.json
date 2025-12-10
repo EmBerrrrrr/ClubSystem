@@ -550,6 +550,84 @@
         }
       }
     },
+    "/api/leader/payment/club/{clubId}": {
+      "get": {
+        "tags": [
+          "ClubLeaderPayment"
+        ],
+        "parameters": [
+          {
+            "name": "clubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/leader/payment/club/{clubId}/member/{accountId}": {
+      "get": {
+        "tags": [
+          "ClubLeaderPayment"
+        ],
+        "parameters": [
+          {
+            "name": "clubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/leader/payment/club/{clubId}/debt": {
+      "get": {
+        "tags": [
+          "ClubLeaderPayment"
+        ],
+        "parameters": [
+          {
+            "name": "clubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/club-leader-requests": {
       "post": {
         "tags": [
