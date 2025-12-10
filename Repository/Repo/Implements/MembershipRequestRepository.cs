@@ -33,6 +33,7 @@ namespace Repository.Repo.Implements
             return await _db.MembershipRequests
                 .Where(x => x.AccountId == accountId)
                 .Include(x => x.Club)
+                .Include(x => x.Account)
                 .OrderByDescending(x => x.RequestDate)
                 .ToListAsync();
         }
@@ -51,6 +52,7 @@ namespace Repository.Repo.Implements
         {
             return await _db.MembershipRequests
                 .Where(r => r.ClubId == clubId && r.Status == "pending")
+                .Include(r => r.Account)
                 .ToListAsync();
         }
 

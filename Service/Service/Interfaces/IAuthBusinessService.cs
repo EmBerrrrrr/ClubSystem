@@ -41,6 +41,7 @@ public class AuthBusinessService : IAuthBusinessService
             Username = account.Username,
             Email = account.Email ?? string.Empty,
             FullName = account.FullName ?? string.Empty,
+            Phone = account.Phone,
             Roles = roles
         };
     }
@@ -58,6 +59,7 @@ public class AuthBusinessService : IAuthBusinessService
             Email = request.Email,
             PasswordHash = _authService.HashPassword(request.Password),
             FullName = request.FullName,
+            Phone = request.Phone,
             IsActive = true,
             CreatedAt = DateTime.Now
         };
@@ -86,6 +88,7 @@ public class AuthBusinessService : IAuthBusinessService
             Username = account.Username,
             Email = account.Email ?? string.Empty,
             FullName = account.FullName ?? string.Empty,
+            Phone = account.Phone,
             Roles = roles
         };
     }

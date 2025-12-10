@@ -14,6 +14,10 @@ namespace DTO.DTO.Membership
         public string Status { get; set; } = string.Empty;
         public string? Note { get; set; }
         public DateTime RequestDate { get; set; }
+        public string? FullName { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
+        public string? Reason { get; set; } // Lý do tham gia (lưu trong Note của request)
     }
 
 }

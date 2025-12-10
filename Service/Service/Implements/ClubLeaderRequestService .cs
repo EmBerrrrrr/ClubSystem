@@ -50,6 +50,9 @@ namespace Service.Service.Implements
                 .OrderByDescending(x => x.RequestDate)
                 .FirstOrDefaultAsync();
 
+            if (req == null)
+                return null;
+
             return new MyLeaderRequestDto
             {
                 Id = req.Id,
@@ -57,7 +60,7 @@ namespace Service.Service.Implements
                 Status = req.Status,
                 Reason = req.Reason,
                 Note = req.Note,
-                Phone = req.Account.Phone
+                Phone = req.Account?.Phone
             };
 
         }

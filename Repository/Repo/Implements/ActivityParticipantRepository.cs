@@ -52,9 +52,10 @@ namespace Repository.Repo.Implements
             await _context.ActivityParticipants.AddAsync(participant);
         }
 
-        public async Task UpdateParticipantAsync(ActivityParticipant participant)
+        public Task UpdateParticipantAsync(ActivityParticipant participant)
         {
             _context.ActivityParticipants.Update(participant);
+            return Task.CompletedTask;
         }
 
         public async Task SaveAsync()

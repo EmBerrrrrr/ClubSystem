@@ -13,6 +13,6 @@ namespace Service.DTO.ClubLeader
 
         public int? ProcessedBy { get; set; }
         public DateTime? ProcessedAt { get; set; }
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
     }
 }

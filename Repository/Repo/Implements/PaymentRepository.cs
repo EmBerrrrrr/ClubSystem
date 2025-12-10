@@ -64,9 +64,10 @@ namespace Repository.Repo.Implements
             await _db.Payments.AddAsync(payment);
         }
 
-        public async Task UpdatePaymentAsync(Payment payment)
+        public Task UpdatePaymentAsync(Payment payment)
         {
             _db.Payments.Update(payment);
+            return Task.CompletedTask;
         }
 
         public async Task SaveAsync()
