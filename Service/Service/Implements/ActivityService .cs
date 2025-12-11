@@ -159,7 +159,7 @@ namespace Service.Service.Implements
                 Phone = p.Membership?.Account?.Phone ?? "",
                 RegisterTime = p.RegisterTime,
                 Attended = p.Attended,
-                CancelReason = p.CancelReason
+                //CancelReason = p.CancelReason
             }).ToList();
         }
 

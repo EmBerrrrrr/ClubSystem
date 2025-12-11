@@ -15,17 +15,20 @@ namespace Service.Service.Implements
         private readonly IMembershipRepository _memberRepo;
         private readonly IClubRepository _clubRepo;
         private readonly IAuthRepository _authRepo;
+        private readonly IPaymentRepository _paymentRepo;
 
         public StudentMembershipService(
             IMembershipRequestRepository reqRepo,
             IMembershipRepository memberRepo,
             IClubRepository clubRepo,
-            IAuthRepository authRepo)
+            IAuthRepository authRepo,
+            IPaymentRepository paymentRepo)  
         {
-            _reqRepo = reqRepo ?? throw new ArgumentNullException(nameof(reqRepo));
-            _memberRepo = memberRepo ?? throw new ArgumentNullException(nameof(memberRepo));
-            _clubRepo = clubRepo ?? throw new ArgumentNullException(nameof(clubRepo));
-            _authRepo = authRepo ?? throw new ArgumentNullException(nameof(authRepo));
+            _reqRepo = reqRepo;
+            _memberRepo = memberRepo;
+            _clubRepo = clubRepo;
+            _authRepo = authRepo;
+            _paymentRepo = paymentRepo;  
         }
 
         // 0) Lấy thông tin account để pre-fill form
@@ -117,20 +120,27 @@ namespace Service.Service.Implements
                     ClubName = x.Club?.Name ?? "",
                     Status = x.Status,
                     Note = x.Note,
-                    RequestDate = x.RequestDate
+                    RequestDate = x.RequestDate,
+                    Amount = x.Club?.MembershipFee ?? 0
                 };
 
-                // Luôn hiển thị amount (phí thành viên) để student biết số tiền cần thanh toán
-                dto.Amount = x.Club?.MembershipFee ?? 0;
-
-                // Nếu status là approved_pending_payment, tìm payment nếu có
                 if (x.Status == "approved_pending_payment")
                 {
-                    //var payment = await _paymentRepo.GetPaymentByMembershipRequestIdAsync(x.Id);
-                    //if (payment != null)
-                    //{
-                    //    dto.PaymentId = payment.Id;
-                    //}
+                    // Tìm membership tương ứng (pending_payment)
+                    var membership = await _memberRepo
+                        .GetMembershipByAccountAndClubAsync(accountId, x.ClubId); // bạn tạo thêm hàm này
+
+                    if (membership != null)
+                    {
+                        var payment = await _paymentRepo.GetByMembershipIdAsync(membership.Id);
+                        if (payment != null)
+                        {
+                            dto.PaymentId = payment.Id;
+                            dto.Status = payment.Status;
+                            dto.OrderCode = payment.OrderCode;
+                            // nếu bạn muốn: dto.PaymentMethod = payment.Method;
+                        }
+                    }
                 }
 
                 result.Add(dto);
@@ -138,6 +148,7 @@ namespace Service.Service.Implements
 
             return result;
         }
+
 
         // 3) Student xem CLB mình đã tham gia
         public async Task<List<MyMembershipDto>> GetMyMembershipsAsync(int accountId)
