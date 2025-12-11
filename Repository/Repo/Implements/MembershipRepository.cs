@@ -53,9 +53,22 @@ namespace Repository.Repo.Implements
                 .FirstOrDefaultAsync(x => x.AccountId == accountId && x.ClubId == clubId);
         }
 
+        public async Task<Membership?> GetMembershipByIdAsync(int membershipId)
+        {
+            return await _db.Memberships
+                .Include(x => x.Account)
+                .Include(x => x.Club)
+                .FirstOrDefaultAsync(x => x.Id == membershipId);
+        }
+
         public async Task AddMembershipAsync(Membership member)
         {
             await _db.Memberships.AddAsync(member);
+        }
+
+        public void UpdateMembership(Membership membership)
+        {
+            _db.Memberships.Update(membership);
         }
 
         public async Task SaveAsync()

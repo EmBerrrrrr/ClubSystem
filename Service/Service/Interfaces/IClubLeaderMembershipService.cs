@@ -14,6 +14,9 @@ namespace Service.Service.Interfaces
         Task<List<ClubMemberDto>> GetClubMembersByClubIdAsync(int leaderId, int clubId);
         Task ApproveAsync(int leaderId, int requestId, string? note);
         Task RejectAsync(int leaderId, int requestId, string? note);
+        Task LockMemberAsync(int leaderId, int membershipId, string? reason);
+        Task UnlockMemberAsync(int leaderId, int membershipId);
+        Task RemoveMemberAsync(int leaderId, int membershipId, string? reason);
     }
 
 }

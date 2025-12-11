@@ -89,6 +89,63 @@ namespace ClubSystem.Controller
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut("members/{membershipId}/lock")]
+        public async Task<IActionResult> LockMember(int membershipId, [FromBody] LeaderDecisionDto? dto)
+        {
+            try
+            {
+                var leaderId = User.GetAccountId();
+                await _service.LockMemberAsync(leaderId, membershipId, dto?.Note);
+                return Ok("Đã khóa thành viên.");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(403, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("members/{membershipId}/unlock")]
+        public async Task<IActionResult> UnlockMember(int membershipId)
+        {
+            try
+            {
+                var leaderId = User.GetAccountId();
+                await _service.UnlockMemberAsync(leaderId, membershipId);
+                return Ok("Đã mở khóa thành viên.");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(403, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("members/{membershipId}")]
+        public async Task<IActionResult> RemoveMember(int membershipId, [FromBody] LeaderDecisionDto? dto)
+        {
+            try
+            {
+                var leaderId = User.GetAccountId();
+                await _service.RemoveMemberAsync(leaderId, membershipId, dto?.Note);
+                return Ok("Đã hủy thành viên khỏi CLB.");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(403, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 
     public class LeaderDecisionDto

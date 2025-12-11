@@ -28,6 +28,7 @@ namespace Service.Service.Implements
             _membershipRequestRepo = membershipRequestRepo;
         }
 
+        // Member đăng ký tham gia activity (không phải student, student phải trở thành member trước)
         public async Task RegisterForActivityAsync(int accountId, int activityId)
         {
             // 1. Kiểm tra activity tồn tại
@@ -35,19 +36,31 @@ namespace Service.Service.Implements
             if (activity == null)
                 throw new Exception("Hoạt động không tồn tại.");
 
-            // 2. Kiểm tra activity không bị hủy hoặc đã hoàn thành
-            if (activity.Status == "Cancelled")
+            // 2. Tính status thực tế dựa trên thời gian
+            var actualStatus = CalculateActivityStatus(activity);
+
+            // 3. Kiểm tra activity không bị hủy, đã hoàn thành, hoặc đang diễn ra
+            if (actualStatus == "Cancelled")
                 throw new Exception("Hoạt động này đã bị hủy.");
             
-            if (activity.Status == "Completed")
+            if (actualStatus == "Completed")
                 throw new Exception("Hoạt động này đã hoàn thành.");
 
-            // 3. Kiểm tra thời gian: Không cho đăng ký sau khi activity đã bắt đầu
-            if (activity.StartTime.HasValue && activity.StartTime.Value <= DateTime.Now)
-                throw new Exception("Hoạt động này đã bắt đầu, không thể đăng ký thêm.");
+            if (actualStatus == "Ongoing")
+                throw new Exception("Hoạt động này đang diễn ra, không thể đăng ký thêm.");
 
-            // 4. Kiểm tra student có phải member của CLB không
-            // Chỉ có member active mới được đăng ký tham gia activity
+            if (activity.Status == "Active_Closed")
+                throw new Exception("Đăng ký cho hoạt động này đã được đóng.");
+
+            if (activity.Status == "Not_yet_open")
+                throw new Exception("Hoạt động này chưa mở đăng ký.");
+
+            if (activity.Status != "Active")
+                throw new Exception("Hoạt động này chưa mở đăng ký.");
+
+            // 4. Kiểm tra account có phải member active của CLB không
+            // CHỈ MEMBER mới được đăng ký tham gia activity
+            // Student muốn tham gia activity thì phải trở thành member của CLB đó trước
             var memberships = await _membershipRepo.GetMembershipsAsync(accountId);
             var membership = memberships.FirstOrDefault(m => m.ClubId == activity.ClubId && m.Status == "active");
             
@@ -66,30 +79,38 @@ namespace Service.Service.Implements
             }
 
             // 5. Kiểm tra đã đăng ký chưa
-            if (await _participantRepo.IsRegisteredAsync(activityId, membership.Id))
-                throw new Exception("Bạn đã đăng ký tham gia hoạt động này rồi.");
+            var existingParticipants = await _participantRepo.GetByMembershipIdAsync(membership.Id);
+            var existingParticipant = existingParticipants.FirstOrDefault(p => p.ActivityId == activityId);
+            
+            if (existingParticipant != null)
+            {
+                if (existingParticipant.Attended == true)
+                    throw new Exception("Bạn đã đăng ký tham gia hoạt động này rồi (trạng thái: attend).");
+                else if (existingParticipant.Attended == false)
+                    throw new Exception("Bạn đã hủy đăng ký hoạt động này rồi. Không thể đăng ký lại.");
+            }
 
-            // 6. Tạo participant
+            // 6. Tạo participant với trạng thái "attend" ngay (không cần club leader duyệt)
             var participant = new ActivityParticipant
             {
                 ActivityId = activityId,
                 MembershipId = membership.Id,
                 RegisterTime = DateTime.Now,
-                Attended = null
+                Attended = true // Set "attend" ngay khi đăng ký
             };
 
             await _participantRepo.AddParticipantAsync(participant);
             await _participantRepo.SaveAsync();
         }
 
-        public async Task CancelRegistrationAsync(int accountId, int activityId)
+        public async Task CancelRegistrationAsync(int accountId, int activityId, string? reason)
         {
             // Kiểm tra activity tồn tại
             var activity = await _activityRepo.GetByIdAsync(activityId);
             if (activity == null)
                 throw new Exception("Hoạt động không tồn tại.");
 
-            // Kiểm tra student có phải member của CLB không
+            // Kiểm tra account có phải member của CLB không
             var memberships = await _membershipRepo.GetMembershipsAsync(accountId);
             var membership = memberships.FirstOrDefault(m => m.ClubId == activity.ClubId && m.Status == "active");
             if (membership == null)
@@ -101,11 +122,16 @@ namespace Service.Service.Implements
             if (participant == null)
                 throw new Exception("Bạn chưa đăng ký tham gia hoạt động này.");
 
-            // Xóa registration (hoặc có thể set flag thay vì xóa)
-            // Ở đây tôi sẽ xóa luôn
-            // Nếu muốn giữ lại lịch sử, có thể thêm field IsCancelled
-            // Tạm thời xóa để đơn giản
-            throw new Exception("Chức năng hủy đăng ký chưa được implement. Vui lòng liên hệ admin.");
+            // Kiểm tra đã cancel chưa
+            if (participant.Attended == false)
+                throw new Exception("Bạn đã hủy đăng ký hoạt động này rồi.");
+
+            // Set trạng thái "cancel" và lưu reason
+            participant.Attended = false; // false = cancel
+            participant.CancelReason = reason; // Lưu lý do hủy
+            
+            await _participantRepo.UpdateParticipantAsync(participant);
+            await _participantRepo.SaveAsync();
         }
 
         public async Task<List<ActivityParticipantDto>> GetMyActivityHistoryAsync(int accountId)
@@ -133,6 +159,7 @@ namespace Service.Service.Implements
                             Location = participant.Activity.Location ?? "",
                             RegisterTime = participant.RegisterTime,
                             Attended = participant.Attended,
+                            CancelReason = participant.CancelReason,
                             ActivityStatus = participant.Activity.Status ?? ""
                         });
                     }
@@ -142,7 +169,8 @@ namespace Service.Service.Implements
             return result.OrderByDescending(r => r.RegisterTime).ToList();
         }
 
-        public async Task<List<ActivityDto>> GetAvailableActivitiesForMyClubsAsync(int accountId)
+        // Lấy activities mà student (đã là member) có thể đăng ký
+        public async Task<List<ActivityDto>> GetActivitiesForRegistrationAsync(int accountId)
         {
             // Lấy tất cả memberships của student
             var memberships = await _membershipRepo.GetMembershipsAsync(accountId);
@@ -152,14 +180,12 @@ namespace Service.Service.Implements
                 return new List<ActivityDto>();
 
             // Lấy tất cả activities của các CLB mà student là member
-            // ClubLeader tạo activity thì tự động hiển thị cho student đăng ký (không cần duyệt)
-            // Chỉ loại bỏ các activity đã bị hủy, đã hoàn thành, hoặc đã bắt đầu
+            // Chỉ hiển thị activities có status "Active" (đang mở đăng ký) để member có thể đăng ký
             var allActivities = await _activityRepo.GetAllAsync();
             var now = DateTime.Now;
             var availableActivities = allActivities
                 .Where(a => clubIds.Contains(a.ClubId) && 
-                           a.Status != "Cancelled" && 
-                           a.Status != "Completed" &&
+                           a.Status == "Active" && // Chỉ hiển thị activities đang mở đăng ký
                            (!a.StartTime.HasValue || a.StartTime.Value > now)) // Chưa bắt đầu
                 .ToList();
 
@@ -172,9 +198,103 @@ namespace Service.Service.Implements
                 StartTime = a.StartTime,
                 EndTime = a.EndTime,
                 Location = a.Location ?? "",
-                Status = a.Status ?? "",
+                Status = CalculateActivityStatus(a), // Tính status động
                 CreatedBy = a.CreatedBy
             }).ToList();
+        }
+
+        // Student xem tất cả activities "Active" của tất cả CLB (không cần là member) - chỉ để xem
+        public async Task<List<ActivityDto>> GetAllActivitiesForViewingAsync()
+        {
+            var allActivities = await _activityRepo.GetAllAsync();
+            var now = DateTime.Now;
+            
+            // Chỉ hiển thị activities có status "Active" (đang mở đăng ký)
+            var activities = allActivities
+                .Where(a => a.Status == "Active" && 
+                           (!a.StartTime.HasValue || a.StartTime.Value > now)) // Chưa bắt đầu
+                .OrderByDescending(a => a.StartTime)
+                .ToList();
+
+            return activities.Select(a => new ActivityDto
+            {
+                Id = a.Id,
+                ClubId = a.ClubId,
+                Title = a.Title ?? "",
+                Description = a.Description ?? "",
+                StartTime = a.StartTime,
+                EndTime = a.EndTime,
+                Location = a.Location ?? "",
+                Status = CalculateActivityStatus(a), // Tính status động
+                CreatedBy = a.CreatedBy
+            }).ToList();
+        }
+
+        // Student xem activities "Active" của một CLB cụ thể (không cần là member) - chỉ để xem
+        public async Task<List<ActivityDto>> GetActivitiesByClubForViewingAsync(int clubId)
+        {
+            var activities = await _activityRepo.GetByClubAsync(clubId);
+            var now = DateTime.Now;
+            
+            // Chỉ hiển thị activities có status "Active" (đang mở đăng ký)
+            var filteredActivities = activities
+                .Where(a => a.Status == "Active" && 
+                           (!a.StartTime.HasValue || a.StartTime.Value > now)) // Chưa bắt đầu
+                .OrderByDescending(a => a.StartTime)
+                .ToList();
+
+            return filteredActivities.Select(a => new ActivityDto
+            {
+                Id = a.Id,
+                ClubId = a.ClubId,
+                Title = a.Title ?? "",
+                Description = a.Description ?? "",
+                StartTime = a.StartTime,
+                EndTime = a.EndTime,
+                Location = a.Location ?? "",
+                Status = CalculateActivityStatus(a), // Tính status động
+                CreatedBy = a.CreatedBy
+            }).ToList();
+        }
+
+        // Tính status của activity dựa trên thời gian hiện tại
+        private static string CalculateActivityStatus(Activity a)
+        {
+            var now = DateTime.Now;
+            
+            // Nếu status là Cancelled hoặc Completed, giữ nguyên
+            if (a.Status == "Cancelled" || a.Status == "Completed")
+                return a.Status;
+
+            // Kiểm tra nếu activity đang diễn ra
+            if (a.StartTime.HasValue && a.EndTime.HasValue)
+            {
+                if (now >= a.StartTime.Value && now <= a.EndTime.Value)
+                {
+                    return "Ongoing"; // Đang diễn ra
+                }
+            }
+            else if (a.StartTime.HasValue && !a.EndTime.HasValue)
+            {
+                // Chỉ có start_time, nếu đã bắt đầu thì là Ongoing
+                if (now >= a.StartTime.Value)
+                {
+                    return "Ongoing";
+                }
+            }
+
+            // Nếu đã kết thúc (có end_time và đã qua end_time)
+            if (a.EndTime.HasValue && now > a.EndTime.Value)
+            {
+                // Chỉ tự động set Completed nếu status hiện tại là Active hoặc Active_Closed hoặc Ongoing
+                if (a.Status == "Active" || a.Status == "Active_Closed" || a.Status == "Ongoing")
+                {
+                    return "Completed";
+                }
+            }
+
+            // Trả về status gốc (Not_yet_open, Active, Active_Closed)
+            return a.Status;
         }
     }
 }

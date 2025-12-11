@@ -138,6 +138,60 @@ namespace Service.Service.Implements
 
             await _reqRepo.UpdateAsync(req);
         }
+
+        // Khóa member (set status = "locked")
+        public async Task LockMemberAsync(int leaderId, int membershipId, string? reason)
+        {
+            var membership = await _membershipRepo.GetMembershipByIdAsync(membershipId)
+                ?? throw new Exception("Không tìm thấy thành viên.");
+
+            // Kiểm tra leader có quyền với CLB này không
+            if (!await _clubRepo.IsLeaderOfClubAsync(membership.ClubId, leaderId))
+                throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
+
+            if (membership.Status == "locked")
+                throw new Exception("Thành viên đã bị khóa.");
+
+            membership.Status = "locked";
+            _membershipRepo.UpdateMembership(membership);
+            await _membershipRepo.SaveAsync();
+        }
+
+        // Mở khóa member (set status = "active")
+        public async Task UnlockMemberAsync(int leaderId, int membershipId)
+        {
+            var membership = await _membershipRepo.GetMembershipByIdAsync(membershipId)
+                ?? throw new Exception("Không tìm thấy thành viên.");
+
+            // Kiểm tra leader có quyền với CLB này không
+            if (!await _clubRepo.IsLeaderOfClubAsync(membership.ClubId, leaderId))
+                throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
+
+            if (membership.Status != "locked")
+                throw new Exception("Thành viên không ở trạng thái bị khóa.");
+
+            membership.Status = "active";
+            _membershipRepo.UpdateMembership(membership);
+            await _membershipRepo.SaveAsync();
+        }
+
+        // Hủy/Remove member khỏi CLB (set status = "removed")
+        public async Task RemoveMemberAsync(int leaderId, int membershipId, string? reason)
+        {
+            var membership = await _membershipRepo.GetMembershipByIdAsync(membershipId)
+                ?? throw new Exception("Không tìm thấy thành viên.");
+
+            // Kiểm tra leader có quyền với CLB này không
+            if (!await _clubRepo.IsLeaderOfClubAsync(membership.ClubId, leaderId))
+                throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
+
+            if (membership.Status == "removed")
+                throw new Exception("Thành viên đã bị hủy khỏi CLB.");
+
+            membership.Status = "removed";
+            _membershipRepo.UpdateMembership(membership);
+            await _membershipRepo.SaveAsync();
+        }
     }
 
 }

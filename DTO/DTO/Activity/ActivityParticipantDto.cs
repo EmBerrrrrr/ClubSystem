@@ -11,7 +11,8 @@ namespace DTO.DTO.Activity
         public DateTime? EndTime { get; set; }
         public string Location { get; set; } = string.Empty;
         public DateTime? RegisterTime { get; set; }
-        public bool? Attended { get; set; }
+        public bool? Attended { get; set; } // true = attend, false = cancel, null = chưa xác định
+        public string? CancelReason { get; set; } // Lý do hủy (nếu có)
         public string ActivityStatus { get; set; } = string.Empty;
     }
 }

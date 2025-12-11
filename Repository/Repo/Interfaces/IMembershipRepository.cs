@@ -11,7 +11,9 @@ namespace Repository.Repo.Interfaces
         Task<List<Membership>> GetAllMembershipsAsync(int accountId); // Lấy tất cả bao gồm pending_payment
         Task<List<Membership>> GetMembershipsByClubIdAsync(int clubId); // Lấy tất cả members của một CLB
         Task<Membership?> GetMembershipByAccountAndClubAsync(int accountId, int clubId);
+        Task<Membership?> GetMembershipByIdAsync(int membershipId);
         Task AddMembershipAsync(Membership member);
+        void UpdateMembership(Membership membership);
         Task SaveAsync();
     }
 }

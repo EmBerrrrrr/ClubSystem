@@ -159,6 +159,9 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.RegisterTime)
                 .HasColumnType("datetime")
                 .HasColumnName("register_time");
+            entity.Property(e => e.CancelReason)
+                .HasMaxLength(500)
+                .HasColumnName("cancelReason");
 
             entity.HasOne(d => d.Activity).WithMany(p => p.ActivityParticipants)
                 .HasForeignKey(d => d.ActivityId)
