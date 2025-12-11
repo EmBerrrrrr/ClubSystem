@@ -11,6 +11,8 @@ namespace Repository.Repo.Interfaces
     {
         Task CreateAsync(ClubLeaderRequest request);
         Task<List<ClubLeaderRequest>> GetPendingAsync();
+        Task<List<ClubLeaderRequest>> GetApprovedAsync();
+        Task<List<ClubLeaderRequest>> GetRejectedAsync();
         Task<ClubLeaderRequest?> GetByIdAsync(int id);
         Task SaveAsync();
     }

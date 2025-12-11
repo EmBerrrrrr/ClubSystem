@@ -67,13 +67,22 @@ namespace ClubSystem.Controller
         // ADMIN APPROVE
         [Authorize(Roles = "admin")]
         [HttpPut("{id}/approve")]
-        public async Task<IActionResult> Approve(int id)
+        public async Task<IActionResult> Approve(
+            int id,
+            [FromBody] ProcessLeaderRequestDto? dto = null)
         {
-            int adminId = User.GetAccountId();
+            try
+            {
+                int adminId = User.GetAccountId();
 
-            await _service.ApproveAsync(id, adminId);
+                await _service.ApproveAsync(id, adminId, dto?.ApproveNote);
 
-            return Ok("Approved");
+                return Ok("Approved");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // ADMIN REJECT
@@ -83,15 +92,23 @@ namespace ClubSystem.Controller
             int id,
             [FromBody] ProcessLeaderRequestDto dto)
         {
-            int adminId = User.GetAccountId();
+            try
+            {
+                int adminId = User.GetAccountId();
 
-            await _service.RejectAsync(
-                id,
-                adminId,
-                dto.RejectReason ?? ""
-            );
+                await _service.RejectAsync(
+                    id,
+                    adminId,
+                    dto.RejectReason ?? ""
+                );
 
-            return Ok("Rejected");
+                return Ok("Rejected");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
     }
 }

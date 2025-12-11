@@ -11,7 +11,10 @@ namespace Service.Service.Interfaces
     {
         Task CreateRequestAsync(int accountId, string reason);
         Task<List<LeaderRequestDto>> GetPendingAsync();
-        Task ApproveAsync(int requestId, int adminId);
+        Task<List<ProcessedLeaderRequestDto>> GetApprovedAsync();
+        Task<List<ProcessedLeaderRequestDto>> GetRejectedAsync();
+        Task<LeaderRequestStatsDto> GetStatsAsync();
+        Task ApproveAsync(int requestId, int adminId, string? note = null);
         Task RejectAsync(int requestId, int adminId, string reason);
         Task<MyLeaderRequestDto?> GetMyRequestAsync(int accountId);
 

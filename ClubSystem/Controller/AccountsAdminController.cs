@@ -11,10 +11,12 @@ namespace StudentClubAPI.Controllers;
 public class AccountsAdminController : ControllerBase
 {
     private readonly IAdminAccountService _service;
+    private readonly IClubLeaderRequestService _leaderRequestService;
 
-    public AccountsAdminController(IAdminAccountService service)
+    public AccountsAdminController(IAdminAccountService service, IClubLeaderRequestService leaderRequestService)
     {
         _service = service;
+        _leaderRequestService = leaderRequestService;
     }
 
     // ==================== GET ====================
@@ -66,5 +68,28 @@ public class AccountsAdminController : ControllerBase
     {
         await _service.RemoveRole(id, dto.RoleName);
         return Ok("Role removed");
+    }
+
+    // ==================== LEADER REQUEST STATS ====================
+
+    [HttpGet("leader-requests/stats")]
+    public async Task<IActionResult> GetLeaderRequestStats()
+    {
+        var stats = await _leaderRequestService.GetStatsAsync();
+        return Ok(stats);
+    }
+
+    [HttpGet("leader-requests/approved")]
+    public async Task<IActionResult> GetApprovedLeaderRequests()
+    {
+        var data = await _leaderRequestService.GetApprovedAsync();
+        return Ok(data);
+    }
+
+    [HttpGet("leader-requests/rejected")]
+    public async Task<IActionResult> GetRejectedLeaderRequests()
+    {
+        var data = await _leaderRequestService.GetRejectedAsync();
+        return Ok(data);
     }
 }

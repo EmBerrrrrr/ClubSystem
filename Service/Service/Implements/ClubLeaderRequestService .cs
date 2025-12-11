@@ -77,7 +77,7 @@ namespace Service.Service.Implements
 
         }
 
-        // Admin xem list
+        // Admin xem list pending
         public async Task<List<LeaderRequestDto>> GetPendingAsync()
         {
             var requests = await _db.ClubLeaderRequests
@@ -103,12 +103,96 @@ namespace Service.Service.Implements
             }).ToList();
         }
 
+        // Admin xem list đã duyệt
+        public async Task<List<ProcessedLeaderRequestDto>> GetApprovedAsync()
+        {
+            var requests = await _db.ClubLeaderRequests
+                .Include(x => x.Account)
+                .Include(x => x.ProcessedByNavigation)
+                .Where(x => x.Status.ToLower() == "approved")
+                .OrderByDescending(x => x.ProcessedAt)
+                .ToListAsync();
+
+            return requests.Select(x => new ProcessedLeaderRequestDto
+            {
+                Id = x.Id,
+                AccountId = x.AccountId,
+                Username = x.Account?.Username ?? string.Empty,
+                FullName = x.Account?.FullName,
+                Email = x.Account?.Email,
+                Phone = x.Account?.Phone,
+                RequestDate = x.RequestDate,
+                Status = x.Status,
+                Reason = x.Reason,
+                Note = x.Note,
+                ProcessedBy = x.ProcessedBy,
+                ProcessedByUsername = x.ProcessedByNavigation?.Username,
+                ProcessedByFullName = x.ProcessedByNavigation?.FullName,
+                ProcessedAt = x.ProcessedAt
+            }).ToList();
+        }
+
+        // Admin xem list đã từ chối
+        public async Task<List<ProcessedLeaderRequestDto>> GetRejectedAsync()
+        {
+            var requests = await _db.ClubLeaderRequests
+                .Include(x => x.Account)
+                .Include(x => x.ProcessedByNavigation)
+                .Where(x => x.Status.ToLower() == "rejected")
+                .OrderByDescending(x => x.ProcessedAt)
+                .ToListAsync();
+
+            return requests.Select(x => new ProcessedLeaderRequestDto
+            {
+                Id = x.Id,
+                AccountId = x.AccountId,
+                Username = x.Account?.Username ?? string.Empty,
+                FullName = x.Account?.FullName,
+                Email = x.Account?.Email,
+                Phone = x.Account?.Phone,
+                RequestDate = x.RequestDate,
+                Status = x.Status,
+                Reason = x.Reason,
+                Note = x.Note,
+                ProcessedBy = x.ProcessedBy,
+                ProcessedByUsername = x.ProcessedByNavigation?.Username,
+                ProcessedByFullName = x.ProcessedByNavigation?.FullName,
+                ProcessedAt = x.ProcessedAt
+            }).ToList();
+        }
+
+        // Admin xem thống kê
+        public async Task<LeaderRequestStatsDto> GetStatsAsync()
+        {
+            var totalApproved = await _db.ClubLeaderRequests
+                .CountAsync(x => x.Status.ToLower() == "approved");
+            
+            var totalRejected = await _db.ClubLeaderRequests
+                .CountAsync(x => x.Status.ToLower() == "rejected");
+            
+            var totalPending = await _db.ClubLeaderRequests
+                .CountAsync(x => x.Status.ToLower() == "pending");
+            
+            var total = await _db.ClubLeaderRequests.CountAsync();
+
+            return new LeaderRequestStatsDto
+            {
+                TotalApproved = totalApproved,
+                TotalRejected = totalRejected,
+                TotalPending = totalPending,
+                Total = total
+            };
+        }
+
         // APPROVE
-        public async Task ApproveAsync(int requestId, int adminId)
+        public async Task ApproveAsync(int requestId, int adminId, string? note = null)
         {
             var request = await _repo.GetByIdAsync(requestId);
             if (request == null)
                 throw new Exception("Request không tồn tại");
+
+            if (request.Status.ToLower() != "pending")
+                throw new Exception("Request đã được xử lý");
 
             //Không cho approve nếu user đã là clubleader
             bool alreadyLeader = await _db.AccountRoles
@@ -122,7 +206,9 @@ namespace Service.Service.Implements
             request.Status = "approved";
             request.ProcessedBy = adminId;
             request.ProcessedAt = DateTime.UtcNow;
-            request.Note = "Approved";
+            request.Note = string.IsNullOrWhiteSpace(note)
+                ? "Đã duyệt"
+                : note.Trim();
 
             var leaderRole = await _db.Roles
                 .FirstOrDefaultAsync(x => x.Name == "clubleader");
@@ -157,11 +243,15 @@ namespace Service.Service.Implements
             var request = await _repo.GetByIdAsync(requestId);
             if (request == null)
                 throw new Exception("Request không tồn tại");
+            
+            if (request.Status.ToLower() != "pending")
+                throw new Exception("Request đã được xử lý");
+            
             request.Status = "rejected";
             request.ProcessedBy = adminId;
             request.ProcessedAt = DateTime.UtcNow;
             request.Note = string.IsNullOrWhiteSpace(reason)
-                ? "Rejected"
+                ? "Đã từ chối"
                 : reason.Trim();
             await _repo.SaveAsync();
         }

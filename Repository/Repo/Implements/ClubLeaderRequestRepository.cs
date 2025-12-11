@@ -25,6 +25,22 @@ namespace Repository.Repo.Implements
                 .ToListAsync();
         }
 
+        public async Task<List<ClubLeaderRequest>> GetApprovedAsync()
+        {
+            return await _context.ClubLeaderRequests
+                .Where(x => x.Status.ToLower() == "approved")
+                .OrderByDescending(x => x.ProcessedAt)
+                .ToListAsync();
+        }
+
+        public async Task<List<ClubLeaderRequest>> GetRejectedAsync()
+        {
+            return await _context.ClubLeaderRequests
+                .Where(x => x.Status.ToLower() == "rejected")
+                .OrderByDescending(x => x.ProcessedAt)
+                .ToListAsync();
+        }
+
         public async Task<ClubLeaderRequest?> GetByIdAsync(int id)
         {
             return await _context.ClubLeaderRequests
