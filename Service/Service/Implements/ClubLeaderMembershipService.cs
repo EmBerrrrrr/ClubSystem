@@ -15,15 +15,19 @@ namespace Service.Service.Implements
         private readonly IMembershipRequestRepository _reqRepo;
         private readonly IClubRepository _clubRepo;
         private readonly IMembershipRepository _membershipRepo;
+        private readonly IPaymentRepository _paymentRepo;
+        private static readonly Random _rnd = new Random();
 
         public ClubLeaderMembershipService(
             IMembershipRequestRepository reqRepo,
             IClubRepository clubRepo,
-            IMembershipRepository membershipRepo)
+            IMembershipRepository membershipRepo,
+            IPaymentRepository paymentRepo) 
         {
             _reqRepo = reqRepo;
             _clubRepo = clubRepo;
             _membershipRepo = membershipRepo;
+            _paymentRepo = paymentRepo; 
         }
 
         // Lấy các request pending của tất cả CLB mà leader này quản lý
@@ -99,7 +103,6 @@ namespace Service.Service.Implements
                 Status = m.Status
             }).ToList();
         }
-
         public async Task ApproveAsync(int leaderId, int requestId, string? note)
         {
             var req = await _reqRepo.GetByIdAsync(requestId)
@@ -112,13 +115,53 @@ namespace Service.Service.Implements
             if (req.Status != "pending")
                 throw new Exception("Yêu cầu đã được xử lý.");
 
+            // Lấy thông tin CLB để biết membership fee
+            var club = await _clubRepo.GetByIdAsync(req.ClubId)
+                ?? throw new Exception("Không tìm thấy CLB.");
+
+            var fee = club.MembershipFee ?? 0;
+
+            // 1) Tạo membership với trạng thái pending_payment
+            var membership = new Membership
+            {
+                AccountId = req.AccountId,
+                ClubId = req.ClubId,
+                JoinDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                Status = "pending_payment"
+            };
+
+            await _membershipRepo.AddMembershipAsync(membership);
+            await _membershipRepo.SaveAsync();
+
+            // 2) Tạo orderCode (sau này dùng đúng code này khi gọi PayOS)
+            long orderCode = _rnd.Next(100000000, 999999999);
+
+            // 3) Tạo payment (status = pending)
+            var payment = new Payment
+            {
+                MembershipId = membership.Id,
+                ClubId = req.ClubId,
+                Amount = fee,
+                Method = "payos",      
+                Status = "pending", 
+                OrderCode = orderCode,
+                Description = $"Membership fee for club {club.Name} - member {membership.Id}"
+            };
+
+            await _paymentRepo.AddAsync(payment);
+            await _paymentRepo.SaveAsync();
+
+            // 4) Cập nhật request
             req.Status = "approved_pending_payment";
             req.ProcessedBy = leaderId;
-            req.ProcessedAt = DateTime.Now;
+            req.ProcessedAt = DateTime.UtcNow;
             req.Note = note;
 
             await _reqRepo.UpdateAsync(req);
+
+            // (tùy bạn) return orderCode / payment info qua controller để FE hiển thị link PayOS
         }
+
 
         public async Task RejectAsync(int leaderId, int requestId, string? note)
         {

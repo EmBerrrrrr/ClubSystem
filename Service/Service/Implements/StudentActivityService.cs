@@ -128,7 +128,7 @@ namespace Service.Service.Implements
 
             // Set trạng thái "cancel" và lưu reason
             participant.Attended = false; // false = cancel
-            participant.CancelReason = reason; // Lưu lý do hủy
+            //participant.CancelReason = reason; // Lưu lý do hủy
             
             await _participantRepo.UpdateParticipantAsync(participant);
             await _participantRepo.SaveAsync();
@@ -159,7 +159,7 @@ namespace Service.Service.Implements
                             Location = participant.Activity.Location ?? "",
                             RegisterTime = participant.RegisterTime,
                             Attended = participant.Attended,
-                            CancelReason = participant.CancelReason,
+                            //CancelReason = participant.CancelReason,
                             ActivityStatus = participant.Activity.Status ?? ""
                         });
                     }

@@ -51,7 +51,7 @@ public partial class StudentClubManagementContext : DbContext
 
             entity.ToTable("accounts");
 
-            entity.HasIndex(e => e.Username, "UQ__accounts__F3DBC572755F3F2F").IsUnique();
+            entity.HasIndex(e => e.Username, "UQ_accounts_username").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
@@ -65,13 +65,11 @@ public partial class StudentClubManagementContext : DbContext
                 .HasColumnName("full_name");
             entity.Property(e => e.ImageAccountUrl)
                 .HasMaxLength(255)
-                .IsUnicode(false)
                 .HasColumnName("imageAccount_url");
             entity.Property(e => e.IsActive).HasColumnName("is_active");
             entity.Property(e => e.PasswordHash)
                 .IsRequired()
                 .HasMaxLength(255)
-                .IsUnicode(false)
                 .HasColumnName("password_hash");
             entity.Property(e => e.Phone)
                 .HasMaxLength(50)
@@ -79,7 +77,6 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.Username)
                 .IsRequired()
                 .HasMaxLength(50)
-                .IsUnicode(false)
                 .HasColumnName("username");
         });
 
@@ -121,19 +118,16 @@ public partial class StudentClubManagementContext : DbContext
                 .HasColumnName("end_time");
             entity.Property(e => e.Location)
                 .HasMaxLength(150)
-                .IsUnicode(false)
                 .HasColumnName("location");
             entity.Property(e => e.StartTime)
                 .HasColumnType("datetime")
                 .HasColumnName("start_time");
             entity.Property(e => e.Status)
-                .HasMaxLength(20)
-                .IsUnicode(false)
+                .HasMaxLength(50)
                 .HasColumnName("status");
             entity.Property(e => e.Title)
                 .IsRequired()
                 .HasMaxLength(150)
-                .IsUnicode(false)
                 .HasColumnName("title");
 
             entity.HasOne(d => d.Club).WithMany(p => p.Activities)
@@ -159,9 +153,6 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.RegisterTime)
                 .HasColumnType("datetime")
                 .HasColumnName("register_time");
-            entity.Property(e => e.CancelReason)
-                .HasMaxLength(500)
-                .HasColumnName("cancelReason");
 
             entity.HasOne(d => d.Activity).WithMany(p => p.ActivityParticipants)
                 .HasForeignKey(d => d.ActivityId)
@@ -187,7 +178,6 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.EstablishedDate).HasColumnName("established_date");
             entity.Property(e => e.ImageClubsUrl)
                 .HasMaxLength(255)
-                .IsUnicode(false)
                 .HasColumnName("imageClubs_url");
             entity.Property(e => e.MembershipFee)
                 .HasColumnType("decimal(12, 2)")
@@ -195,11 +185,9 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("name");
             entity.Property(e => e.Status)
-                .HasMaxLength(20)
-                .IsUnicode(false)
+                .HasMaxLength(50)
                 .HasColumnName("status");
         });
 
@@ -248,8 +236,7 @@ public partial class StudentClubManagementContext : DbContext
                 .HasColumnName("request_date");
             entity.Property(e => e.Status)
                 .IsRequired()
-                .HasMaxLength(20)
-                .IsUnicode(false)
+                .HasMaxLength(50)
                 .HasColumnName("status");
 
             entity.HasOne(d => d.Account).WithMany(p => p.ClubLeaderRequestAccounts)
@@ -273,8 +260,7 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.ClubId).HasColumnName("club_id");
             entity.Property(e => e.JoinDate).HasColumnName("join_date");
             entity.Property(e => e.Status)
-                .HasMaxLength(20)
-                .IsUnicode(false)
+                .HasMaxLength(50)
                 .HasColumnName("status");
 
             entity.HasOne(d => d.Account).WithMany(p => p.Memberships)
@@ -308,8 +294,7 @@ public partial class StudentClubManagementContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("request_date");
             entity.Property(e => e.Status)
-                .HasMaxLength(20)
-                .IsUnicode(false)
+                .HasMaxLength(100)
                 .HasColumnName("status");
 
             entity.HasOne(d => d.Account).WithMany(p => p.MembershipRequestAccounts)
@@ -338,17 +323,19 @@ public partial class StudentClubManagementContext : DbContext
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("amount");
             entity.Property(e => e.ClubId).HasColumnName("club_id");
+            entity.Property(e => e.Description)
+                .HasMaxLength(255)
+                .HasColumnName("description");
             entity.Property(e => e.MembershipId).HasColumnName("membership_id");
             entity.Property(e => e.Method)
                 .HasMaxLength(30)
-                .IsUnicode(false)
                 .HasColumnName("method");
+            entity.Property(e => e.OrderCode).HasColumnName("order_code");
             entity.Property(e => e.PaidDate)
                 .HasColumnType("datetime")
                 .HasColumnName("paid_date");
             entity.Property(e => e.Status)
-                .HasMaxLength(20)
-                .IsUnicode(false)
+                .HasMaxLength(50)
                 .HasColumnName("status");
 
             entity.HasOne(d => d.Club).WithMany(p => p.Payments)
