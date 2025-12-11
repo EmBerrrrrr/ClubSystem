@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Repository.Models;
 using Service.Helper;
 using Service.Service.Interfaces;
 
@@ -10,24 +12,31 @@ namespace ClubSystem.Controller
     public class ClubLeaderRequestsController : ControllerBase
     {
         private readonly IClubLeaderRequestService _service;
+        private readonly StudentClubManagementContext _db;
 
-        public ClubLeaderRequestsController(IClubLeaderRequestService service)
+
+        public ClubLeaderRequestsController(IClubLeaderRequestService service, StudentClubManagementContext db)
         {
             _service = service;
+            _db = db;
         }
 
         // STUDENT SEND REQUEST
         [Authorize(Roles = "student")]
         [HttpPost]
-        public async Task<IActionResult> Create(
-            [FromBody] CreateLeaderRequestDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateLeaderRequestDto dto)
         {
-            var studentId = User.GetAccountId();
+            int studentId = User.GetAccountId();
 
-            await _service.CreateRequestAsync(
-                studentId,
-                dto.Reason
-            );
+            bool isLeader = await _db.AccountRoles
+                .Include(ar => ar.Role)
+                .AnyAsync(ar => ar.AccountId == studentId &&
+                                ar.Role.Name.ToLower() == "clubleader");
+
+            if (isLeader)
+                return BadRequest("Bạn đã là Club Leader, không thể gửi request");
+
+            await _service.CreateRequestAsync(studentId, dto.Reason);
 
             return Ok("Request submitted");
         }

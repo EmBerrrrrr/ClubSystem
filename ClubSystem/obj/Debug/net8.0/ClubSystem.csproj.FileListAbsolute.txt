@@ -359,3 +359,6 @@ D:\SWP391\ClubSystem\ClubSystem\obj\Debug\net8.0\ref\ClubSystem.dll
 D:\SWP391\ClubSystem\ClubSystem\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\SWP391\ClubSystem\ClubSystem\bin\Debug\net8.0\Newtonsoft.Json.dll
 D:\SWP391\ClubSystem\ClubSystem\bin\Debug\net8.0\payos-lib-backend-dotnet.dll
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\payos-lib-backend-dotnet.dll
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

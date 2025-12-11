@@ -22,12 +22,24 @@ namespace Service.Service.Implements
         // Student gửi request
         public async Task CreateRequestAsync(int accountId, string reason)
         {
+            //1. Không cho clubleader gửi request
+            bool isLeader = await _db.AccountRoles
+                .Include(ar => ar.Role)
+                .AnyAsync(ar =>
+                    ar.AccountId == accountId &&
+                    ar.Role.Name.ToLower() == "clubleader");
+
+            if (isLeader)
+                throw new Exception("Bạn đã là Club Leader, không thể gửi request nữa");
+
+            //2. Không cho gửi nếu đã có request pending
             var exists = await _db.ClubLeaderRequests
                 .AnyAsync(x =>
                     x.AccountId == accountId &&
                     x.Status.ToLower() == "pending");
             if (exists)
                 throw new Exception("Bạn đã gửi request và đang chờ duyệt");
+
             var request = new ClubLeaderRequest
             {
                 AccountId = accountId,
@@ -97,6 +109,15 @@ namespace Service.Service.Implements
             var request = await _repo.GetByIdAsync(requestId);
             if (request == null)
                 throw new Exception("Request không tồn tại");
+
+            //Không cho approve nếu user đã là clubleader
+            bool alreadyLeader = await _db.AccountRoles
+                .Include(ar => ar.Role)
+                .AnyAsync(ar => ar.AccountId == request.AccountId &&
+                                ar.Role.Name.ToLower() == "clubleader");
+
+            if (alreadyLeader)
+                throw new Exception("Tài khoản này đã là Club Leader");
 
             request.Status = "approved";
             request.ProcessedBy = adminId;
