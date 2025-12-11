@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DTO.DTO.Club;
 
 namespace DTO.DTO.Membership
 {
@@ -12,7 +8,6 @@ namespace DTO.DTO.Membership
         public string ClubName { get; set; } = string.Empty;
         public DateOnly? JoinDate { get; set; }
         public string Status { get; set; } = string.Empty;
+        public ClubDto? Club { get; set; }
     }
-
-
 }

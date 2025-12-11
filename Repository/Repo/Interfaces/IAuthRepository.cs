@@ -5,6 +5,7 @@ namespace Repository.Repo.Interfaces;
 public interface IAuthRepository
 {
     Task<Account?> GetAccountByUsernameAsync(string username);
+    Task<Account?> GetAccountByEmailAsync(string email);
     Task<List<string>> GetRolesByAccountIdAsync(int accountId);
     Task AddAccountAsync(Account account);
     Task<int> GetRoleIdByNameAsync(string roleName);

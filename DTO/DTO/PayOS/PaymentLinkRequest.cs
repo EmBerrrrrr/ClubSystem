@@ -4,8 +4,8 @@
     {
         public long orderCode { get; set; }
         public int amount { get; set; }
-        public string description { get; set; }
-        public string returnUrl { get; set; }
-        public string cancelUrl { get; set; }
+        public required string description { get; set; }
+        public required string returnUrl { get; set; }
+        public required string cancelUrl { get; set; }
     }
 }

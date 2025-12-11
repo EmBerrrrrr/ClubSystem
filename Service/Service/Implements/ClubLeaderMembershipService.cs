@@ -106,16 +106,27 @@ namespace Service.Service.Implements
         public async Task ApproveAsync(int leaderId, int requestId, string? note)
         {
             var req = await _reqRepo.GetByIdAsync(requestId)
-                ?? throw new Exception("Không tìm thấy request.");
+                ?? throw new Exception("Không tìm thấy yêu cầu tham gia.");
 
-            // kiểm tra leader có quyền với CLB không
+            // Kiểm tra quyền truy cập: Leader phải quản lý CLB này
             if (!await _clubRepo.IsLeaderOfClubAsync(req.ClubId, leaderId))
-                throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
+                throw new UnauthorizedAccessException("Bạn không có quyền quản lý CLB này.");
 
             if (req.Status != "pending")
                 throw new Exception("Yêu cầu đã được xử lý.");
 
-            // Lấy thông tin CLB để biết membership fee
+            // Kiểm tra trùng lặp: Đảm bảo không có membership đang hoạt động hoặc đang chờ thanh toán
+            var existingMembership = await _membershipRepo.GetMembershipByAccountAndClubAsync(req.AccountId, req.ClubId);
+            if (existingMembership != null && existingMembership.Status != null)
+            {
+                var statusLower = existingMembership.Status.ToLower();
+                if (statusLower == "active" || statusLower == "pending_payment")
+                {
+                    throw new Exception("Học sinh này đã là thành viên hoặc đang trong quá trình tham gia CLB.");
+                }
+            }
+
+            // Lấy thông tin CLB để xác định phí thành viên
             var club = await _clubRepo.GetByIdAsync(req.ClubId)
                 ?? throw new Exception("Không tìm thấy CLB.");
 

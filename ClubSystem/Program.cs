@@ -32,7 +32,6 @@ public class Program
         builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
         builder.Services.AddScoped<IAuthRepository, AuthRepository>();
         builder.Services.AddScoped<IClubLeaderRequestRepository, ClubLeaderRequestRepository>();
-        builder.Services.AddScoped<IClubRepository, ClubRepository>();
         builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
         builder.Services.AddScoped<IMembershipRequestRepository, MembershipRequestRepository>();
         builder.Services.AddScoped<IActivityParticipantRepository, ActivityParticipantRepository>();
@@ -54,11 +53,14 @@ public class Program
         {
             var cfg = sp.GetRequiredService<IConfiguration>();
 
-            return new PayOS(
-                cfg["PayOSSettings:ClientId"],
-                cfg["PayOSSettings:ApiKey"],
-                cfg["PayOSSettings:ChecksumKey"]
-            );
+            var clientId = cfg["PayOSSettings:ClientId"]
+                ?? throw new InvalidOperationException("PayOSSettings:ClientId not configured in appsettings.");
+            var apiKey = cfg["PayOSSettings:ApiKey"]
+                ?? throw new InvalidOperationException("PayOSSettings:ApiKey not configured in appsettings.");
+            var checksumKey = cfg["PayOSSettings:ChecksumKey"]
+                ?? throw new InvalidOperationException("PayOSSettings:ChecksumKey not configured in appsettings.");
+
+            return new PayOS(clientId, apiKey, checksumKey);
         });
 
 

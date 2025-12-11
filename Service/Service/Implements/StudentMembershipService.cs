@@ -6,6 +6,7 @@ using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.Service.Interfaces;
 using DTO.DTO.Membership;
+using DTO.DTO.Club;
 
 namespace Service.Service.Implements
 {
@@ -160,7 +161,19 @@ namespace Service.Service.Implements
                 ClubId = x.ClubId,
                 ClubName = x.Club?.Name ?? "",
                 JoinDate = x.JoinDate,
-                Status = x.Status
+                Status = x.Status,
+                Club = x.Club != null ? new ClubDto
+                {
+                    Id = x.Club.Id,
+                    Name = x.Club.Name ?? "",
+                    Description = x.Club.Description,
+                    EstablishedDate = x.Club.EstablishedDate.HasValue 
+                        ? x.Club.EstablishedDate.Value.ToDateTime(TimeOnly.MinValue) 
+                        : null,
+                    ImageClubsUrl = x.Club.ImageClubsUrl,
+                    MembershipFee = x.Club.MembershipFee,
+                    Status = x.Club.Status
+                } : null
             }).ToList();
         }
     }

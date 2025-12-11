@@ -49,10 +49,16 @@ public class AuthBusinessService : IAuthBusinessService
     public async Task<LoginResponseDTO?> RegisterAsync(RegisterRequestDTO request)
     {
         // 1. Check username trùng
-        var existing = await _repo.GetAccountByUsernameAsync(request.Username);
-        if (existing != null) return null;
+        var existingUsername = await _repo.GetAccountByUsernameAsync(request.Username);
+        if (existingUsername != null) 
+            throw new Exception("Username already exists.");
 
-        // 2. Tạo account mới
+        // 2. Check email trùng
+        var existingEmail = await _repo.GetAccountByEmailAsync(request.Email);
+        if (existingEmail != null) 
+            throw new Exception("Email already exists.");
+
+        // 3. Tạo account mới
         var account = new Account
         {
             Username = request.Username,
@@ -66,7 +72,7 @@ public class AuthBusinessService : IAuthBusinessService
 
         await _repo.AddAccountAsync(account);
 
-        // 3. Gán role mặc định "User" trong bảng roles + account_roles
+        // 4. Gán role mặc định "Student" trong bảng roles + account_roles
         const string defaultRoleName = "Student";
 
         // lấy roleId theo tên
@@ -77,10 +83,10 @@ public class AuthBusinessService : IAuthBusinessService
 
         var roles = new List<string> { defaultRoleName };
 
-        // 4. Tạo token
+        // 5. Tạo token
         var token = _authService.GenerateToken(account, roles);
 
-        // 5. Trả response
+        // 6. Trả response
         return new LoginResponseDTO
         {
             Token = token,

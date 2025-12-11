@@ -17,6 +17,10 @@ public class AuthRepository : IAuthRepository
         => await _context.Accounts
             .SingleOrDefaultAsync(a => a.Username == username);
 
+    public async Task<Account?> GetAccountByEmailAsync(string email)
+        => await _context.Accounts
+            .SingleOrDefaultAsync(a => a.Email == email);
+
     public async Task<List<string>> GetRolesByAccountIdAsync(int accountId)
     {
         return await _context.AccountRoles

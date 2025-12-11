@@ -108,6 +108,7 @@ public class AdminAccountService : IAdminAccountService
             Username = acc.Username,
             Email = acc.Email,
             FullName = acc.FullName,
+            Phone = acc.Phone,
             IsActive = acc.IsActive ?? false,
             Roles = roles
         };
