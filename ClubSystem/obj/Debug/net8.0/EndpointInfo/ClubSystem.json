@@ -358,6 +358,75 @@
         }
       }
     },
+    "/api/activities/{id}/open-registration": {
+      "put": {
+        "tags": [
+          "Activities"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/activities/{id}/close-registration": {
+      "put": {
+        "tags": [
+          "Activities"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/activities/{id}/participants": {
+      "get": {
+        "tags": [
+          "Activities"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/login": {
       "post": {
         "tags": [
@@ -466,6 +535,41 @@
         }
       }
     },
+    "/api/leader/membership/members": {
+      "get": {
+        "tags": [
+          "ClubLeaderMembership"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/leader/membership/clubs/{clubId}/members": {
+      "get": {
+        "tags": [
+          "ClubLeaderMembership"
+        ],
+        "parameters": [
+          {
+            "name": "clubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/leader/membership/{id}/approve": {
       "post": {
         "tags": [
@@ -550,14 +654,56 @@
         }
       }
     },
-    "/api/leader/payment/club/{clubId}": {
-      "get": {
+    "/api/leader/membership/members/{membershipId}/lock": {
+      "put": {
         "tags": [
-          "ClubLeaderPayment"
+          "ClubLeaderMembership"
         ],
         "parameters": [
           {
-            "name": "clubId",
+            "name": "membershipId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaderDecisionDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaderDecisionDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaderDecisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/leader/membership/members/{membershipId}/unlock": {
+      "put": {
+        "tags": [
+          "ClubLeaderMembership"
+        ],
+        "parameters": [
+          {
+            "name": "membershipId",
             "in": "path",
             "required": true,
             "schema": {
@@ -573,23 +719,14 @@
         }
       }
     },
-    "/api/leader/payment/club/{clubId}/member/{accountId}": {
-      "get": {
+    "/api/leader/membership/members/{membershipId}": {
+      "delete": {
         "tags": [
-          "ClubLeaderPayment"
+          "ClubLeaderMembership"
         ],
         "parameters": [
           {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "accountId",
+            "name": "membershipId",
             "in": "path",
             "required": true,
             "schema": {
@@ -598,29 +735,25 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/leader/payment/club/{clubId}/debt": {
-      "get": {
-        "tags": [
-          "ClubLeaderPayment"
-        ],
-        "parameters": [
-          {
-            "name": "clubId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaderDecisionDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaderDecisionDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaderDecisionDto"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -883,26 +1016,49 @@
         }
       }
     },
-    "/api/payment/vnpay/create": {
+    "/api/PayOS/create/{paymentId}": {
       "post": {
         "tags": [
-          "Payment"
+          "PayOS"
+        ],
+        "parameters": [
+          {
+            "name": "paymentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PayOS/webhook": {
+      "post": {
+        "tags": [
+          "PayOS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateVNPayPaymentDto"
+                "$ref": "#/components/schemas/WebhookType"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateVNPayPaymentDto"
+                "$ref": "#/components/schemas/WebhookType"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateVNPayPaymentDto"
+                "$ref": "#/components/schemas/WebhookType"
               }
             }
           }
@@ -914,32 +1070,41 @@
         }
       }
     },
-    "/api/payment/vnpay-return": {
-      "get": {
-        "tags": [
-          "Payment"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/payment/vnpay-ipn": {
+    "/api/PayOS/confirm-webhook": {
       "post": {
         "tags": [
-          "Payment"
+          "PayOS"
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookURL"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookURL"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookURL"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
           }
         }
-      },
+      }
+    },
+    "/api/student/activities/view-all": {
       "get": {
         "tags": [
-          "Payment"
+          "StudentActivity"
         ],
         "responses": {
           "200": {
@@ -948,10 +1113,21 @@
         }
       }
     },
-    "/api/payment/history": {
+    "/api/student/activities/view-club/{clubId}": {
       "get": {
         "tags": [
-          "Payment"
+          "StudentActivity"
+        ],
+        "parameters": [
+          {
+            "name": "clubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -960,19 +1136,7 @@
         }
       }
     },
-    "/api/payment/status": {
-      "get": {
-        "tags": [
-          "Payment"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/student/activities/available": {
+    "/api/student/activities/for-registration": {
       "get": {
         "tags": [
           "StudentActivity"
@@ -1023,6 +1187,25 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelActivityRegistrationDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelActivityRegistrationDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelActivityRegistrationDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -1112,6 +1295,16 @@
   },
   "components": {
     "schemas": {
+      "CancelActivityRegistrationDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "CreateActivityDto": {
         "type": "object",
         "properties": {
@@ -1208,16 +1401,6 @@
         },
         "additionalProperties": false
       },
-      "CreateVNPayPaymentDto": {
-        "type": "object",
-        "properties": {
-          "membershipRequestId": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
       "LeaderDecisionDto": {
         "type": "object",
         "properties": {
@@ -1262,6 +1445,10 @@
             "nullable": true
           },
           "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
             "type": "string",
             "nullable": true
           },
@@ -1311,6 +1498,10 @@
             "nullable": true
           },
           "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
             "type": "string",
             "nullable": true
           }
@@ -1385,6 +1576,110 @@
             "nullable": true
           },
           "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WebhookData": {
+        "type": "object",
+        "properties": {
+          "orderCode": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionDateTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentLinkId": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "desc": {
+            "type": "string",
+            "nullable": true
+          },
+          "counterAccountBankId": {
+            "type": "string",
+            "nullable": true
+          },
+          "counterAccountBankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "counterAccountName": {
+            "type": "string",
+            "nullable": true
+          },
+          "counterAccountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualAccountName": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualAccountNumber": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WebhookType": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "desc": {
+            "type": "string",
+            "nullable": true
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "#/components/schemas/WebhookData"
+          },
+          "signature": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WebhookURL": {
+        "type": "object",
+        "properties": {
+          "webhook_url": {
             "type": "string",
             "nullable": true
           }

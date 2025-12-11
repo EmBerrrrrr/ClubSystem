@@ -80,6 +80,54 @@
   },
   {
     "ContainingType": "StudentClubAPI.Controllers.ActivitiesController",
+    "Method": "CloseRegistration",
+    "RelativePath": "api/activities/{id}/close-registration",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StudentClubAPI.Controllers.ActivitiesController",
+    "Method": "OpenRegistration",
+    "RelativePath": "api/activities/{id}/open-registration",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StudentClubAPI.Controllers.ActivitiesController",
+    "Method": "GetParticipants",
+    "RelativePath": "api/activities/{id}/participants",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StudentClubAPI.Controllers.ActivitiesController",
     "Method": "GetByClub",
     "RelativePath": "api/activities/club/{clubId}",
     "HttpMethod": "GET",
@@ -473,6 +521,90 @@
   },
   {
     "ContainingType": "ClubSystem.Controller.ClubLeaderMembershipController",
+    "Method": "GetClubMembersByClubId",
+    "RelativePath": "api/leader/membership/clubs/{clubId}/members",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "clubId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderMembershipController",
+    "Method": "GetClubMembers",
+    "RelativePath": "api/leader/membership/members",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderMembershipController",
+    "Method": "RemoveMember",
+    "RelativePath": "api/leader/membership/members/{membershipId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "membershipId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "ClubSystem.Controller.LeaderDecisionDto",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderMembershipController",
+    "Method": "LockMember",
+    "RelativePath": "api/leader/membership/members/{membershipId}/lock",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "membershipId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "ClubSystem.Controller.LeaderDecisionDto",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderMembershipController",
+    "Method": "UnlockMember",
+    "RelativePath": "api/leader/membership/members/{membershipId}/unlock",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "membershipId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.ClubLeaderMembershipController",
     "Method": "GetPendingRequests",
     "RelativePath": "api/leader/membership/pending",
     "HttpMethod": "GET",
@@ -482,119 +614,48 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "ClubSystem.Controller.ClubLeaderPaymentController",
-    "Method": "GetClubPayments",
-    "RelativePath": "api/leader/payment/club/{clubId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "clubId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "ClubSystem.Controller.ClubLeaderPaymentController",
-    "Method": "GetDebtMembers",
-    "RelativePath": "api/leader/payment/club/{clubId}/debt",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "clubId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "ClubSystem.Controller.ClubLeaderPaymentController",
-    "Method": "GetMemberPayments",
-    "RelativePath": "api/leader/payment/club/{clubId}/member/{accountId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "clubId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "accountId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "ClubSystem.Controller.PaymentController",
-    "Method": "GetPaymentHistory",
-    "RelativePath": "api/payment/history",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "ClubSystem.Controller.PaymentController",
-    "Method": "GetPaymentStatus",
-    "RelativePath": "api/payment/status",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "ClubSystem.Controller.PaymentController",
-    "Method": "VNPayIPN",
-    "RelativePath": "api/payment/vnpay-ipn",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "ClubSystem.Controller.PaymentController",
-    "Method": "VNPayIPN",
-    "RelativePath": "api/payment/vnpay-ipn",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "ClubSystem.Controller.PaymentController",
-    "Method": "VNPayReturn",
-    "RelativePath": "api/payment/vnpay-return",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "ClubSystem.Controller.PaymentController",
-    "Method": "CreateVNPayPayment",
-    "RelativePath": "api/payment/vnpay/create",
+    "ContainingType": "PayOSController",
+    "Method": "Confirm",
+    "RelativePath": "api/PayOS/confirm-webhook",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "dto",
-        "Type": "DTO.DTO.Payment.CreateVNPayPaymentDto",
+        "Name": "url",
+        "Type": "DTO.DTO.PayOS.WebhookURL",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PayOSController",
+    "Method": "CreateLink",
+    "RelativePath": "api/PayOS/create/{paymentId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "paymentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PayOSController",
+    "Method": "Webhook",
+    "RelativePath": "api/PayOS/webhook",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "data",
+        "Type": "Net.payOS.Types.WebhookType",
         "IsRequired": true
       }
     ],
@@ -612,6 +673,11 @@
         "Name": "activityId",
         "Type": "System.Int32",
         "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "DTO.DTO.Activity.CancelActivityRegistrationDto",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -634,8 +700,8 @@
   },
   {
     "ContainingType": "ClubSystem.Controller.StudentActivityController",
-    "Method": "GetAvailableActivities",
-    "RelativePath": "api/student/activities/available",
+    "Method": "GetActivitiesForRegistration",
+    "RelativePath": "api/student/activities/for-registration",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -650,6 +716,32 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.StudentActivityController",
+    "Method": "GetAllActivitiesForViewing",
+    "RelativePath": "api/student/activities/view-all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.StudentActivityController",
+    "Method": "GetActivitiesByClubForViewing",
+    "RelativePath": "api/student/activities/view-club/{clubId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "clubId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {

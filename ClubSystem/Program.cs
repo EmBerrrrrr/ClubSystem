@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Net.payOS;
 using Repository.Models;
 using Repository.Repo.Implements;
 using Repository.Repo.Interfaces;
@@ -36,22 +35,8 @@ public class Program
         builder.Services.AddScoped<IClubRepository, ClubRepository>();
         builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
         builder.Services.AddScoped<IMembershipRequestRepository, MembershipRequestRepository>();
-        builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
         builder.Services.AddScoped<IActivityParticipantRepository, ActivityParticipantRepository>();
-
-        // VNPay Helper
-        builder.Services.AddSingleton<Service.Helper.VNPayHelper>(sp =>
-        {
-            var config = sp.GetRequiredService<IConfiguration>();
-            var vnpaySection = config.GetSection("VNPay");
-            return new Service.Helper.VNPayHelper(
-                vnpaySection["TmnCode"] ?? "",
-                vnpaySection["HashSecret"] ?? "",
-                vnpaySection["PaymentUrl"] ?? "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
-                vnpaySection["ReturnUrl"] ?? "",
-                vnpaySection["IpnUrl"] ?? ""
-            );
-        });
+        builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
         // SERVICES
         builder.Services.AddScoped<IClubService, ClubService>();
@@ -62,9 +47,19 @@ public class Program
         builder.Services.AddScoped<IAdminAccountService, AdminAccountService>();
         builder.Services.AddScoped<IStudentMembershipService, StudentMembershipService>();
         builder.Services.AddScoped<IClubLeaderMembershipService, ClubLeaderMembershipService>();
-        builder.Services.AddScoped<IPaymentService, PaymentService>();
         builder.Services.AddScoped<IStudentActivityService, StudentActivityService>();
-        builder.Services.AddScoped<IClubLeaderPaymentService, ClubLeaderPaymentService>();
+        builder.Services.AddScoped<IPayOSService, PayOSService>();
+
+        builder.Services.AddSingleton(sp =>
+        {
+            var cfg = sp.GetRequiredService<IConfiguration>();
+
+            return new PayOS(
+                cfg["PayOSSettings:ClientId"],
+                cfg["PayOSSettings:ApiKey"],
+                cfg["PayOSSettings:ChecksumKey"]
+            );
+        });
 
 
         builder.Services.AddControllers();

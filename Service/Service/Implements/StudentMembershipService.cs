@@ -14,20 +14,17 @@ namespace Service.Service.Implements
         private readonly IMembershipRequestRepository _reqRepo;
         private readonly IMembershipRepository _memberRepo;
         private readonly IClubRepository _clubRepo;
-        private readonly IPaymentRepository _paymentRepo;
         private readonly IAuthRepository _authRepo;
 
         public StudentMembershipService(
             IMembershipRequestRepository reqRepo,
             IMembershipRepository memberRepo,
             IClubRepository clubRepo,
-            IPaymentRepository paymentRepo,
             IAuthRepository authRepo)
         {
             _reqRepo = reqRepo ?? throw new ArgumentNullException(nameof(reqRepo));
             _memberRepo = memberRepo ?? throw new ArgumentNullException(nameof(memberRepo));
             _clubRepo = clubRepo ?? throw new ArgumentNullException(nameof(clubRepo));
-            _paymentRepo = paymentRepo ?? throw new ArgumentNullException(nameof(paymentRepo));
             _authRepo = authRepo ?? throw new ArgumentNullException(nameof(authRepo));
         }
 
@@ -129,11 +126,11 @@ namespace Service.Service.Implements
                 // Nếu status là approved_pending_payment, tìm payment nếu có
                 if (x.Status == "approved_pending_payment")
                 {
-                    var payment = await _paymentRepo.GetPaymentByMembershipRequestIdAsync(x.Id);
-                    if (payment != null)
-                    {
-                        dto.PaymentId = payment.Id;
-                    }
+                    //var payment = await _paymentRepo.GetPaymentByMembershipRequestIdAsync(x.Id);
+                    //if (payment != null)
+                    //{
+                    //    dto.PaymentId = payment.Id;
+                    //}
                 }
 
                 result.Add(dto);
