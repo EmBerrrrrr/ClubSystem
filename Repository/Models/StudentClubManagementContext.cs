@@ -110,9 +110,7 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ClubId).HasColumnName("club_id");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-            entity.Property(e => e.Description)
-                .HasColumnType("text")
-                .HasColumnName("description");
+            entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.EndTime)
                 .HasColumnType("datetime")
                 .HasColumnName("end_time");
@@ -172,9 +170,7 @@ public partial class StudentClubManagementContext : DbContext
             entity.ToTable("clubs");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Description)
-                .HasColumnType("text")
-                .HasColumnName("description");
+            entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.EstablishedDate).HasColumnName("established_date");
             entity.Property(e => e.ImageClubsUrl)
                 .HasMaxLength(255)
@@ -223,9 +219,7 @@ public partial class StudentClubManagementContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("account_id");
-            entity.Property(e => e.Note)
-                .HasColumnType("text")
-                .HasColumnName("note");
+            entity.Property(e => e.Note).HasColumnName("note");
             entity.Property(e => e.ProcessedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("processed_at");
@@ -283,9 +277,7 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("account_id");
             entity.Property(e => e.ClubId).HasColumnName("club_id");
-            entity.Property(e => e.Note)
-                .HasColumnType("text")
-                .HasColumnName("note");
+            entity.Property(e => e.Note).HasColumnName("note");
             entity.Property(e => e.ProcessedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("processed_at");
@@ -358,9 +350,7 @@ public partial class StudentClubManagementContext : DbContext
             entity.HasIndex(e => e.Name, "UQ_roles_name").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Description)
-                .HasColumnType("text")
-                .HasColumnName("description");
+            entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(50)
