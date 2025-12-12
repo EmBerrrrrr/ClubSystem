@@ -49,13 +49,13 @@ namespace Service.Service.Implements
             if (actualStatus == "Ongoing")
                 throw new Exception("Hoạt động này đang diễn ra, không thể đăng ký thêm.");
 
-            if (activity.Status == "Active_Closed")
+            if (activity.Status == "Active_Closed" || activity.Status == "closed")
                 throw new Exception("Đăng ký cho hoạt động này đã được đóng.");
 
-            if (activity.Status == "Not_yet_open")
+            if (activity.Status == "Not_yet_open" || activity.Status == "draft")
                 throw new Exception("Hoạt động này chưa mở đăng ký.");
 
-            if (activity.Status != "Active")
+            if (activity.Status != "Active" && activity.Status != "opened")
                 throw new Exception("Hoạt động này chưa mở đăng ký.");
 
             // 4. Kiểm tra account có phải member active của CLB không
@@ -180,12 +180,12 @@ namespace Service.Service.Implements
                 return new List<ActivityDto>();
 
             // Lấy tất cả activities của các CLB mà student là member
-            // Chỉ hiển thị activities có status "Active" (đang mở đăng ký) để member có thể đăng ký
+            // Chỉ hiển thị activities có status "Active" hoặc "opened" (đang mở đăng ký) để member có thể đăng ký
             var allActivities = await _activityRepo.GetAllAsync();
             var now = DateTime.Now;
             var availableActivities = allActivities
                 .Where(a => clubIds.Contains(a.ClubId) && 
-                           a.Status == "Active" && // Chỉ hiển thị activities đang mở đăng ký
+                           (a.Status == "Active" || a.Status == "opened") && // Chỉ hiển thị activities đang mở đăng ký
                            (!a.StartTime.HasValue || a.StartTime.Value > now)) // Chưa bắt đầu
                 .ToList();
 
@@ -207,15 +207,26 @@ namespace Service.Service.Implements
         public async Task<List<ActivityDto>> GetAllActivitiesForViewingAsync()
         {
             var allActivities = await _activityRepo.GetAllAsync();
-            var now = DateTime.Now;
             
-            // Chỉ hiển thị activities có status "Active" (đang mở đăng ký)
+            // Debug: Log số lượng activities
+            Console.WriteLine($"[GetAllActivitiesForViewingAsync] Total activities from DB: {allActivities.Count}");
+            if (allActivities.Any())
+            {
+                Console.WriteLine($"[GetAllActivitiesForViewingAsync] Sample statuses: {string.Join(", ", allActivities.Take(5).Select(a => a.Status))}");
+            }
+            
+            // Chỉ hiển thị activities có status "Active" hoặc "opened" (đang mở đăng ký)
+            // Không lọc theo StartTime vì đây là endpoint để xem, không phải để đăng ký
+            // Sử dụng case-insensitive comparison để tránh vấn đề với case
             var activities = allActivities
-                .Where(a => a.Status == "Active" && 
-                           (!a.StartTime.HasValue || a.StartTime.Value > now)) // Chưa bắt đầu
+                .Where(a => a.Status != null && 
+                           (a.Status.Equals("Active", StringComparison.OrdinalIgnoreCase) || 
+                            a.Status.Equals("opened", StringComparison.OrdinalIgnoreCase)))
                 .OrderByDescending(a => a.StartTime)
                 .ToList();
-
+            
+            Console.WriteLine($"[GetAllActivitiesForViewingAsync] Filtered activities (Active/opened): {activities.Count}");
+            
             return activities.Select(a => new ActivityDto
             {
                 Id = a.Id,
@@ -234,12 +245,11 @@ namespace Service.Service.Implements
         public async Task<List<ActivityDto>> GetActivitiesByClubForViewingAsync(int clubId)
         {
             var activities = await _activityRepo.GetByClubAsync(clubId);
-            var now = DateTime.Now;
             
-            // Chỉ hiển thị activities có status "Active" (đang mở đăng ký)
+            // Chỉ hiển thị activities có status "Active" hoặc "opened" (đang mở đăng ký)
+            // Không lọc theo StartTime vì đây là endpoint để xem, không phải để đăng ký
             var filteredActivities = activities
-                .Where(a => a.Status == "Active" && 
-                           (!a.StartTime.HasValue || a.StartTime.Value > now)) // Chưa bắt đầu
+                .Where(a => a.Status == "Active" || a.Status == "opened")
                 .OrderByDescending(a => a.StartTime)
                 .ToList();
 
