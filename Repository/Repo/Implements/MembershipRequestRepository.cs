@@ -20,7 +20,7 @@ namespace Repository.Repo.Implements
                 .AnyAsync(x =>
                     x.AccountId == accountId &&
                     x.ClubId == clubId &&
-                    x.Status.ToLower() == "pending");
+                    x.Status == "Pending");
         }
 
         public async Task CreateRequestAsync(MembershipRequest request)
@@ -51,8 +51,17 @@ namespace Repository.Repo.Implements
         public async Task<List<MembershipRequest>> GetPendingRequestsByClubAsync(int clubId)
         {
             return await _db.MembershipRequests
-                .Where(r => r.ClubId == clubId && r.Status == "pending")
+                .Where(r => r.ClubId == clubId && r.Status == "Pending")
                 .Include(r => r.Account)
+                .ToListAsync();
+        }
+
+        public async Task<List<MembershipRequest>> GetAllRequestsByClubAsync(int clubId)
+        {
+            return await _db.MembershipRequests
+                .Where(r => r.ClubId == clubId)
+                .Include(r => r.Account)
+                .OrderByDescending(r => r.RequestDate)
                 .ToListAsync();
         }
 

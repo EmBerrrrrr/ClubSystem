@@ -25,6 +25,14 @@ namespace ClubSystem.Controller
             return Ok(result);
         }
 
+        [HttpGet("requests")]
+        public async Task<IActionResult> GetAllRequests()
+        {
+            var leaderId = User.GetAccountId();
+            var result = await _service.GetAllRequestsAsync(leaderId);
+            return Ok(result);
+        }
+
         [HttpGet("members")]
         public async Task<IActionResult> GetClubMembers()
         {

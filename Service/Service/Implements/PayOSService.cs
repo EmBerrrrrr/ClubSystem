@@ -150,7 +150,7 @@ namespace Service.Service.Implements
 
                 if (request != null)
                 {
-                    request.Status = "paid";
+                    request.Status = "Paid";
                     await _membershipRequestRepo.UpdateAsync(request);
                 }
             }
@@ -161,7 +161,7 @@ namespace Service.Service.Implements
 
                 if (request != null)
                 {
-                    request.Status = "unpaid";
+                    request.Status = "Failed";
                     await _membershipRequestRepo.UpdateAsync(request);
                 }
                 // membership.status giữ nguyên "pending_payment" để có thể thanh toán lại

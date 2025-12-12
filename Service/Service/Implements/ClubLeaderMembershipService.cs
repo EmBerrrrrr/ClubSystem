@@ -57,6 +57,33 @@ namespace Service.Service.Implements
             }).ToList();
         }
 
+        // Lấy tất cả requests (với các trạng thái) của tất cả CLB mà leader này quản lý
+        public async Task<List<MembershipRequestForLeaderDto>> GetAllRequestsAsync(int leaderId)
+        {
+            var myClubs = await _clubRepo.GetByLeaderIdAsync(leaderId);
+            var requests = new List<MembershipRequest>();
+
+            foreach (var club in myClubs)
+            {
+                var list = await _reqRepo.GetAllRequestsByClubAsync(club.Id);
+                requests.AddRange(list);
+            }
+
+            return requests.Select(r => new MembershipRequestForLeaderDto
+            {
+                Id = r.Id,
+                AccountId = r.AccountId,
+                ClubId = r.ClubId,
+                Status = r.Status,
+                Note = r.Note,
+                RequestDate = r.RequestDate,
+                FullName = r.Account?.FullName,
+                Email = r.Account?.Email,
+                Phone = r.Account?.Phone,
+                Reason = r.Note // Lý do tham gia được lưu trong Note
+            }).ToList();
+        }
+
         // Lấy danh sách thành viên của tất cả CLB mà leader này quản lý
         public async Task<List<ClubMemberDto>> GetClubMembersAsync(int leaderId)
         {
@@ -112,7 +139,7 @@ namespace Service.Service.Implements
             if (!await _clubRepo.IsLeaderOfClubAsync(req.ClubId, leaderId))
                 throw new UnauthorizedAccessException("Bạn không có quyền quản lý CLB này.");
 
-            if (req.Status != "pending")
+            if (req.Status != "Pending")
                 throw new Exception("Yêu cầu đã được xử lý.");
 
             // Kiểm tra trùng lặp: Đảm bảo không có membership đang hoạt động hoặc đang chờ thanh toán
@@ -163,7 +190,7 @@ namespace Service.Service.Implements
             await _paymentRepo.SaveAsync();
 
             // 4) Cập nhật request
-            req.Status = "approved_pending_payment";
+            req.Status = "Awaiting Payment";
             req.ProcessedBy = leaderId;
             req.ProcessedAt = DateTime.UtcNow;
             req.Note = note;
@@ -182,10 +209,10 @@ namespace Service.Service.Implements
             if (!await _clubRepo.IsLeaderOfClubAsync(req.ClubId, leaderId))
                 throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
 
-            if (req.Status != "pending")
+            if (req.Status != "Pending")
                 throw new Exception("Yêu cầu đã được xử lý.");
 
-            req.Status = "rejected";
+            req.Status = "Reject";
             req.ProcessedBy = leaderId;
             req.ProcessedAt = DateTime.Now;
             req.Note = note;

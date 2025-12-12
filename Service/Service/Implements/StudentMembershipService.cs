@@ -98,7 +98,7 @@ namespace Service.Service.Implements
             {
                 AccountId = accountId,
                 ClubId = dto.ClubId,
-                Status = "pending",
+                Status = "Pending",
                 RequestDate = DateTime.UtcNow,
                 Note = dto.Reason // Lưu lý do tham gia vào Note
             };
@@ -125,7 +125,7 @@ namespace Service.Service.Implements
                     Amount = x.Club?.MembershipFee ?? 0
                 };
 
-                if (x.Status == "approved_pending_payment")
+                if (x.Status == "Awaiting Payment")
                 {
                     // Tìm membership tương ứng (pending_payment)
                     var membership = await _memberRepo

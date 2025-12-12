@@ -10,6 +10,7 @@ namespace Service.Service.Interfaces
     public interface IClubLeaderMembershipService
     {
         Task<List<MembershipRequestForLeaderDto>> GetPendingRequestsAsync(int leaderId);
+        Task<List<MembershipRequestForLeaderDto>> GetAllRequestsAsync(int leaderId);
         Task<List<ClubMemberDto>> GetClubMembersAsync(int leaderId);
         Task<List<ClubMemberDto>> GetClubMembersByClubIdAsync(int leaderId, int clubId);
         Task ApproveAsync(int leaderId, int requestId, string? note);

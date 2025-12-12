@@ -12,6 +12,7 @@ namespace Repository.Repo.Interfaces
         Task SaveAsync();
         Task<MembershipRequest?> GetByIdAsync(int id);
         Task<List<MembershipRequest>> GetPendingRequestsByClubAsync(int clubId);
+        Task<List<MembershipRequest>> GetAllRequestsByClubAsync(int clubId);
         Task UpdateAsync(MembershipRequest req);
 
     }
