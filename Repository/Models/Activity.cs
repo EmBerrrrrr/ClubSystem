@@ -25,6 +25,10 @@ public partial class Activity
 
     public int? CreatedBy { get; set; }
 
+    public string ImageActsUrl { get; set; }
+
+    public string AvatarPublicId { get; set; }
+
     public virtual ICollection<ActivityParticipant> ActivityParticipants { get; set; } = new List<ActivityParticipant>();
 
     public virtual Club Club { get; set; }

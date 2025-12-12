@@ -114,6 +114,9 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.EndTime)
                 .HasColumnType("datetime")
                 .HasColumnName("end_time");
+            entity.Property(e => e.ImageActsUrl)
+                .HasMaxLength(255)
+                .HasColumnName("imageActs_url");
             entity.Property(e => e.Location)
                 .HasMaxLength(150)
                 .HasColumnName("location");
@@ -127,6 +130,9 @@ public partial class StudentClubManagementContext : DbContext
                 .IsRequired()
                 .HasMaxLength(150)
                 .HasColumnName("title");
+            entity.Property(e => e.AvatarPublicId)
+                .HasMaxLength(255)
+                .HasColumnName("avatarPublicId");
 
             entity.HasOne(d => d.Club).WithMany(p => p.Activities)
                 .HasForeignKey(d => d.ClubId)
@@ -175,6 +181,9 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.ImageClubsUrl)
                 .HasMaxLength(255)
                 .HasColumnName("imageClubs_url");
+            entity.Property(e => e.AvatarPublicId)
+                .HasMaxLength(255)
+                .HasColumnName("avatarPublicId");
             entity.Property(e => e.MembershipFee)
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("membership_fee");

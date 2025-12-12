@@ -167,7 +167,7 @@ namespace Service.Service.Implements
         {
             // Tính status động dựa trên thời gian hiện tại
             var calculatedStatus = CalculateActivityStatus(a);
-            
+
             return new ActivityDto
             {
                 Id = a.Id,
@@ -178,7 +178,9 @@ namespace Service.Service.Implements
                 EndTime = a.EndTime,
                 Location = a.Location,
                 Status = calculatedStatus, // Sử dụng status đã tính toán
-                CreatedBy = a.CreatedBy
+                CreatedBy = a.CreatedBy,
+                ImageActsUrl = a.ImageActsUrl,
+                AvatarPublicId = a.AvatarPublicId
             };
         }
 

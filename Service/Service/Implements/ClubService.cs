@@ -160,7 +160,9 @@ namespace Service.Service.Implements
                         EndTime = a.EndTime,
                         Location = a.Location,
                         Status = a.Status,
-                        CreatedBy = a.CreatedBy
+                        CreatedBy = a.CreatedBy,
+                        ImageActsUrl = a.ImageActsUrl,
+                        AvatarPublicId = a.AvatarPublicId
                     })
                     .ToList()
             };
@@ -174,6 +176,7 @@ namespace Service.Service.Implements
                 Name = c.Name,
                 Description = c.Description,
                 ImageClubsUrl = c.ImageClubsUrl,
+                AvatarPublicId = c.AvatarPublicId,
                 EstablishedDate = c.EstablishedDate?.ToDateTime(TimeOnly.MinValue),
                 MembershipFee = c.MembershipFee,
                 Status = c.Status

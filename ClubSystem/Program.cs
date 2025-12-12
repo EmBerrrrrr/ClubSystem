@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using CloudinaryDotNet;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Net.payOS;
 using Repository.Models;
 using Repository.Repo.Implements;
 using Repository.Repo.Interfaces;
+using Service.Helper;
 using Service.Service.Implements;
 using Service.Service.Interfaces;
 using Service.Services;
@@ -49,6 +52,7 @@ public class Program
         builder.Services.AddScoped<IClubLeaderMembershipService, ClubLeaderMembershipService>();
         builder.Services.AddScoped<IStudentActivityService, StudentActivityService>();
         builder.Services.AddScoped<IPayOSService, PayOSService>();
+        builder.Services.AddScoped<IPhotoService, PhotoService>();
 
         builder.Services.AddSingleton(sp =>
         {
@@ -64,7 +68,21 @@ public class Program
             return new PayOS(clientId, apiKey, checksumKey);
         });
 
-        
+        builder.Services.Configure<CloudinarySettings>(
+        builder.Configuration.GetSection("CloudinarySettings"));
+
+        builder.Services.AddScoped<Cloudinary>(provider =>
+        {
+            var settings = provider.GetRequiredService<IOptions<CloudinarySettings>>().Value;
+
+            return new Cloudinary(new CloudinaryDotNet.Account(
+                settings.CloudName,
+                settings.ApiKey,
+                settings.ApiSecret
+            ));
+        });
+
+
         builder.Services.AddControllers();
 
         // CORS - read from configuration

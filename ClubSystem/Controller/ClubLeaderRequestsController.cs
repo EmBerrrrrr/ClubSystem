@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Service.Helper;
 using Service.Service.Interfaces;
+using DTO.DTO.ClubLeader;
 
 namespace ClubSystem.Controller
 {
@@ -69,7 +70,7 @@ namespace ClubSystem.Controller
         [HttpPut("{id}/approve")]
         public async Task<IActionResult> Approve(
             int id,
-            [FromBody] ProcessLeaderRequestDto? dto = null)
+            [FromBody] ApproveLeaderRequestDto? dto = null)
         {
             try
             {
@@ -90,7 +91,7 @@ namespace ClubSystem.Controller
         [HttpPut("{id}/reject")]
         public async Task<IActionResult> Reject(
             int id,
-            [FromBody] ProcessLeaderRequestDto dto)
+            [FromBody] RejectLeaderRequestDto dto)
         {
             try
             {

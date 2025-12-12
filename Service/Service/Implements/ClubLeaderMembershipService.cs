@@ -147,7 +147,7 @@ namespace Service.Service.Implements
             if (existingMembership != null && existingMembership.Status != null)
             {
                 var statusLower = existingMembership.Status.ToLower();
-                if (statusLower == "active" || statusLower == "pending_payment")
+                if (statusLower == "active" || statusLower == "approved_pending_payment")
                 {
                     throw new Exception("Học sinh này đã là thành viên hoặc đang trong quá trình tham gia CLB.");
                 }

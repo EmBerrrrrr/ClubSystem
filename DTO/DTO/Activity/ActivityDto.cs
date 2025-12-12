@@ -11,5 +11,7 @@ public class ActivityDto
     public string Location { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public int? CreatedBy { get; set; }
+    public string? ImageActsUrl { get; set; }
+    public string? AvatarPublicId { get; set; }
 }
 

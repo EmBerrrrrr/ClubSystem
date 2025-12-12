@@ -46,27 +46,4 @@ public class AuthController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
-    [HttpPut("profile")]
-    [Authorize]
-    public async Task<ActionResult<LoginResponseDTO>> UpdateProfile([FromBody] UpdateAccountRequestDto request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        try
-        {
-            var accountId = User.GetAccountId();
-            var result = await _service.UpdateAccountAsync(accountId, request);
-            if (result == null) return NotFound("Account not found.");
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 }
