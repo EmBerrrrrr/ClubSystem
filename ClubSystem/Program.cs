@@ -37,6 +37,7 @@ public class Program
         builder.Services.AddScoped<IActivityParticipantRepository, ActivityParticipantRepository>();
         builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
+
         // SERVICES
         builder.Services.AddScoped<IClubService, ClubService>();
         builder.Services.AddScoped<IActivityService, ActivityService>();
@@ -63,7 +64,7 @@ public class Program
             return new PayOS(clientId, apiKey, checksumKey);
         });
 
-
+        
         builder.Services.AddControllers();
 
         // CORS - read from configuration

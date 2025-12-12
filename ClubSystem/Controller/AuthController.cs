@@ -1,6 +1,8 @@
 ﻿using DTO;
 using DTO.DTO.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Service.Helper;
 using Service.Services;
 
 namespace StudentClubAPI.Controllers;
@@ -37,6 +39,29 @@ public class AuthController : ControllerBase
         try
         {
             var result = await _service.RegisterAsync(request);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPut("profile")]
+    [Authorize]
+    public async Task<ActionResult<LoginResponseDTO>> UpdateProfile([FromBody] UpdateAccountRequestDto request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var accountId = User.GetAccountId();
+            var result = await _service.UpdateAccountAsync(accountId, request);
+            if (result == null) return NotFound("Account not found.");
+
             return Ok(result);
         }
         catch (Exception ex)

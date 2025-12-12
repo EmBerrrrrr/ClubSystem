@@ -10,6 +10,7 @@ public interface IAuthBusinessService
 {
     Task<LoginResponseDTO?> LoginAsync(LoginRequestDTO request);
     Task<LoginResponseDTO?> RegisterAsync(RegisterRequestDTO request);
+    Task<LoginResponseDTO?> UpdateAccountAsync(int accountId, UpdateAccountRequestDto request);
 }
 
 public class AuthBusinessService : IAuthBusinessService
@@ -84,6 +85,54 @@ public class AuthBusinessService : IAuthBusinessService
         var roles = new List<string> { defaultRoleName };
 
         // 5. Tạo token
+        var token = _authService.GenerateToken(account, roles);
+
+        // 6. Trả response
+        return new LoginResponseDTO
+        {
+            Token = token,
+            AccountId = account.Id,
+            Username = account.Username,
+            Email = account.Email ?? string.Empty,
+            FullName = account.FullName ?? string.Empty,
+            Phone = account.Phone,
+            Roles = roles
+        };
+    }
+
+    public async Task<LoginResponseDTO?> UpdateAccountAsync(int accountId, UpdateAccountRequestDto request)
+    {
+        // 1. Lấy account hiện tại
+        var account = await _repo.GetAccountByIdAsync(accountId);
+        if (account == null)
+            throw new Exception("Account not found.");
+
+        // 2. Kiểm tra email trùng (nếu có thay đổi email)
+        if (!string.IsNullOrWhiteSpace(request.Email) && request.Email != account.Email)
+        {
+            var existingEmail = await _repo.GetAccountByEmailAsync(request.Email);
+            if (existingEmail != null && existingEmail.Id != accountId)
+                throw new Exception("Email already exists.");
+        }
+
+        // 3. Cập nhật thông tin (chỉ cập nhật các trường được cung cấp)
+        if (!string.IsNullOrWhiteSpace(request.FullName))
+            account.FullName = request.FullName;
+
+        if (!string.IsNullOrWhiteSpace(request.Email))
+            account.Email = request.Email;
+
+        if (request.Phone != null)
+            account.Phone = request.Phone;
+
+        if (request.ImageAccountUrl != null)
+            account.ImageAccountUrl = request.ImageAccountUrl;
+
+        // 4. Lưu thay đổi
+        await _repo.UpdateAccountAsync(account);
+
+        // 5. Lấy roles và tạo token mới
+        var roles = await _repo.GetRolesByAccountIdAsync(account.Id);
         var token = _authService.GenerateToken(account, roles);
 
         // 6. Trả response
