@@ -1,4 +1,5 @@
 ﻿using Repository.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Repository.Repo.Interfaces
@@ -12,6 +13,14 @@ namespace Repository.Repo.Interfaces
         Task<Payment?> GetByMembershipIdAsync(int membershipId);
 
         Task<Payment?> GetByOrderCodeAsync(long orderCode);
+
+        Task<List<Payment>> GetPaymentsByClubIdAsync(int clubId);
+
+        Task<List<Payment>> GetPaymentHistoryByClubIdAsync(int clubId);
+
+        Task<List<Payment>> GetPendingPaymentsByClubIdAsync(int clubId);
+
+        Task<decimal> GetTotalRevenueFromMembersByClubIdAsync(int clubId);
 
         Task UpdateAsync(Payment payment);
 

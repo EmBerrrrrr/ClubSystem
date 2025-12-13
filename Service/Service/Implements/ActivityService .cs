@@ -97,6 +97,13 @@ namespace Service.Service.Implements
                     throw new UnauthorizedAccessException("Bạn không phải leader CLB này");
             }
 
+            // Kiểm tra: Activity phải được dừng (Cancelled hoặc Completed) trước khi xóa
+            var currentStatus = entity.Status?.Trim() ?? "";
+            if (currentStatus != "Cancelled" && currentStatus != "Completed")
+            {
+                throw new Exception("Không thể xóa hoạt động. Vui lòng dừng hoạt động (hủy hoặc đánh dấu hoàn thành) trước khi xóa.");
+            }
+
             // XÓA PARTICIPANTS TRƯỚC
             await _participantRepo.DeleteByActivityIdAsync(id);
 

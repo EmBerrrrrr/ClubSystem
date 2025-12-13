@@ -98,14 +98,17 @@ namespace Service.Service.Implements
 
             return allMembers.Select(m => new ClubMemberDto
             {
+                Member = new MemberInfo
+                {
+                    AccountId = m.AccountId,
+                    FullName = m.Account?.FullName,
+                    Email = m.Account?.Email,
+                    Phone = m.Account?.Phone,
+                    Status = m.Status ?? ""
+                },
                 MembershipId = m.Id,
-                AccountId = m.AccountId,
                 ClubId = m.ClubId,
-                FullName = m.Account?.FullName,
-                Email = m.Account?.Email,
-                Phone = m.Account?.Phone,
-                JoinDate = m.JoinDate,
-                Status = m.Status
+                JoinDate = m.JoinDate
             }).ToList();
         }
 
@@ -120,14 +123,17 @@ namespace Service.Service.Implements
 
             return members.Select(m => new ClubMemberDto
             {
+                Member = new MemberInfo
+                {
+                    AccountId = m.AccountId,
+                    FullName = m.Account?.FullName,
+                    Email = m.Account?.Email,
+                    Phone = m.Account?.Phone,
+                    Status = m.Status ?? ""
+                },
                 MembershipId = m.Id,
-                AccountId = m.AccountId,
                 ClubId = m.ClubId,
-                FullName = m.Account?.FullName,
-                Email = m.Account?.Email,
-                Phone = m.Account?.Phone,
-                JoinDate = m.JoinDate,
-                Status = m.Status
+                JoinDate = m.JoinDate
             }).ToList();
         }
         public async Task ApproveAsync(int leaderId, int requestId, string? note)

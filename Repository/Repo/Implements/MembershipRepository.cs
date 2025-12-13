@@ -47,6 +47,13 @@ namespace Repository.Repo.Implements
                 .ToListAsync();
         }
 
+        public async Task<int> GetActiveMemberCountByClubIdAsync(int clubId)
+        {
+            return await _db.Memberships
+                .Where(x => x.ClubId == clubId && x.Status != null && x.Status.ToLower() == "active")
+                .CountAsync();
+        }
+
         public async Task<Membership?> GetMembershipByAccountAndClubAsync(int accountId, int clubId)
         {
             return await _db.Memberships

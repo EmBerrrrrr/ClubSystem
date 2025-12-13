@@ -158,21 +158,20 @@ namespace Service.Service.Implements
 
             return list.Select(x => new MyMembershipDto
             {
-                ClubId = x.ClubId,
-                ClubName = x.Club?.Name ?? "",
-                JoinDate = x.JoinDate,
-                Status = x.Status,
-                Club = x.Club != null ? new ClubDto
+                Membership = new MembershipInfo
+                {
+                    ClubId = x.ClubId,
+                    ClubName = x.Club?.Name ?? "",
+                    JoinDate = x.JoinDate,
+                    Status = x.Status ?? ""
+                },
+                Club = x.Club != null ? new ClubInfo
                 {
                     Id = x.Club.Id,
                     Name = x.Club.Name ?? "",
                     Description = x.Club.Description,
-                    EstablishedDate = x.Club.EstablishedDate.HasValue 
-                        ? x.Club.EstablishedDate.Value.ToDateTime(TimeOnly.MinValue) 
-                        : null,
-                    ImageClubsUrl = x.Club.ImageClubsUrl,
-                    MembershipFee = x.Club.MembershipFee,
-                    Status = x.Club.Status
+                    Status = x.Club.Status ?? "Unknown",
+                    MembershipFee = x.Club.MembershipFee
                 } : null
             }).ToList();
         }

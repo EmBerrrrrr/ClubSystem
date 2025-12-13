@@ -14,4 +14,5 @@ public interface IAdminAccountService
 
     Task AddRole(int id, string role);
     Task RemoveRole(int id, string role);
+    Task<int> HashAllPasswordsAsync();
 }

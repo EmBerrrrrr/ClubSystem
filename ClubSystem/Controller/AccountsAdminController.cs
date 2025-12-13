@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Service.Interfaces;
+using System;
 
-namespace StudentClubAPI.Controllers;
+namespace ClubSystem.Controller;
 
 [ApiController]
 [Route("api/admin/accounts")]
@@ -91,5 +92,48 @@ public class AccountsAdminController : ControllerBase
     {
         var data = await _leaderRequestService.GetRejectedAsync();
         return Ok(data);
+    }
+
+    [HttpPost("hash-all-passwords")]
+    public async Task<IActionResult> HashAllPasswords()
+    {
+        var count = await _service.HashAllPasswordsAsync();
+        return Ok(new { message = $"Đã hash lại {count} password(s)", count });
+    }
+
+    // Giám sát CLB: Xem danh sách CLB với trạng thái, số thành viên, tổng doanh thu phí
+    [HttpGet("clubs/monitoring")]
+    public async Task<IActionResult> GetClubsForMonitoring([FromServices] IAdminClubService adminClubService)
+    {
+        try
+        {
+            var result = await adminClubService.GetAllClubsForMonitoringAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    // Quản lý chi tiết CLB: Xem thông tin chi tiết của một CLB bao gồm danh sách membership
+    [HttpGet("clubs/{clubId}/detail")]
+    public async Task<IActionResult> GetClubDetailForMonitoring(
+        int clubId, 
+        [FromServices] IAdminClubService adminClubService)
+    {
+        try
+        {
+            var result = await adminClubService.GetClubDetailForMonitoringAsync(clubId);
+            
+            if (result == null)
+                return NotFound(new { message = "Không tìm thấy CLB" });
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 }

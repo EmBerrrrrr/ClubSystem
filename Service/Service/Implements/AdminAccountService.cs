@@ -96,6 +96,29 @@ public class AdminAccountService : IAdminAccountService
         await _repo.RemoveAccountRoleAsync(id, roleId);
     }
 
+    public async Task<int> HashAllPasswordsAsync()
+    {
+        var accounts = await _repo.GetAllAccountsAsync();
+        int count = 0;
+
+        foreach (var acc in accounts)
+        {
+            // Kiểm tra xem password đã được hash chưa
+            // BCrypt hash thường bắt đầu bằng $2a$ hoặc $2b$ và có độ dài khoảng 60 ký tự
+            if (!string.IsNullOrEmpty(acc.PasswordHash) &&
+                !acc.PasswordHash.StartsWith("$2a$") && !acc.PasswordHash.StartsWith("$2b$"))
+            {
+                // Password chưa được hash (là plain text), hash lại
+                var plainPassword = acc.PasswordHash; // Lưu plain text trước
+                acc.PasswordHash = _authService.HashPassword(plainPassword);
+                await _repo.UpdateAccountAsync(acc);
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     #region helpers
 
     private async Task<AccountListDto> Map(Account acc)

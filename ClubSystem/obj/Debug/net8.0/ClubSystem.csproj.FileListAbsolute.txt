@@ -1,3 +1,12 @@
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.csproj.AssemblyReference.cache
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.GeneratedMSBuildEditorConfig.editorconfig
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.AssemblyInfoInputs.cache
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.AssemblyInfo.cs
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.csproj.CoreCompileInputs.cache
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.MvcApplicationPartsAssemblyInfo.cs
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.MvcApplicationPartsAssemblyInfo.cache
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.sourcelink.json
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\appsettings.Development.json
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\appsettings.json
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\ClubSystem.staticwebassets.endpoints.json
@@ -9,6 +18,7 @@ C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\ClubSystem.pdb
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\Azure.Core.dll
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\Azure.Identity.dll
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\CloudinaryDotNet.dll
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\Humanizer.dll
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
@@ -156,15 +166,6 @@ C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\Service.dll
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\Service.pdb
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\DTO.pdb
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\Repository.pdb
-C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.csproj.AssemblyReference.cache
-C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\rpswa.dswa.cache.json
-C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.GeneratedMSBuildEditorConfig.editorconfig
-C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.AssemblyInfoInputs.cache
-C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.AssemblyInfo.cs
-C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.csproj.CoreCompileInputs.cache
-C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.MvcApplicationPartsAssemblyInfo.cs
-C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.MvcApplicationPartsAssemblyInfo.cache
-C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.sourcelink.json
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\rjimswa.dswa.cache.json
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
@@ -179,4 +180,3 @@ C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\refint\ClubSystem.d
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.pdb
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ClubSystem.genruntimeconfig.cache
 C:\MyCode\StudentClub\ClubSystem\ClubSystem\obj\Debug\net8.0\ref\ClubSystem.dll
-C:\MyCode\StudentClub\ClubSystem\ClubSystem\bin\Debug\net8.0\CloudinaryDotNet.dll
