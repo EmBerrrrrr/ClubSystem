@@ -8,6 +8,7 @@ using Service.Helper;
 using Service.Service.Interfaces;
 using Service.Services;
 using Service.Services.Interfaces;
+using System;
 
 namespace StudentClubAPI.Controllers
 {
@@ -57,6 +58,28 @@ namespace StudentClubAPI.Controllers
                 return NotFound("Không tìm thấy câu lạc bộ");
 
             return Ok(data);
+        }
+
+        // ADMIN - Quản lý chi tiết CLB: Xem thông tin chi tiết của một CLB bao gồm danh sách membership
+        [Authorize(Roles = "admin")]
+        [HttpGet("{id}/detail")]
+        public async Task<IActionResult> GetClubDetailForMonitoring(
+            int id, 
+            [FromServices] IAdminClubService adminClubService)
+        {
+            try
+            {
+                var result = await adminClubService.GetClubDetailForMonitoringAsync(id);
+                
+                if (result == null)
+                    return NotFound(new { message = "Không tìm thấy CLB" });
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         // CREATE CLUB

@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.Services.Interfaces;
+using System;
+using System.Linq;
 
 namespace Service.Service.Implements
 {
@@ -13,11 +15,19 @@ namespace Service.Service.Implements
     {
         private readonly IClubRepository _repo;
         private readonly StudentClubManagementContext _context;
+        private readonly IPaymentRepository _paymentRepo;
+        private readonly IMembershipRepository _membershipRepo;
 
-        public ClubService(IClubRepository repo, StudentClubManagementContext context)
+        public ClubService(
+            IClubRepository repo, 
+            StudentClubManagementContext context,
+            IPaymentRepository paymentRepo,
+            IMembershipRepository membershipRepo)
         {
             _repo = repo;
             _context = context;
+            _paymentRepo = paymentRepo;
+            _membershipRepo = membershipRepo;
         }
 
         // FOR CLUB LEADER
@@ -28,12 +38,33 @@ namespace Service.Service.Implements
             return clubs.Select(c => MapToDto(c)).ToList();
         }
 
-        // FOR ADMIN
+        // FOR ADMIN - Bao gồm thông tin monitoring (memberCount, totalRevenue)
         public async Task<List<ClubDto>> GetAllClubsForAdminAsync()
         {
             var clubs = await _repo.GetAllAsync();
+            var result = new List<ClubDto>();
 
-            return clubs.Select(c => MapToDto(c)).ToList();
+            foreach (var club in clubs)
+            {
+                // Validate: Đảm bảo club có thông tin hợp lệ
+                if (club == null || string.IsNullOrEmpty(club.Name))
+                    continue;
+
+                // Tính số thành viên active
+                var memberCount = await _membershipRepo.GetActiveMemberCountByClubIdAsync(club.Id);
+
+                // Tính tổng doanh thu phí (từ payments đã paid)
+                var totalRevenue = await _paymentRepo.GetTotalRevenueFromMembersByClubIdAsync(club.Id);
+
+                var dto = MapToDto(club);
+                dto.MemberCount = memberCount;
+                dto.TotalRevenue = totalRevenue;
+                
+                result.Add(dto);
+            }
+
+            // Sắp xếp theo tên CLB
+            return result.OrderBy(c => c.Name).ToList();
         }
 
         public async Task<ClubDto> CreateAsync(CreateClubDto dto, int leaderId)
