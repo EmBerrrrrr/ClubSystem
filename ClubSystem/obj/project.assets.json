@@ -7970,23 +7970,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\mq311\\.nuget\\packages\\": {},
+    "C:\\Users\\Admin\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\MyCode\\StudentClub\\ClubSystem\\ClubSystem\\ClubSystem.csproj",
+      "projectUniqueName": "D:\\SWP391\\ClubSystem\\ClubSystem\\ClubSystem.csproj",
       "projectName": "ClubSystem",
-      "projectPath": "C:\\MyCode\\StudentClub\\ClubSystem\\ClubSystem\\ClubSystem.csproj",
-      "packagesPath": "C:\\Users\\mq311\\.nuget\\packages\\",
-      "outputPath": "C:\\MyCode\\StudentClub\\ClubSystem\\ClubSystem\\obj\\",
+      "projectPath": "D:\\SWP391\\ClubSystem\\ClubSystem\\ClubSystem.csproj",
+      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+      "outputPath": "D:\\SWP391\\ClubSystem\\ClubSystem\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\mq311\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -8001,8 +8001,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\MyCode\\StudentClub\\ClubSystem\\Service\\Service.csproj": {
-              "projectPath": "C:\\MyCode\\StudentClub\\ClubSystem\\Service\\Service.csproj"
+            "D:\\SWP391\\ClubSystem\\Service\\Service.csproj": {
+              "projectPath": "D:\\SWP391\\ClubSystem\\Service\\Service.csproj"
             }
           }
         }
@@ -8069,7 +8069,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

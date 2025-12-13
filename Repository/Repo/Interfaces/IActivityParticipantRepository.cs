@@ -13,6 +13,8 @@ namespace Repository.Repo.Interfaces
         Task AddParticipantAsync(ActivityParticipant participant);
         Task UpdateParticipantAsync(ActivityParticipant participant);
         Task SaveAsync();
+        Task DeleteByActivityIdAsync(int activityId);
+
     }
 }
 

@@ -62,6 +62,17 @@ namespace Repository.Repo.Implements
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task DeleteByActivityIdAsync(int activityId)
+        {
+            var list = await _context.ActivityParticipants
+                .Where(x => x.ActivityId == activityId)
+                .ToListAsync();
+
+            _context.ActivityParticipants.RemoveRange(list);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
 

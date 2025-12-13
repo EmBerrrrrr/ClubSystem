@@ -97,8 +97,13 @@ namespace Service.Service.Implements
                     throw new UnauthorizedAccessException("Bạn không phải leader CLB này");
             }
 
+            // XÓA PARTICIPANTS TRƯỚC
+            await _participantRepo.DeleteByActivityIdAsync(id);
+
+            // SAU ĐÓ XÓA ACTIVITY
             await _repo.DeleteAsync(entity);
         }
+
 
         // Mở đăng ký activity (chuyển từ "Not_yet_open" hoặc "Active_Closed" sang "Active")
         public async Task OpenRegistrationAsync(int activityId, int leaderId)
