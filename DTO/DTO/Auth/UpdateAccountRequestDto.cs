@@ -16,8 +16,10 @@ namespace DTO.DTO.Auth
         [StringLength(12, ErrorMessage = "Phone number cannot exceed 12 characters")]
         public string? Phone { get; set; }
 
-        [StringLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
-        public string? ImageAccountUrl { get; set; }
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$", 
+            ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, and one number")]
+        public string? Password { get; set; }
     }
 }
 

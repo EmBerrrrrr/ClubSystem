@@ -122,20 +122,26 @@ public class AuthBusinessService : IAuthBusinessService
         if (!string.IsNullOrWhiteSpace(request.Email))
             account.Email = request.Email;
 
-        if (request.Phone != null)
+        // Phone: nếu gửi null hoặc empty thì giữ nguyên, chỉ update khi có giá trị hợp lệ
+        if (request.Phone != null && !string.IsNullOrWhiteSpace(request.Phone))
             account.Phone = request.Phone;
 
-        if (request.ImageAccountUrl != null)
-            account.ImageAccountUrl = request.ImageAccountUrl;
+        // 4. Cập nhật password nếu có (hash trước khi lưu)
+        bool passwordChanged = false;
+        if (!string.IsNullOrWhiteSpace(request.Password))
+        {
+            account.PasswordHash = _authService.HashPassword(request.Password);
+            passwordChanged = true;
+        }
 
-        // 4. Lưu thay đổi
+        // 5. Lưu thay đổi
         await _repo.UpdateAccountAsync(account);
 
-        // 5. Lấy roles và tạo token mới
+        // 6. Lấy roles và tạo token mới
         var roles = await _repo.GetRolesByAccountIdAsync(account.Id);
         var token = _authService.GenerateToken(account, roles);
 
-        // 6. Trả response
+        // 7. Trả response
         return new LoginResponseDTO
         {
             Token = token,
@@ -144,7 +150,8 @@ public class AuthBusinessService : IAuthBusinessService
             Email = account.Email ?? string.Empty,
             FullName = account.FullName ?? string.Empty,
             Phone = account.Phone,
-            Roles = roles
+            Roles = roles,
+            PasswordChanged = passwordChanged ? true : null // Chỉ set true nếu có đổi password, null nếu không
         };
     }
 }

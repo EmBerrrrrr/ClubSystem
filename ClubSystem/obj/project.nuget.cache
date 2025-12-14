@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "keItMh1UEwY=",
+  "dgSpecHash": "mW5xUbYSs58=",
   "success": true,
-  "projectFilePath": "C:\\MyCode\\StudentClub\\ClubSystem\\ClubSystem\\ClubSystem.csproj",
+  "projectFilePath": "C:\\MyCode\\StudentClub\\siuuuu\\ClubSystem\\ClubSystem.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mq311\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\mq311\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

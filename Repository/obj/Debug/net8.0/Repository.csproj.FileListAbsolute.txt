@@ -9,10 +9,10 @@ C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\Repository.Generate
 C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\Repository.AssemblyInfoInputs.cache
 C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\Repository.AssemblyInfo.cs
 C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\Repository.csproj.CoreCompileInputs.cache
-C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\Repository.sourcelink.json
 C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\Repository.csproj.Up2Date
 C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\Repository.dll
 C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\refint\Repository.dll
 C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\Repository.pdb
 C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\Repository.genruntimeconfig.cache
 C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\ref\Repository.dll
+C:\MyCode\StudentClub\ClubSystem\Repository\obj\Debug\net8.0\Repository.sourcelink.json

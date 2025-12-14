@@ -22,6 +22,12 @@ namespace Repository.Repo.Interfaces
 
         Task<decimal> GetTotalRevenueFromMembersByClubIdAsync(int clubId);
 
+        // Student payment methods
+        Task<List<Payment>> GetPaymentsByAccountIdAsync(int accountId);
+        Task<List<Payment>> GetPaidPaymentsByAccountIdAsync(int accountId);
+        Task<List<Payment>> GetPendingPaymentsByAccountIdAsync(int accountId);
+        Task<List<Payment>> GetPaymentHistoryByAccountIdAsync(int accountId);
+
         Task UpdateAsync(Payment payment);
 
         Task SaveAsync();

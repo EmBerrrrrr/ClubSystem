@@ -11,10 +11,10 @@ C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\Service.GeneratedMSBui
 C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\Service.AssemblyInfoInputs.cache
 C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\Service.AssemblyInfo.cs
 C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\Service.csproj.CoreCompileInputs.cache
-C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\Service.sourcelink.json
 C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\Service.csproj.Up2Date
 C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\Service.dll
 C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\refint\Service.dll
 C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\Service.pdb
 C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\Service.genruntimeconfig.cache
 C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\ref\Service.dll
+C:\MyCode\StudentClub\ClubSystem\Service\obj\Debug\net8.0\Service.sourcelink.json

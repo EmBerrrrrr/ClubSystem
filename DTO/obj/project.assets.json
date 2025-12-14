@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\MyCode\\StudentClub\\ClubSystem\\DTO\\DTO.csproj",
+      "projectUniqueName": "C:\\MyCode\\StudentClub\\siuuuu\\DTO\\DTO.csproj",
       "projectName": "DTO",
-      "projectPath": "C:\\MyCode\\StudentClub\\ClubSystem\\DTO\\DTO.csproj",
+      "projectPath": "C:\\MyCode\\StudentClub\\siuuuu\\DTO\\DTO.csproj",
       "packagesPath": "C:\\Users\\mq311\\.nuget\\packages\\",
-      "outputPath": "C:\\MyCode\\StudentClub\\ClubSystem\\DTO\\obj\\",
+      "outputPath": "C:\\MyCode\\StudentClub\\siuuuu\\DTO\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

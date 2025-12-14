@@ -1,4 +1,6 @@
-﻿namespace DTO;
+﻿using System.Text.Json.Serialization;
+
+namespace DTO;
 
 public class LoginResponseDTO
 {
@@ -9,5 +11,8 @@ public class LoginResponseDTO
     public string FullName { get; set; } = null!;
     public string? Phone { get; set; }
     public List<string> Roles { get; set; } = new();
+    
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? PasswordChanged { get; set; } // Chỉ có giá trị khi update profile và có đổi password, không include trong JSON nếu null
 }
 

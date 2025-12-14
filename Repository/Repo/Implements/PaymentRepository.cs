@@ -88,6 +88,56 @@ namespace Repository.Repo.Implements
                 .SumAsync(p => p.Amount);
         }
 
+        // ========== STUDENT PAYMENT METHODS ==========
+
+        // Lấy tất cả payments của một student (accountId)
+        public async Task<List<Payment>> GetPaymentsByAccountIdAsync(int accountId)
+        {
+            return await _db.Payments
+                .Where(p => p.Membership.AccountId == accountId)
+                .Include(p => p.Club)
+                .Include(p => p.Membership)
+                    .ThenInclude(m => m.Account)
+                .OrderByDescending(p => p.Id)
+                .ToListAsync();
+        }
+
+        // Lấy các payments đã đóng (status = paid) của student
+        public async Task<List<Payment>> GetPaidPaymentsByAccountIdAsync(int accountId)
+        {
+            return await _db.Payments
+                .Where(p => p.Membership.AccountId == accountId && p.Status.ToLower() == "paid")
+                .Include(p => p.Club)
+                .Include(p => p.Membership)
+                    .ThenInclude(m => m.Account)
+                .OrderByDescending(p => p.Id)
+                .ToListAsync();
+        }
+
+        // Lấy các payments còn nợ (status = pending) của student
+        public async Task<List<Payment>> GetPendingPaymentsByAccountIdAsync(int accountId)
+        {
+            return await _db.Payments
+                .Where(p => p.Membership.AccountId == accountId && p.Status.ToLower() == "pending")
+                .Include(p => p.Club)
+                .Include(p => p.Membership)
+                    .ThenInclude(m => m.Account)
+                .OrderByDescending(p => p.Id)
+                .ToListAsync();
+        }
+
+        // Lấy lịch sử thanh toán (tất cả trạng thái) của student
+        public async Task<List<Payment>> GetPaymentHistoryByAccountIdAsync(int accountId)
+        {
+            return await _db.Payments
+                .Where(p => p.Membership.AccountId == accountId)
+                .Include(p => p.Club)
+                .Include(p => p.Membership)
+                    .ThenInclude(m => m.Account)
+                .OrderByDescending(p => p.Id)
+                .ToListAsync();
+        }
+
         // Cập nhật payment + lưu luôn
         public async Task UpdateAsync(Payment payment)
         {
