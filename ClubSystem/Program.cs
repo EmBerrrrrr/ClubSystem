@@ -1,4 +1,5 @@
 ﻿using CloudinaryDotNet;
+using ClubSystem.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -56,6 +57,7 @@ public class Program
         builder.Services.AddScoped<IStudentActivityService, StudentActivityService>();
         builder.Services.AddScoped<IPayOSService, PayOSService>();
         builder.Services.AddScoped<IPhotoService, PhotoService>();
+        builder.Services.AddSingleton<INotificationService, InMemoryNotificationService>();
 
         builder.Services.AddSingleton(sp =>
         {
@@ -87,6 +89,7 @@ public class Program
 
 
         builder.Services.AddControllers();
+        builder.Services.AddSignalR();
 
         // CORS - read from configuration
         var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new string[0];
@@ -231,6 +234,8 @@ public class Program
         app.UseCors("AllowFE");
 
         app.MapControllers();
+
+        app.MapHub<NotificationHub>("/notiHub");
 
         app.Run();
     }

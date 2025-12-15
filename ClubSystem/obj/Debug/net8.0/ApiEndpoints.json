@@ -817,6 +817,32 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "ClubSystem.Controller.NotificationController",
+    "Method": "GetMyNotifications",
+    "RelativePath": "api/Notification",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ClubSystem.Controller.NotificationController",
+    "Method": "MarkAsRead",
+    "RelativePath": "api/Notification/read/{id}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "PayOSController",
     "Method": "Confirm",
     "RelativePath": "api/PayOS/confirm-webhook",

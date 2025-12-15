@@ -213,6 +213,13 @@ namespace Service.Service.Implements
                 Status = c.Status
             };
         }
-    }
 
+        public async Task<List<int>> GetLeaderAccountIdsByClubIdAsync(int clubId)
+        {
+            return await _context.ClubLeaders
+                .Where(x => x.ClubId == clubId && x.IsActive == true)
+                .Select(x => x.AccountId)
+                .ToListAsync();
+        }
+    }
 }
