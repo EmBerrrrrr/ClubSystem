@@ -43,7 +43,9 @@ namespace Service.Service.Implements
             {
                 FullName = account.FullName,
                 Email = account.Email,
-                Phone = account.Phone
+                Phone = account.Phone,
+                Major = account.Major,
+                Skills = account.Skills
             };
         }
 

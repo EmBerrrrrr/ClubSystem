@@ -10,6 +10,8 @@ public class LoginResponseDTO
     public string Email { get; set; } = null!;
     public string FullName { get; set; } = null!;
     public string? Phone { get; set; }
+    public string? Major { get; set; }
+    public string? Skills { get; set; }
     public List<string> Roles { get; set; } = new();
     
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

@@ -20,6 +20,12 @@ namespace DTO.DTO.Auth
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$", 
             ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, and one number")]
         public string? Password { get; set; }
+
+        [StringLength(150, ErrorMessage = "Major cannot exceed 150 characters")]
+        public string? Major { get; set; }
+
+        [StringLength(500, ErrorMessage = "Skills cannot exceed 500 characters")]
+        public string? Skills { get; set; }
     }
 }
 

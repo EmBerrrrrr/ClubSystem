@@ -28,5 +28,11 @@ namespace DTO.DTO.Auth
             ErrorMessage = "Phone number must be a valid Vietnamese phone number (10 digits, starting with 0 or +84, followed by 3, 5, 7, 8, or 9)")]
         [StringLength(12, ErrorMessage = "Phone number cannot exceed 12 characters")]
         public string? Phone { get; set; }
+
+        [StringLength(150, ErrorMessage = "Major cannot exceed 150 characters")]
+        public string? Major { get; set; }
+
+        [StringLength(500, ErrorMessage = "Skills cannot exceed 500 characters")]
+        public string? Skills { get; set; }
     }
 }

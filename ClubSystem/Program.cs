@@ -220,12 +220,15 @@ public class Program
             Console.WriteLine("Warning: failed to initialize DB roles: " + ex.Message);
         }
 
-        // MIDDLEWARE PIPELINE
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+        //// MIDDLEWARE PIPELINE
+        //if (app.Environment.IsDevelopment())
+        //{
+        //    app.UseSwagger();
+        //    app.UseSwaggerUI();
+        //}
+
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
         app.UseHttpsRedirection();
 

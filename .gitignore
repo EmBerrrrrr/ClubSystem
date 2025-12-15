@@ -1,0 +1,16 @@
+## .NET build folders
+**/bin/
+**/obj/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+
+## Publish
+**/PublishProfiles/
+*.pubxml
+*.pubxml.user
+
+## App secrets
+appsettings.Development.json

@@ -7,6 +7,8 @@ public class AccountListDto
     public string? Email { get; set; }
     public string? FullName { get; set; }
     public string? Phone { get; set; }
+    public string? Major { get; set; }
+    public string? Skills { get; set; }
     public bool IsActive { get; set; }
     public List<string> Roles { get; set; } = new();
 }
