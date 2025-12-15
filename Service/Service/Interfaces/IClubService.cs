@@ -13,6 +13,8 @@ namespace Service.Services.Interfaces
         Task<ClubDto> CreateAsync(CreateClubDto dto, int leaderId);
         Task UpdateAsync(int clubId, UpdateClubDto dto, int accountId, bool isAdmin);
         Task DeleteAsync(int clubId, int accountId, bool isAdmin);
+        Task<List<int>> GetLeaderAccountIdsByClubIdAsync(int clubId);
+
     }
 
 }

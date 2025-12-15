@@ -51,18 +51,25 @@ namespace Repository.Repo.Implements
         public async Task<List<Club>> GetByLeaderIdAsync(int leaderId)
         {
             return await _context.ClubLeaders
-                .Where(x => x.AccountId == leaderId && x.IsActive == true)
-                .Include(x => x.Club)
-                .Select(x => x.Club)
-                .ToListAsync();
+               .Where(x => x.AccountId == leaderId && x.IsActive == true)
+               .Include(x => x.Club)
+               .Select(x => x.Club)
+               .ToListAsync();
         }
-
-        public async Task<bool> IsLeaderOfClubAsync(int clubId, int accountId)
+        public async Task<bool> IsLeaderOfClubAsync(int clubId, int leaderId)
         {
-            return await _context.ClubLeaders.AnyAsync(x =>
-                x.ClubId == clubId &&
-                x.AccountId == accountId &&
-                x.IsActive == true);
+            return await _context.ClubLeaders
+                .AnyAsync(x =>
+                    x.ClubId == clubId &&
+                    x.AccountId == leaderId &&
+                    x.IsActive == true);
+        }
+        public async Task<List<int>> GetLeaderAccountIdsByClubIdAsync(int clubId)
+        {
+            return await _context.ClubLeaders
+                .Where(x => x.ClubId == clubId && x.IsActive == true)
+                .Select(x => x.AccountId)
+                .ToListAsync();
         }
     }
 

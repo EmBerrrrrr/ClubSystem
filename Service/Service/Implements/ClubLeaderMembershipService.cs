@@ -17,17 +17,20 @@ namespace Service.Service.Implements
         private readonly IMembershipRepository _membershipRepo;
         private readonly IPaymentRepository _paymentRepo;
         private static readonly Random _rnd = new Random();
+        private readonly INotificationService _noti;
 
         public ClubLeaderMembershipService(
             IMembershipRequestRepository reqRepo,
             IClubRepository clubRepo,
             IMembershipRepository membershipRepo,
-            IPaymentRepository paymentRepo) 
+            IPaymentRepository paymentRepo,
+            INotificationService noti) 
         {
             _reqRepo = reqRepo;
             _clubRepo = clubRepo;
             _membershipRepo = membershipRepo;
-            _paymentRepo = paymentRepo; 
+            _paymentRepo = paymentRepo;
+            _noti = noti;
         }
 
         // Lấy các request pending của tất cả CLB mà leader này quản lý
@@ -139,33 +142,14 @@ namespace Service.Service.Implements
         public async Task ApproveAsync(int leaderId, int requestId, string? note)
         {
             var req = await _reqRepo.GetByIdAsync(requestId)
-                ?? throw new Exception("Không tìm thấy yêu cầu tham gia.");
+                ?? throw new Exception("Không tìm thấy request");
 
-            // Kiểm tra quyền truy cập: Leader phải quản lý CLB này
             if (!await _clubRepo.IsLeaderOfClubAsync(req.ClubId, leaderId))
-                throw new UnauthorizedAccessException("Bạn không có quyền quản lý CLB này.");
+                throw new UnauthorizedAccessException();
 
-            if (req.Status != "Pending")
-                throw new Exception("Yêu cầu đã được xử lý.");
-
-            // Kiểm tra trùng lặp: Đảm bảo không có membership đang hoạt động hoặc đang chờ thanh toán
-            var existingMembership = await _membershipRepo.GetMembershipByAccountAndClubAsync(req.AccountId, req.ClubId);
-            if (existingMembership != null && existingMembership.Status != null)
-            {
-                var statusLower = existingMembership.Status.ToLower();
-                if (statusLower == "active" || statusLower == "approved_pending_payment")
-                {
-                    throw new Exception("Học sinh này đã là thành viên hoặc đang trong quá trình tham gia CLB.");
-                }
-            }
-
-            // Lấy thông tin CLB để xác định phí thành viên
             var club = await _clubRepo.GetByIdAsync(req.ClubId)
-                ?? throw new Exception("Không tìm thấy CLB.");
+                ?? throw new Exception("Không tìm thấy CLB");
 
-            var fee = club.MembershipFee ?? 0;
-
-            // 1) Tạo membership với trạng thái pending_payment
             var membership = new Membership
             {
                 AccountId = req.AccountId,
@@ -177,25 +161,19 @@ namespace Service.Service.Implements
             await _membershipRepo.AddMembershipAsync(membership);
             await _membershipRepo.SaveAsync();
 
-            // 2) Tạo orderCode (sau này dùng đúng code này khi gọi PayOS)
-            long orderCode = _rnd.Next(100000000, 999999999);
-
-            // 3) Tạo payment (status = pending)
             var payment = new Payment
             {
                 MembershipId = membership.Id,
-                ClubId = req.ClubId,
-                Amount = fee,
-                Method = "payos",      
-                Status = "pending", 
-                OrderCode = orderCode,
-                Description = $"Membership fee for club {club.Name} - member {membership.Id}"
+                ClubId = club.Id,
+                Amount = club.MembershipFee ?? 0,
+                Status = "pending",
+                Method = "payos",
+                OrderCode = _rnd.Next(100000000, 999999999)
             };
 
             await _paymentRepo.AddAsync(payment);
             await _paymentRepo.SaveAsync();
 
-            // 4) Cập nhật request
             req.Status = "Awaiting Payment";
             req.ProcessedBy = leaderId;
             req.ProcessedAt = DateTime.UtcNow;
@@ -203,27 +181,31 @@ namespace Service.Service.Implements
 
             await _reqRepo.UpdateAsync(req);
 
-            // (tùy bạn) return orderCode / payment info qua controller để FE hiển thị link PayOS
+            // 🔔 NOTI → STUDENT
+            _noti.Push(
+                req.AccountId,
+                "Được duyệt vào CLB 🎉",
+                $"Bạn đã được chấp nhận vào CLB {club.Name}"
+            );
         }
-
-
         public async Task RejectAsync(int leaderId, int requestId, string? note)
         {
             var req = await _reqRepo.GetByIdAsync(requestId)
-                ?? throw new Exception("Không tìm thấy request.");
-
-            if (!await _clubRepo.IsLeaderOfClubAsync(req.ClubId, leaderId))
-                throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
-
-            if (req.Status != "Pending")
-                throw new Exception("Yêu cầu đã được xử lý.");
+                ?? throw new Exception("Không tìm thấy request");
 
             req.Status = "Reject";
             req.ProcessedBy = leaderId;
-            req.ProcessedAt = DateTime.Now;
+            req.ProcessedAt = DateTime.UtcNow;
             req.Note = note;
 
             await _reqRepo.UpdateAsync(req);
+
+            // 🔔 NOTI → STUDENT
+            _noti.Push(
+                req.AccountId,
+                "Bị từ chối gia nhập CLB",
+                note ?? "Yêu cầu của bạn đã bị từ chối"
+            );
         }
 
         // Khóa member (set status = "locked")
@@ -278,6 +260,19 @@ namespace Service.Service.Implements
             membership.Status = "removed";
             _membershipRepo.UpdateMembership(membership);
             await _membershipRepo.SaveAsync();
+        }
+        public async Task NotifyLeaderWhenRequestCreated(int clubId, int studentId)
+        {
+            var leaderIds = await _clubRepo.GetLeaderAccountIdsByClubIdAsync(clubId);
+
+            foreach (var leaderId in leaderIds)
+            {
+                _noti.Push(
+                    leaderId,
+                    "Đơn xin gia nhập CLB",
+                    "Có sinh viên mới xin gia nhập CLB bạn quản lý"
+                );
+            }
         }
     }
 

@@ -11,32 +11,32 @@ namespace Service.Service.Implements
     {
         private readonly StudentClubManagementContext _db;
         private readonly IClubLeaderRequestRepository _repo;
-
-        public ClubLeaderRequestService(StudentClubManagementContext db,
-                                         IClubLeaderRequestRepository repo)
+        private readonly INotificationService _noti;
+        public ClubLeaderRequestService(
+            StudentClubManagementContext db,
+            IClubLeaderRequestRepository repo,
+            INotificationService noti)
         {
             _db = db;
             _repo = repo;
+            _noti = noti;
         }
 
         // Student gửi request
         public async Task CreateRequestAsync(int accountId, string reason)
         {
-            //1. Không cho clubleader gửi request
             bool isLeader = await _db.AccountRoles
-                .Include(ar => ar.Role)
-                .AnyAsync(ar =>
-                    ar.AccountId == accountId &&
-                    ar.Role.Name.ToLower() == "clubleader");
+                .Include(x => x.Role)
+                .AnyAsync(x => x.AccountId == accountId &&
+                               x.Role.Name.ToLower() == "clubleader");
 
             if (isLeader)
-                throw new Exception("Bạn đã là Club Leader, không thể gửi request nữa");
+                throw new Exception("Bạn đã là Club Leader");
 
-            //2. Không cho gửi nếu đã có request pending
-            var exists = await _db.ClubLeaderRequests
-                .AnyAsync(x =>
-                    x.AccountId == accountId &&
-                    x.Status.ToLower() == "pending");
+            bool exists = await _db.ClubLeaderRequests
+                .AnyAsync(x => x.AccountId == accountId &&
+                               x.Status.ToLower() == "pending");
+
             if (exists)
                 throw new Exception("Bạn đã gửi request và đang chờ duyệt");
 
@@ -45,12 +45,27 @@ namespace Service.Service.Implements
                 AccountId = accountId,
                 RequestDate = DateTime.UtcNow,
                 Status = "pending",
-                Reason = string.IsNullOrWhiteSpace(reason)
-                    ? "No reason provided"
-                    : reason.Trim()
+                Reason = string.IsNullOrWhiteSpace(reason) ? "No reason" : reason.Trim()
             };
+
             await _repo.CreateAsync(request);
             await _repo.SaveAsync();
+
+            // 🔔 NOTI → ADMIN
+            var adminIds = await _db.AccountRoles
+                .Include(x => x.Role)
+                .Where(x => x.Role.Name == "admin")
+                .Select(x => x.AccountId)
+                .ToListAsync();
+
+            foreach (var adminId in adminIds)
+            {
+                _noti.Push(
+                    adminId,
+                    "Yêu cầu Club Leader mới",
+                    "Có sinh viên gửi yêu cầu trở thành Club Leader"
+                );
+            }
         }
 
         // Student xem list của bản thân
@@ -187,74 +202,59 @@ namespace Service.Service.Implements
         // APPROVE
         public async Task ApproveAsync(int requestId, int adminId, string? note = null)
         {
-            var request = await _repo.GetByIdAsync(requestId);
-            if (request == null)
-                throw new Exception("Request không tồn tại");
+            var request = await _repo.GetByIdAsync(requestId)
+                ?? throw new Exception("Request không tồn tại");
 
             if (request.Status.ToLower() != "pending")
-                throw new Exception("Request đã được xử lý");
-
-            //Không cho approve nếu user đã là clubleader
-            bool alreadyLeader = await _db.AccountRoles
-                .Include(ar => ar.Role)
-                .AnyAsync(ar => ar.AccountId == request.AccountId &&
-                                ar.Role.Name.ToLower() == "clubleader");
-
-            if (alreadyLeader)
-                throw new Exception("Tài khoản này đã là Club Leader");
+                throw new Exception("Request đã xử lý");
 
             request.Status = "approved";
             request.ProcessedBy = adminId;
             request.ProcessedAt = DateTime.UtcNow;
-            request.Note = string.IsNullOrWhiteSpace(note)
-                ? "Đã duyệt"
-                : note.Trim();
+            request.Note = note ?? "Đã duyệt";
 
-            var leaderRole = await _db.Roles
-                .FirstOrDefaultAsync(x => x.Name == "clubleader");
-            if (leaderRole == null)
-            {
-                leaderRole = new Role
-                {
-                    Name = "clubleader",
-                    Description = "Club leader role"
-                };
+            var role = await _db.Roles.FirstAsync(x => x.Name == "clubleader");
 
-                _db.Roles.Add(leaderRole);
-                await _db.SaveChangesAsync();
-            }
-            bool existsRole = await _db.AccountRoles.AnyAsync(x =>
-                x.AccountId == request.AccountId &&
-                x.RoleId == leaderRole.Id);
-            if (!existsRole)
+            if (!await _db.AccountRoles.AnyAsync(x =>
+                    x.AccountId == request.AccountId &&
+                    x.RoleId == role.Id))
             {
                 _db.AccountRoles.Add(new AccountRole
                 {
                     AccountId = request.AccountId,
-                    RoleId = leaderRole.Id
+                    RoleId = role.Id
                 });
             }
+
             await _repo.SaveAsync();
+
+            // 🔔 NOTI → STUDENT
+            _noti.Push(
+                request.AccountId,
+                "Yêu cầu được duyệt 🎉",
+                "Bạn đã trở thành Club Leader"
+            );
         }
 
         // REJECT
         public async Task RejectAsync(int requestId, int adminId, string reason)
         {
-            var request = await _repo.GetByIdAsync(requestId);
-            if (request == null)
-                throw new Exception("Request không tồn tại");
-            
-            if (request.Status.ToLower() != "pending")
-                throw new Exception("Request đã được xử lý");
-            
+            var request = await _repo.GetByIdAsync(requestId)
+                ?? throw new Exception("Request không tồn tại");
+
             request.Status = "rejected";
             request.ProcessedBy = adminId;
             request.ProcessedAt = DateTime.UtcNow;
-            request.Note = string.IsNullOrWhiteSpace(reason)
-                ? "Đã từ chối"
-                : reason.Trim();
+            request.Note = reason;
+
             await _repo.SaveAsync();
+
+            // 🔔 NOTI → STUDENT
+            _noti.Push(
+                request.AccountId,
+                "Yêu cầu bị từ chối",
+                reason
+            );
         }
     }
-
 }

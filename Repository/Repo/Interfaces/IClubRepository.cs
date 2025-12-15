@@ -13,6 +13,7 @@ namespace Repository.Repo.Interfaces
         Task UpdateAsync(Club club);
         Task DeleteAsync(Club club);
         Task<bool> IsLeaderOfClubAsync(int clubId, int accountId);
+        Task<List<int>> GetLeaderAccountIdsByClubIdAsync(int clubId);
     }
 
 }
