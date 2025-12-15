@@ -21,11 +21,11 @@ public partial class Account
 
     public string ImageAccountUrl { get; set; }
 
-    public string AvatarPublicId { get; set; }
-
     public bool? IsActive { get; set; }
 
     public DateTime? CreatedAt { get; set; }
+
+    public string AvatarPublicId { get; set; }
 
     public virtual ICollection<AccountRole> AccountRoles { get; set; } = new List<AccountRole>();
 

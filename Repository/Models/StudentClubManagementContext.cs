@@ -39,9 +39,9 @@ public partial class StudentClubManagementContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
-//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-//        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-MAGKEL5\\MSSQLSERVER1;Initial Catalog=StudentClubManagement;User ID=sa;Password=123456;Encrypt=False");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-MAGKEL5\\MSSQLSERVER1;Initial Catalog=StudentClubManagement;User ID=sa;Password=123456;Encrypt=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -54,6 +54,9 @@ public partial class StudentClubManagementContext : DbContext
             entity.HasIndex(e => e.Username, "UQ_accounts_username").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AvatarPublicId)
+                .HasMaxLength(225)
+                .HasColumnName("avatarPublicId");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
@@ -108,6 +111,9 @@ public partial class StudentClubManagementContext : DbContext
             entity.ToTable("activities");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AvatarPublicId)
+                .HasMaxLength(225)
+                .HasColumnName("avatarPublicId");
             entity.Property(e => e.ClubId).HasColumnName("club_id");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.Description).HasColumnName("description");
@@ -115,7 +121,7 @@ public partial class StudentClubManagementContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("end_time");
             entity.Property(e => e.ImageActsUrl)
-                .HasMaxLength(255)
+                .HasMaxLength(225)
                 .HasColumnName("imageActs_url");
             entity.Property(e => e.Location)
                 .HasMaxLength(150)
@@ -130,9 +136,6 @@ public partial class StudentClubManagementContext : DbContext
                 .IsRequired()
                 .HasMaxLength(150)
                 .HasColumnName("title");
-            entity.Property(e => e.AvatarPublicId)
-                .HasMaxLength(255)
-                .HasColumnName("avatarPublicId");
 
             entity.HasOne(d => d.Club).WithMany(p => p.Activities)
                 .HasForeignKey(d => d.ClubId)
@@ -176,14 +179,14 @@ public partial class StudentClubManagementContext : DbContext
             entity.ToTable("clubs");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AvatarPublicId)
+                .HasMaxLength(225)
+                .HasColumnName("avatarPublicId");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.EstablishedDate).HasColumnName("established_date");
             entity.Property(e => e.ImageClubsUrl)
                 .HasMaxLength(255)
                 .HasColumnName("imageClubs_url");
-            entity.Property(e => e.AvatarPublicId)
-                .HasMaxLength(255)
-                .HasColumnName("avatarPublicId");
             entity.Property(e => e.MembershipFee)
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("membership_fee");

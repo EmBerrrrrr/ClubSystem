@@ -17,11 +17,11 @@ public partial class Club
 
     public string ImageClubsUrl { get; set; }
 
-    public string AvatarPublicId { get; set; }
-
     public decimal? MembershipFee { get; set; }
 
     public string Status { get; set; }
+
+    public string AvatarPublicId { get; set; }
 
     public virtual ICollection<Activity> Activities { get; set; } = new List<Activity>();
 
