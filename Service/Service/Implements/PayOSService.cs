@@ -15,19 +15,25 @@ namespace Service.Service.Implements
         private readonly IConfiguration _config;
         private readonly IMembershipRepository _membershipRepo;  
         private readonly IMembershipRequestRepository _membershipRequestRepo;
+        private readonly IClubRepository _clubRepo;
+        private readonly IAuthRepository _accountRepo;
 
         public PayOSService(
             PayOS payOS,
             IPaymentRepository paymentRepo,
             IConfiguration config,
-            IMembershipRepository membershipRepo,            
-            IMembershipRequestRepository membershipRequestRepo)  
+            IMembershipRepository membershipRepo,
+            IMembershipRequestRepository membershipRequestRepo,
+            IClubRepository clubRepo,
+            IAuthRepository accountRepo)
         {
             _payOS = payOS;
             _paymentRepo = paymentRepo;
             _config = config;
-            _membershipRepo = membershipRepo;              
-            _membershipRequestRepo = membershipRequestRepo;   
+            _membershipRepo = membershipRepo;
+            _membershipRequestRepo = membershipRequestRepo;
+            _clubRepo = clubRepo;
+            _accountRepo = accountRepo;
         }
 
         // Tạo link thanh toán cho 1 payment trong DB
@@ -46,7 +52,15 @@ namespace Service.Service.Implements
 
             payment.OrderCode = orderCode;  
             payment.Method = "PayOS";
-            payment.Description = $"Payment for membership {payment.MembershipId}";
+            var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId)
+                ?? throw new Exception("Không tìm thấy membership.");
+            var club = await _clubRepo.GetByIdAsync(membership.ClubId)
+                ?? throw new Exception("Không tìm thấy club.");
+            var account = await _accountRepo.GetAccountByIdAsync(membership.AccountId)
+                ?? throw new Exception("Không tìm thấy account.");
+            payment.Description =
+                $"Đơn của {account.FullName}";
+
             payment.Status = "pending";
 
             await _paymentRepo.UpdateAsync(payment);  // lưu lại orderCode, status
