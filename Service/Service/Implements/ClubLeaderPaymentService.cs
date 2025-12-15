@@ -1,5 +1,6 @@
 using DTO.DTO.Payment;
 using Repository.Repo.Interfaces;
+using Service.Helper;
 using Service.Service.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -71,7 +72,7 @@ namespace Service.Service.Implements
                 JoinDate = p.Membership?.JoinDate,
                 PaymentId = p.Id,
                 PaymentStatus = p.Status ?? "",
-                PaymentCreatedDate = p.PaidDate
+                PaymentCreatedDate = p.PaidDate.ToVietnamTime()
             }).ToList();
         }
 
@@ -91,7 +92,7 @@ namespace Service.Service.Implements
                 ClubId = p.ClubId,
                 ClubName = p.Club?.Name ?? "",
                 Amount = p.Amount,
-                PaidDate = p.PaidDate,
+                PaidDate = p.PaidDate.ToVietnamTime(),
                 Method = p.Method ?? "",
                 Status = p.Status ?? "",
                 Description = p.Description ?? "",

@@ -5,6 +5,7 @@ using Net.payOS;
 using Net.payOS.Types;
 using Repository.Models;
 using Repository.Repo.Interfaces;
+using Service.Helper;
 
 namespace Service.Service.Implements
 {
@@ -153,7 +154,7 @@ namespace Service.Service.Implements
             if (data.code == "00")
             {
                 payment.Status = "paid";
-                payment.PaidDate = DateTime.UtcNow;
+                payment.PaidDate = DateTimeExtensions.NowVietnam();
 
                 if (membership != null)
                 {

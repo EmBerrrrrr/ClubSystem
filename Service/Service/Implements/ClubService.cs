@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.Services.Interfaces;
+using Service.Helper;
 using System;
 using System.Linq;
 
@@ -89,7 +90,7 @@ namespace Service.Service.Implements
                 ClubId = club.Id,
                 AccountId = leaderId,
                 IsActive = true,
-                StartDate = DateOnly.FromDateTime(DateTime.Now)
+                StartDate = DateOnly.FromDateTime(DateTimeExtensions.NowVietnam())
             });
 
             await _context.SaveChangesAsync();

@@ -3,6 +3,7 @@ using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.Services;
 using System;
+using Service.Helper; 
 
 namespace Service.Service.Implements
 {
@@ -49,11 +50,9 @@ namespace Service.Service.Implements
                 ClubId = dto.ClubId,
                 Title = dto.Title,
                 Description = dto.Description,
-                StartTime = dto.StartTime,
-                EndTime = dto.EndTime,
+                StartTime = dto.StartTime.ToVietnamTime(),
+                EndTime = dto.EndTime.ToVietnamTime(),
                 Location = dto.Location,
-                // Club leader tạo activity mặc định với status "Not_yet_open" (chưa mở đăng ký)
-                // Có thể dùng OpenRegistrationAsync để mở đăng ký sau
                 Status = "Not_yet_open",
                 CreatedBy = accountId
             };
@@ -77,8 +76,8 @@ namespace Service.Service.Implements
 
             entity.Title = dto.Title;
             entity.Description = dto.Description;
-            entity.StartTime = dto.StartTime;
-            entity.EndTime = dto.EndTime;
+            entity.StartTime = dto.StartTime.ToVietnamTime();
+            entity.EndTime = dto.EndTime.ToVietnamTime();
             entity.Location = dto.Location;
             entity.Status = dto.Status ?? entity.Status;
 
@@ -97,28 +96,21 @@ namespace Service.Service.Implements
                     throw new UnauthorizedAccessException("Bạn không phải leader CLB này");
             }
 
-            // Kiểm tra: Activity phải được dừng (Cancelled hoặc Completed) trước khi xóa
             var currentStatus = entity.Status?.Trim() ?? "";
             if (currentStatus != "Cancelled" && currentStatus != "Completed")
             {
                 throw new Exception("Không thể xóa hoạt động. Vui lòng dừng hoạt động (hủy hoặc đánh dấu hoàn thành) trước khi xóa.");
             }
 
-            // XÓA PARTICIPANTS TRƯỚC
             await _participantRepo.DeleteByActivityIdAsync(id);
-
-            // SAU ĐÓ XÓA ACTIVITY
             await _repo.DeleteAsync(entity);
         }
 
-
-        // Mở đăng ký activity (chuyển từ "Not_yet_open" hoặc "Active_Closed" sang "Active")
         public async Task OpenRegistrationAsync(int activityId, int leaderId)
         {
             var activity = await _repo.GetByIdAsync(activityId)
                 ?? throw new Exception("Không tìm thấy activity.");
 
-            // Kiểm tra leader có quyền với CLB này không
             if (!await _repo.IsLeaderOfClubAsync(activity.ClubId, leaderId))
                 throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
 
@@ -132,13 +124,11 @@ namespace Service.Service.Implements
             await _repo.UpdateAsync(activity);
         }
 
-        // Đóng đăng ký activity (status = "Active_Closed")
         public async Task CloseRegistrationAsync(int activityId, int leaderId)
         {
             var activity = await _repo.GetByIdAsync(activityId)
                 ?? throw new Exception("Không tìm thấy activity.");
 
-            // Kiểm tra leader có quyền với CLB này không
             if (!await _repo.IsLeaderOfClubAsync(activity.ClubId, leaderId))
                 throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
 
@@ -149,13 +139,11 @@ namespace Service.Service.Implements
             await _repo.UpdateAsync(activity);
         }
 
-        // Xem danh sách participants của activity
         public async Task<List<ActivityParticipantForLeaderDto>> GetActivityParticipantsAsync(int activityId, int leaderId)
         {
             var activity = await _repo.GetByIdAsync(activityId)
                 ?? throw new Exception("Không tìm thấy activity.");
 
-            // Kiểm tra leader có quyền với CLB này không
             if (!await _repo.IsLeaderOfClubAsync(activity.ClubId, leaderId))
                 throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
 
@@ -171,13 +159,11 @@ namespace Service.Service.Implements
                 Phone = p.Membership?.Account?.Phone ?? "",
                 RegisterTime = p.RegisterTime,
                 Attended = p.Attended,
-                //CancelReason = p.CancelReason
             }).ToList();
         }
 
         private static ActivityDto Map(Activity a)
         {
-            // Tính status động dựa trên thời gian hiện tại
             var calculatedStatus = CalculateActivityStatus(a);
 
             return new ActivityDto
@@ -189,50 +175,37 @@ namespace Service.Service.Implements
                 StartTime = a.StartTime,
                 EndTime = a.EndTime,
                 Location = a.Location,
-                Status = calculatedStatus, // Sử dụng status đã tính toán
+                Status = calculatedStatus,
                 CreatedBy = a.CreatedBy,
                 ImageActsUrl = a.ImageActsUrl,
                 AvatarPublicId = a.AvatarPublicId
             };
         }
 
-        // Tính status của activity dựa trên thời gian hiện tại
         private static string CalculateActivityStatus(Activity a)
         {
-            var now = DateTime.Now;
-            
-            // Nếu status là Cancelled hoặc Completed, giữ nguyên
+            var now = DateTimeExtensions.NowVietnam();
+
             if (a.Status == "Cancelled" || a.Status == "Completed")
                 return a.Status;
 
-            // Kiểm tra nếu activity đang diễn ra
             if (a.StartTime.HasValue && a.EndTime.HasValue)
             {
                 if (now >= a.StartTime.Value && now <= a.EndTime.Value)
-                {
-                    return "Ongoing"; // Đang diễn ra
-                }
+                    return "Ongoing";
             }
             else if (a.StartTime.HasValue && !a.EndTime.HasValue)
             {
-                // Chỉ có start_time, nếu đã bắt đầu thì là Ongoing
                 if (now >= a.StartTime.Value)
-                {
                     return "Ongoing";
-                }
             }
 
-            // Nếu đã kết thúc (có end_time và đã qua end_time)
             if (a.EndTime.HasValue && now > a.EndTime.Value)
             {
-                // Chỉ tự động set Completed nếu status hiện tại là Active hoặc Active_Closed
                 if (a.Status == "Active" || a.Status == "Active_Closed" || a.Status == "Ongoing")
-                {
                     return "Completed";
-                }
             }
 
-            // Trả về status gốc (Not_yet_open, Active, Active_Closed)
             return a.Status;
         }
     }

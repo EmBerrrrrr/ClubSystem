@@ -111,5 +111,14 @@ namespace ClubSystem.Controller
             }
         }
 
+        [Authorize(Roles = "admin")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDetail(int id)
+        {
+            var data = await _service.GetRequestDetailAsync(id);
+            if (data == null)
+                return NotFound("Request không tồn tại");
+            return Ok(data);
+        }
     }
 }

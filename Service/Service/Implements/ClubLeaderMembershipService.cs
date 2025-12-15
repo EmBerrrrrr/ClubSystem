@@ -2,6 +2,7 @@
 using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.Service.Interfaces;
+using Service.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -154,7 +155,8 @@ namespace Service.Service.Implements
             {
                 AccountId = req.AccountId,
                 ClubId = req.ClubId,
-                JoinDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                // DÙNG GIỜ VIỆT NAM
+                JoinDate = DateOnly.FromDateTime(DateTimeExtensions.NowVietnam()),
                 Status = "pending_payment"
             };
 
@@ -176,12 +178,11 @@ namespace Service.Service.Implements
 
             req.Status = "Awaiting Payment";
             req.ProcessedBy = leaderId;
-            req.ProcessedAt = DateTime.UtcNow;
+            req.ProcessedAt = DateTimeExtensions.NowVietnam();
             req.Note = note;
 
             await _reqRepo.UpdateAsync(req);
 
-            // 🔔 NOTI → STUDENT
             _noti.Push(
                 req.AccountId,
                 "Được duyệt vào CLB 🎉",
@@ -195,12 +196,11 @@ namespace Service.Service.Implements
 
             req.Status = "Reject";
             req.ProcessedBy = leaderId;
-            req.ProcessedAt = DateTime.UtcNow;
+            req.ProcessedAt = DateTimeExtensions.NowVietnam();
             req.Note = note;
 
             await _reqRepo.UpdateAsync(req);
 
-            // 🔔 NOTI → STUDENT
             _noti.Push(
                 req.AccountId,
                 "Bị từ chối gia nhập CLB",

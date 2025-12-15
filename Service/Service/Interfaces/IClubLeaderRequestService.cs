@@ -17,6 +17,7 @@ namespace Service.Service.Interfaces
         Task ApproveAsync(int requestId, int adminId, string? note = null);
         Task RejectAsync(int requestId, int adminId, string reason);
         Task<MyLeaderRequestDto?> GetMyRequestAsync(int accountId);
+        Task<ProcessedLeaderRequestDto?> GetRequestDetailAsync(int id);
 
     }
 }

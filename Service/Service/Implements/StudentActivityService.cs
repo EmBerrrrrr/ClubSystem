@@ -2,6 +2,7 @@ using DTO.DTO.Activity;
 using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.Service.Interfaces;
+using Service.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,7 +96,7 @@ namespace Service.Service.Implements
             {
                 ActivityId = activityId,
                 MembershipId = membership.Id,
-                RegisterTime = DateTime.Now,
+                RegisterTime = DateTimeExtensions.NowVietnam(),
                 Attended = true // Set "attend" ngay khi đăng ký
             };
 
@@ -182,7 +183,7 @@ namespace Service.Service.Implements
             // Lấy tất cả activities của các CLB mà student là member
             // Chỉ hiển thị activities có status "Active" hoặc "opened" (đang mở đăng ký) để member có thể đăng ký
             var allActivities = await _activityRepo.GetAllAsync();
-            var now = DateTime.Now;
+            var now = DateTimeExtensions.NowVietnam();
             var availableActivities = allActivities
                 .Where(a => clubIds.Contains(a.ClubId) && 
                            (a.Status == "Active" || a.Status == "opened") && // Chỉ hiển thị activities đang mở đăng ký
@@ -270,8 +271,8 @@ namespace Service.Service.Implements
         // Tính status của activity dựa trên thời gian hiện tại
         private static string CalculateActivityStatus(Activity a)
         {
-            var now = DateTime.Now;
-            
+            var now = DateTimeExtensions.NowVietnam();
+
             // Nếu status là Cancelled hoặc Completed, giữ nguyên
             if (a.Status == "Cancelled" || a.Status == "Completed")
                 return a.Status;

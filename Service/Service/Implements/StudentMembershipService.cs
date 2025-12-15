@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Service.Helper;
 using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.Service.Interfaces;
@@ -101,7 +102,7 @@ namespace Service.Service.Implements
                 AccountId = accountId,
                 ClubId = dto.ClubId,
                 Status = "Pending",
-                RequestDate = DateTime.UtcNow,
+                RequestDate = DateTimeExtensions.NowVietnam(),
                 Note = dto.Reason // Lưu lý do tham gia vào Note
             };
 

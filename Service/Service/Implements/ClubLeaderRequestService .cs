@@ -3,6 +3,7 @@ using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.DTO.ClubLeader;
 using Service.Service.Interfaces;
+using Service.Helper;
 using System;
 
 namespace Service.Service.Implements
@@ -43,7 +44,7 @@ namespace Service.Service.Implements
             var request = new ClubLeaderRequest
             {
                 AccountId = accountId,
-                RequestDate = DateTime.UtcNow,
+                RequestDate = DateTimeExtensions.NowVietnam(),
                 Status = "pending",
                 Reason = string.IsNullOrWhiteSpace(reason) ? "No reason" : reason.Trim()
             };
@@ -210,7 +211,7 @@ namespace Service.Service.Implements
 
             request.Status = "approved";
             request.ProcessedBy = adminId;
-            request.ProcessedAt = DateTime.UtcNow;
+            request.ProcessedAt = DateTimeExtensions.NowVietnam();
             request.Note = note ?? "Đã duyệt";
 
             var role = await _db.Roles.FirstAsync(x => x.Name == "clubleader");
@@ -244,7 +245,7 @@ namespace Service.Service.Implements
 
             request.Status = "rejected";
             request.ProcessedBy = adminId;
-            request.ProcessedAt = DateTime.UtcNow;
+            request.ProcessedAt = DateTimeExtensions.NowVietnam();
             request.Note = reason;
 
             await _repo.SaveAsync();
@@ -256,5 +257,34 @@ namespace Service.Service.Implements
                 reason
             );
         }
+
+        public async Task<ProcessedLeaderRequestDto?> GetRequestDetailAsync(int id)
+        {
+            var x = await _db.ClubLeaderRequests
+                .Include(r => r.Account)
+                .Include(r => r.ProcessedByNavigation)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (x == null) return null;
+
+            return new ProcessedLeaderRequestDto
+            {
+                Id = x.Id,
+                AccountId = x.AccountId,
+                Username = x.Account?.Username ?? string.Empty,
+                FullName = x.Account?.FullName,
+                Email = x.Account?.Email,
+                Phone = x.Account?.Phone,
+                RequestDate = x.RequestDate,
+                Status = x.Status,
+                Reason = x.Reason,
+                Note = x.Note,
+                ProcessedBy = x.ProcessedBy,
+                ProcessedByUsername = x.ProcessedByNavigation?.Username,
+                ProcessedByFullName = x.ProcessedByNavigation?.FullName,
+                ProcessedAt = x.ProcessedAt
+            };
+        }
+
     }
 }

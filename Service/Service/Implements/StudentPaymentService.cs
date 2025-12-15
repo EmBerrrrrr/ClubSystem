@@ -1,5 +1,6 @@
 using DTO.DTO.Payment;
 using Repository.Repo.Interfaces;
+using Service.Helper;
 using Service.Service.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace Service.Service.Implements
                 ClubId = p.ClubId,
                 ClubName = p.Club?.Name ?? "",
                 Amount = p.Amount,
-                PaidDate = p.PaidDate,
+                PaidDate = p.PaidDate.ToVietnamTime(),
                 Method = p.Method ?? "",
                 Status = p.Status ?? "",
                 OrderCode = p.OrderCode,
@@ -48,11 +49,11 @@ namespace Service.Service.Implements
                 ClubId = p.ClubId,
                 ClubName = p.Club?.Name ?? "",
                 Amount = p.Amount,
-                PaidDate = p.PaidDate,
+                PaidDate = p.PaidDate.ToVietnamTime(),
                 Status = p.Status ?? "",
                 OrderCode = p.OrderCode,
                 Description = p.Description ?? "",
-                CreatedDate = p.PaidDate // Có thể dùng PaidDate hoặc tạo field CreatedDate riêng
+                CreatedDate = p.PaidDate.ToVietnamTime(), // Có thể dùng PaidDate hoặc tạo field CreatedDate riêng
             }).ToList();
         }
 
@@ -68,7 +69,7 @@ namespace Service.Service.Implements
                 ClubId = p.ClubId,
                 ClubName = p.Club?.Name ?? "",
                 Amount = p.Amount,
-                PaidDate = p.PaidDate,
+                PaidDate = p.PaidDate.ToVietnamTime(),
                 Method = p.Method ?? "",
                 Status = p.Status ?? "",
                 Description = p.Description ?? "",
