@@ -23,6 +23,16 @@ namespace DTO.DTO.Club
         public string? Description { get; set; }
         public string? Status { get; set; } // Trạng thái của CLB - frontend bắt status ở đây là club status
         public decimal? MembershipFee { get; set; }
+
+        // Các field mới thêm tương ứng với entity Club
+        public DateOnly? EstablishedDate { get; set; }
+        public string? ImageClubsUrl { get; set; }
+        public string? AvatarPublicId { get; set; }
+        public string? Location { get; set; }
+        public string? ContactEmail { get; set; }
+        public string? ContactPhone { get; set; }
+        public string? ActivityFrequency { get; set; }
     }
+
 }
 

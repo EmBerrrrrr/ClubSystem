@@ -214,7 +214,14 @@ namespace Service.Service.Implements
                     Name = x.Club.Name ?? "",
                     Description = x.Club.Description,
                     Status = x.Club.Status ?? "Unknown",
-                    MembershipFee = x.Club.MembershipFee
+                    MembershipFee = x.Club.MembershipFee,
+                    EstablishedDate = x.Club.EstablishedDate,
+                    ImageClubsUrl = x.Club.ImageClubsUrl,
+                    AvatarPublicId = x.Club.AvatarPublicId,
+                    Location = x.Club.Location,
+                    ContactEmail = x.Club.ContactEmail,
+                    ContactPhone = x.Club.ContactPhone,
+                    ActivityFrequency = x.Club.ActivityFrequency
                 } : null
             }).ToList();
         }
