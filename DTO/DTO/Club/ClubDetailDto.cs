@@ -1,18 +1,18 @@
 ﻿using DTO.DTO.Activity;
 
-namespace DTO.DTO.Clubs;
-
-public class ClubDetailDto
+namespace DTO.DTO.Clubs
 {
-    public int Id { get; set; }
-
-    public string Name { get; set; } = string.Empty;
-
-    public string Description { get; set; } = string.Empty;
-
-    public string ImageUrl { get; set; } = string.Empty;
-
-    public string Status { get; set; } = string.Empty;
-
-    public List<ActivityDto> Activities { get; set; } = new();
+    public class ClubDetailDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string? Location { get; set; }
+        public string? ContactEmail { get; set; }
+        public string? ContactPhone { get; set; }
+        public string? ActivityFrequency { get; set; }
+        public List<ActivityDto> Activities { get; set; } = new();
+    }
 }

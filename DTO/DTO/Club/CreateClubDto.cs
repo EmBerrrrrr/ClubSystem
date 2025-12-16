@@ -7,6 +7,11 @@
         public DateTime? EstablishedDate { get; set; }
         public string? ImageClubsUrl { get; set; }
         public decimal? MembershipFee { get; set; }
+        public string? Location { get; set; }
+        public string? ContactEmail { get; set; }
+        public string? ContactPhone { get; set; }
+        public string? ActivityFrequency { get; set; }
     }
+
 
 }

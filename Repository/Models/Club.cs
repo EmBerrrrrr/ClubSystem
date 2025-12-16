@@ -23,6 +23,14 @@ public partial class Club
 
     public string AvatarPublicId { get; set; }
 
+    public string Location { get; set; }
+
+    public string ContactEmail { get; set; }
+
+    public string ContactPhone { get; set; }
+
+    public string ActivityFrequency { get; set; }
+
     public virtual ICollection<Activity> Activities { get; set; } = new List<Activity>();
 
     public virtual ICollection<ClubLeader> ClubLeaders { get; set; } = new List<ClubLeader>();
