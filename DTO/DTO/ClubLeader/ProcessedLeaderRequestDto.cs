@@ -10,8 +10,8 @@ namespace Service.DTO.ClubLeader
         public string? Phone { get; set; }
         public DateTime RequestDate { get; set; }
         public string Status { get; set; } = string.Empty;
-        public string? Reason { get; set; } // Lý do student gửi request
-        public string? Note { get; set; } // Lý do admin duyệt/từ chối
+        public string? RejectReason { get; set; } // Lý do student gửi request
+        public string? AdminNote { get; set; } // Lý do admin duyệt/từ chối
         public int? ProcessedBy { get; set; }
         public string? ProcessedByUsername { get; set; }
         public string? ProcessedByFullName { get; set; }

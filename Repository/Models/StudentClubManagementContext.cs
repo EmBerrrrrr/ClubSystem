@@ -70,6 +70,9 @@ public partial class StudentClubManagementContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("imageAccount_url");
             entity.Property(e => e.IsActive).HasColumnName("is_active");
+            entity.Property(e => e.Major)
+                .HasMaxLength(150)
+                .HasColumnName("major");
             entity.Property(e => e.PasswordHash)
                 .IsRequired()
                 .HasMaxLength(255)
@@ -77,6 +80,9 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(50)
                 .HasColumnName("phone");
+            entity.Property(e => e.Skills)
+                .HasMaxLength(500)
+                .HasColumnName("skills");
             entity.Property(e => e.Username)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -231,12 +237,17 @@ public partial class StudentClubManagementContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("account_id");
-            entity.Property(e => e.Note).HasColumnName("note");
+            entity.Property(e => e.AdminNote).HasColumnName("admin_note");
+            entity.Property(e => e.Commitment)
+                .HasMaxLength(255)
+                .HasColumnName("commitment");
+            entity.Property(e => e.Experience).HasColumnName("experience");
+            entity.Property(e => e.Motivation).HasColumnName("motivation");
             entity.Property(e => e.ProcessedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("processed_at");
             entity.Property(e => e.ProcessedBy).HasColumnName("processed_by");
-            entity.Property(e => e.Reason).HasColumnName("reason");
+            entity.Property(e => e.RejectReason).HasColumnName("reject_reason");
             entity.Property(e => e.RequestDate)
                 .HasColumnType("datetime")
                 .HasColumnName("request_date");
@@ -244,6 +255,7 @@ public partial class StudentClubManagementContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .HasColumnName("status");
+            entity.Property(e => e.Vision).HasColumnName("vision");
 
             entity.HasOne(d => d.Account).WithMany(p => p.ClubLeaderRequestAccounts)
                 .HasForeignKey(d => d.AccountId)

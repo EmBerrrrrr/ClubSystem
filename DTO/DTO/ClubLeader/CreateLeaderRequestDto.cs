@@ -1,4 +1,7 @@
 ﻿public class CreateLeaderRequestDto
 {
-    public string Reason { get; set; } = "";
+    public string Motivation { get; set; } = "";
+    public string Experience { get; set; } = "";
+    public string Vision { get; set; } = "";
+    public string Commitment { get; set; } = "";
 }

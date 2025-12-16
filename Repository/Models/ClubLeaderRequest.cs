@@ -19,9 +19,17 @@ public partial class ClubLeaderRequest
 
     public DateTime? ProcessedAt { get; set; }
 
-    public string Note { get; set; }
+    public string AdminNote { get; set; }
 
-    public string Reason { get; set; }
+    public string RejectReason { get; set; }
+
+    public string Motivation { get; set; }
+
+    public string Experience { get; set; }
+
+    public string Vision { get; set; }
+
+    public string Commitment { get; set; }
 
     public virtual Account Account { get; set; }
 
