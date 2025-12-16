@@ -12,6 +12,7 @@ namespace Service.Service.Interfaces
         Task<AccountInfoDto> GetAccountInfoAsync(int accountId);
         Task SendMembershipRequestAsync(int accountId, CreateMembershipRequestDto dto);
         Task<List<MembershipRequestDto>> GetMyRequestsAsync(int accountId);
+        Task<MembershipRequestDto> GetRequestDetailAsync(int requestId, int accountId);
         Task<List<MyMembershipDto>> GetMyMembershipsAsync(int accountId);
     }
 

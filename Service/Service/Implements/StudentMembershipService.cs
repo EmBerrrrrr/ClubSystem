@@ -125,7 +125,9 @@ namespace Service.Service.Implements
                     Status = x.Status,
                     Note = x.Note,
                     RequestDate = x.RequestDate,
-                    Amount = x.Club?.MembershipFee ?? 0
+                    Amount = x.Club?.MembershipFee ?? 0,
+                    Major = x.Major,
+                    Skills = x.Skills
                 };
 
                 if (x.Status == "Awaiting Payment")
@@ -153,6 +155,44 @@ namespace Service.Service.Implements
             return result;
         }
 
+        public async Task<MembershipRequestDto> GetRequestDetailAsync(int requestId, int accountId)
+        {
+            // tuỳ repo, có thể là GetByIdAsync hoặc GetDetailAsync kèm include Club, Account
+            var x = await _reqRepo.GetByIdAsync(requestId);
+
+            // bảo vệ: chỉ cho xem request của chính mình
+            if (x == null || x.AccountId != accountId)
+                return null;
+
+            var dto = new MembershipRequestDto
+            {
+                Id = x.Id,
+                ClubName = x.Club?.Name ?? string.Empty,
+                Status = x.Status,
+                Note = x.Note,
+                RequestDate = x.RequestDate,
+                Amount = x.Club?.MembershipFee ?? 0,
+                Major = x.Major,
+                Skills = x.Skills
+            };
+
+            // nếu muốn hiện luôn thông tin payment nếu đã tạo
+            var membership = await _memberRepo
+                .GetMembershipByAccountAndClubAsync(accountId, x.ClubId);
+
+            if (membership != null)
+            {
+                var payment = await _paymentRepo.GetByMembershipIdAsync(membership.Id);
+                if (payment != null)
+                {
+                    dto.PaymentId = payment.Id;
+                    dto.Status = payment.Status;
+                    dto.OrderCode = payment.OrderCode;
+                }
+            }
+
+            return dto;
+        }
 
         // 3) Student xem CLB mình đã tham gia
         public async Task<List<MyMembershipDto>> GetMyMembershipsAsync(int accountId)

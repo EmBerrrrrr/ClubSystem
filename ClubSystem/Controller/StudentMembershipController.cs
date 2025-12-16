@@ -59,6 +59,15 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetRequestDetail(int id)
+        {
+            var accountId = User.GetAccountId();
+            var dto = await _service.GetRequestDetailAsync(id, accountId);
+            if (dto == null) return NotFound();
+            return Ok(dto);
+        }
+
         [HttpGet("my-clubs")]
         [Authorize(Roles = "student")]
         public async Task<IActionResult> MyClubs()
