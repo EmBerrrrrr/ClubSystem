@@ -15,14 +15,15 @@ namespace ClubSystem.Controller
         private readonly IClubLeaderRequestService _service;
         private readonly StudentClubManagementContext _db;
 
-
-        public ClubLeaderRequestsController(IClubLeaderRequestService service, StudentClubManagementContext db)
+        public ClubLeaderRequestsController(
+            IClubLeaderRequestService service,
+            StudentClubManagementContext db)
         {
             _service = service;
             _db = db;
         }
 
-        // STUDENT SEND REQUEST
+        // ================= STUDENT SEND REQUEST =================
         [Authorize(Roles = "student")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateLeaderRequestDto dto)
@@ -31,17 +32,19 @@ namespace ClubSystem.Controller
 
             bool isLeader = await _db.AccountRoles
                 .Include(ar => ar.Role)
-                .AnyAsync(ar => ar.AccountId == studentId &&
-                                ar.Role.Name.ToLower() == "clubleader");
+                .AnyAsync(ar =>
+                    ar.AccountId == studentId &&
+                    ar.Role.Name.ToLower() == "clubleader");
 
             if (isLeader)
                 return BadRequest("Bạn đã là Club Leader, không thể gửi request");
 
-            await _service.CreateRequestAsync(studentId, dto.Reason);
+            await _service.CreateRequestAsync(studentId, dto);
 
             return Ok("Request submitted");
         }
-        // STUDENT VIEW OUR PENDING
+
+        // ================= STUDENT VIEW MY REQUEST =================
         [Authorize(Roles = "student")]
         [HttpGet("my-request")]
         public async Task<IActionResult> GetMyRequest()
@@ -56,7 +59,7 @@ namespace ClubSystem.Controller
             return Ok(data);
         }
 
-        // ADMIN VIEW PENDING
+        // ================= ADMIN VIEW PENDING =================
         [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> GetPending()
@@ -65,59 +68,52 @@ namespace ClubSystem.Controller
             return Ok(data);
         }
 
-        // ADMIN APPROVE
+        // ================= ADMIN APPROVE =================
         [Authorize(Roles = "admin")]
         [HttpPut("{id}/approve")]
         public async Task<IActionResult> Approve(
             int id,
-            [FromBody] ApproveLeaderRequestDto? dto = null)
+            [FromBody] ApproveLeaderRequestDto? dto)
         {
-            try
-            {
-                int adminId = User.GetAccountId();
+            int adminId = User.GetAccountId();
 
-                await _service.ApproveAsync(id, adminId, dto?.ApproveNote);
+            await _service.ApproveAsync(
+                id,
+                adminId,
+                dto?.AdminNote
+            );
 
-                return Ok("Approved");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok("Approved");
         }
 
-        // ADMIN REJECT
+        // ================= ADMIN REJECT =================
         [Authorize(Roles = "admin")]
         [HttpPut("{id}/reject")]
         public async Task<IActionResult> Reject(
             int id,
             [FromBody] RejectLeaderRequestDto dto)
         {
-            try
-            {
-                int adminId = User.GetAccountId();
+            int adminId = User.GetAccountId();
 
-                await _service.RejectAsync(
-                    id,
-                    adminId,
-                    dto.RejectReason ?? ""
-                );
+            await _service.RejectAsync(
+                id,
+                adminId,
+                dto.RejectReason
+            );
 
-                return Ok("Rejected");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok("Rejected");
         }
 
+        // ================= ADMIN VIEW DETAIL =================
         [Authorize(Roles = "admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDetail(int id)
         {
             var data = await _service.GetRequestDetailAsync(id);
+
             if (data == null)
                 return NotFound("Request không tồn tại");
+
             return Ok(data);
         }
     }

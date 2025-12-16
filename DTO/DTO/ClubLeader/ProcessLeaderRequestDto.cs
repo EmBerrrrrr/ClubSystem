@@ -9,11 +9,11 @@
 
     public class ApproveLeaderRequestDto
     {
-        public string? ApproveNote { get; set; }
+        public string? AdminNote { get; set; }
     }
 
     public class RejectLeaderRequestDto
     {
-        public string? RejectReason { get; set; }
+        public string RejectReason { get; set; } = "";
     }
 }

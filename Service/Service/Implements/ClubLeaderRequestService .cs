@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DTO.DTO.ClubLeader;
+using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.DTO.ClubLeader;
-using Service.Service.Interfaces;
 using Service.Helper;
-using System;
+using Service.Service.Interfaces;
 
 namespace Service.Service.Implements
 {
@@ -13,6 +13,7 @@ namespace Service.Service.Implements
         private readonly StudentClubManagementContext _db;
         private readonly IClubLeaderRequestRepository _repo;
         private readonly INotificationService _noti;
+
         public ClubLeaderRequestService(
             StudentClubManagementContext db,
             IClubLeaderRequestRepository repo,
@@ -23,8 +24,8 @@ namespace Service.Service.Implements
             _noti = noti;
         }
 
-        // Student gửi request
-        public async Task CreateRequestAsync(int accountId, string reason)
+        // ================= STUDENT CREATE =================
+        public async Task CreateRequestAsync(int accountId, CreateLeaderRequestDto dto)
         {
             bool isLeader = await _db.AccountRoles
                 .Include(x => x.Role)
@@ -36,7 +37,7 @@ namespace Service.Service.Implements
 
             bool exists = await _db.ClubLeaderRequests
                 .AnyAsync(x => x.AccountId == accountId &&
-                               x.Status.ToLower() == "pending");
+                               x.Status == "pending");
 
             if (exists)
                 throw new Exception("Bạn đã gửi request và đang chờ duyệt");
@@ -46,7 +47,11 @@ namespace Service.Service.Implements
                 AccountId = accountId,
                 RequestDate = DateTimeExtensions.NowVietnam(),
                 Status = "pending",
-                Reason = string.IsNullOrWhiteSpace(reason) ? "No reason" : reason.Trim()
+
+                Motivation = dto.Motivation,
+                Experience = dto.Experience,
+                Vision = dto.Vision,
+                Commitment = dto.Commitment
             };
 
             await _repo.CreateAsync(request);
@@ -69,7 +74,7 @@ namespace Service.Service.Implements
             }
         }
 
-        // Student xem list của bản thân
+        // ================= STUDENT VIEW =================
         public async Task<MyLeaderRequestDto?> GetMyRequestAsync(int accountId)
         {
             var req = await _db.ClubLeaderRequests
@@ -78,27 +83,25 @@ namespace Service.Service.Implements
                 .OrderByDescending(x => x.RequestDate)
                 .FirstOrDefaultAsync();
 
-            if (req == null)
-                return null;
+            if (req == null) return null;
 
             return new MyLeaderRequestDto
             {
                 Id = req.Id,
                 RequestDate = req.RequestDate,
                 Status = req.Status,
-                Reason = req.Reason,
-                Note = req.Note,
-                Phone = req.Account?.Phone
+                AdminNote = req.AdminNote,
+                RejectReason = req.RejectReason,
+                //Phone = req.Account?.Phone
             };
-
         }
 
-        // Admin xem list pending
+        // ================= ADMIN PENDING =================
         public async Task<List<LeaderRequestDto>> GetPendingAsync()
         {
             var requests = await _db.ClubLeaderRequests
-                .Include(x => x.Account) // JOIN ACCOUNT
-                .Where(x => x.Status.ToLower() == "pending")
+                .Include(x => x.Account)
+                .Where(x => x.Status == "pending")
                 .OrderByDescending(x => x.RequestDate)
                 .ToListAsync();
 
@@ -106,119 +109,75 @@ namespace Service.Service.Implements
             {
                 Id = x.Id,
                 AccountId = x.AccountId,
-
                 Username = x.Account.Username,
                 FullName = x.Account.FullName,
                 Email = x.Account.Email,
                 Phone = x.Account.Phone,
-
                 RequestDate = x.RequestDate,
                 Status = x.Status,
-                Reason = x.Reason,
-                Note = x.Note
+                Motivation = x.Motivation,
+                Experience = x.Experience,
+                Vision = x.Vision,
+                Commitment = x.Commitment
             }).ToList();
         }
 
-        // Admin xem list đã duyệt
+        // ================= ADMIN APPROVED =================
         public async Task<List<ProcessedLeaderRequestDto>> GetApprovedAsync()
         {
             var requests = await _db.ClubLeaderRequests
                 .Include(x => x.Account)
                 .Include(x => x.ProcessedByNavigation)
-                .Where(x => x.Status.ToLower() == "approved")
+                .Where(x => x.Status == "approved")
                 .OrderByDescending(x => x.ProcessedAt)
                 .ToListAsync();
 
-            return requests.Select(x => new ProcessedLeaderRequestDto
-            {
-                Id = x.Id,
-                AccountId = x.AccountId,
-                Username = x.Account?.Username ?? string.Empty,
-                FullName = x.Account?.FullName,
-                Email = x.Account?.Email,
-                Phone = x.Account?.Phone,
-                RequestDate = x.RequestDate,
-                Status = x.Status,
-                Reason = x.Reason,
-                Note = x.Note,
-                ProcessedBy = x.ProcessedBy,
-                ProcessedByUsername = x.ProcessedByNavigation?.Username,
-                ProcessedByFullName = x.ProcessedByNavigation?.FullName,
-                ProcessedAt = x.ProcessedAt
-            }).ToList();
+            return requests.Select(x => MapProcessed(x)).ToList();
         }
 
-        // Admin xem list đã từ chối
+        // ================= ADMIN REJECTED =================
         public async Task<List<ProcessedLeaderRequestDto>> GetRejectedAsync()
         {
             var requests = await _db.ClubLeaderRequests
                 .Include(x => x.Account)
                 .Include(x => x.ProcessedByNavigation)
-                .Where(x => x.Status.ToLower() == "rejected")
+                .Where(x => x.Status == "rejected")
                 .OrderByDescending(x => x.ProcessedAt)
                 .ToListAsync();
 
-            return requests.Select(x => new ProcessedLeaderRequestDto
-            {
-                Id = x.Id,
-                AccountId = x.AccountId,
-                Username = x.Account?.Username ?? string.Empty,
-                FullName = x.Account?.FullName,
-                Email = x.Account?.Email,
-                Phone = x.Account?.Phone,
-                RequestDate = x.RequestDate,
-                Status = x.Status,
-                Reason = x.Reason,
-                Note = x.Note,
-                ProcessedBy = x.ProcessedBy,
-                ProcessedByUsername = x.ProcessedByNavigation?.Username,
-                ProcessedByFullName = x.ProcessedByNavigation?.FullName,
-                ProcessedAt = x.ProcessedAt
-            }).ToList();
+            return requests.Select(x => MapProcessed(x)).ToList();
         }
 
-        // Admin xem thống kê
+        // ================= STATS =================
         public async Task<LeaderRequestStatsDto> GetStatsAsync()
         {
-            var totalApproved = await _db.ClubLeaderRequests
-                .CountAsync(x => x.Status.ToLower() == "approved");
-            
-            var totalRejected = await _db.ClubLeaderRequests
-                .CountAsync(x => x.Status.ToLower() == "rejected");
-            
-            var totalPending = await _db.ClubLeaderRequests
-                .CountAsync(x => x.Status.ToLower() == "pending");
-            
-            var total = await _db.ClubLeaderRequests.CountAsync();
-
             return new LeaderRequestStatsDto
             {
-                TotalApproved = totalApproved,
-                TotalRejected = totalRejected,
-                TotalPending = totalPending,
-                Total = total
+                TotalApproved = await _db.ClubLeaderRequests.CountAsync(x => x.Status == "approved"),
+                TotalRejected = await _db.ClubLeaderRequests.CountAsync(x => x.Status == "rejected"),
+                TotalPending = await _db.ClubLeaderRequests.CountAsync(x => x.Status == "pending"),
+                Total = await _db.ClubLeaderRequests.CountAsync()
             };
         }
 
-        // APPROVE
-        public async Task ApproveAsync(int requestId, int adminId, string? note = null)
+        // ================= APPROVE =================
+        public async Task ApproveAsync(int requestId, int adminId, string? adminNote)
         {
             var request = await _repo.GetByIdAsync(requestId)
                 ?? throw new Exception("Request không tồn tại");
 
-            if (request.Status.ToLower() != "pending")
+            if (request.Status != "pending")
                 throw new Exception("Request đã xử lý");
 
             request.Status = "approved";
+            request.AdminNote = adminNote;
             request.ProcessedBy = adminId;
             request.ProcessedAt = DateTimeExtensions.NowVietnam();
-            request.Note = note ?? "Đã duyệt";
 
             var role = await _db.Roles.FirstAsync(x => x.Name == "clubleader");
 
             if (!await _db.AccountRoles.AnyAsync(x =>
-                    x.AccountId == request.AccountId &&
-                    x.RoleId == role.Id))
+                x.AccountId == request.AccountId && x.RoleId == role.Id))
             {
                 _db.AccountRoles.Add(new AccountRole
                 {
@@ -229,7 +188,6 @@ namespace Service.Service.Implements
 
             await _repo.SaveAsync();
 
-            // 🔔 NOTI → STUDENT
             _noti.Push(
                 request.AccountId,
                 "Yêu cầu được duyệt 🎉",
@@ -237,27 +195,27 @@ namespace Service.Service.Implements
             );
         }
 
-        // REJECT
-        public async Task RejectAsync(int requestId, int adminId, string reason)
+        // ================= REJECT =================
+        public async Task RejectAsync(int requestId, int adminId, string rejectReason)
         {
             var request = await _repo.GetByIdAsync(requestId)
                 ?? throw new Exception("Request không tồn tại");
 
             request.Status = "rejected";
+            request.RejectReason = rejectReason;
             request.ProcessedBy = adminId;
             request.ProcessedAt = DateTimeExtensions.NowVietnam();
-            request.Note = reason;
 
             await _repo.SaveAsync();
 
-            // 🔔 NOTI → STUDENT
             _noti.Push(
                 request.AccountId,
                 "Yêu cầu bị từ chối",
-                reason
+                rejectReason
             );
         }
 
+        // ================= DETAIL =================
         public async Task<ProcessedLeaderRequestDto?> GetRequestDetailAsync(int id)
         {
             var x = await _db.ClubLeaderRequests
@@ -265,26 +223,28 @@ namespace Service.Service.Implements
                 .Include(r => r.ProcessedByNavigation)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (x == null) return null;
+            return x == null ? null : MapProcessed(x);
+        }
 
+        private static ProcessedLeaderRequestDto MapProcessed(ClubLeaderRequest x)
+        {
             return new ProcessedLeaderRequestDto
             {
                 Id = x.Id,
                 AccountId = x.AccountId,
-                Username = x.Account?.Username ?? string.Empty,
+                Username = x.Account?.Username ?? "",
                 FullName = x.Account?.FullName,
                 Email = x.Account?.Email,
                 Phone = x.Account?.Phone,
                 RequestDate = x.RequestDate,
                 Status = x.Status,
-                Reason = x.Reason,
-                Note = x.Note,
+                AdminNote = x.AdminNote,
+                RejectReason = x.RejectReason,
                 ProcessedBy = x.ProcessedBy,
                 ProcessedByUsername = x.ProcessedByNavigation?.Username,
                 ProcessedByFullName = x.ProcessedByNavigation?.FullName,
                 ProcessedAt = x.ProcessedAt
             };
         }
-
     }
 }

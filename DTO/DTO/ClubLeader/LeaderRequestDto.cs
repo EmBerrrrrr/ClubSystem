@@ -10,8 +10,10 @@
         public string? Phone { get; set; }
         public DateTime RequestDate { get; set; }
         public string Status { get; set; } = string.Empty;
-        public string? Reason { get; set; }
-        public string? Note { get; set; }
+        public string Motivation { get; set; } = "";
+        public string Experience { get; set; } = "";
+        public string Vision { get; set; } = "";
+        public string Commitment { get; set; } ="";
     }
 
 }

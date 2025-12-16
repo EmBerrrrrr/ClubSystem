@@ -27,9 +27,9 @@ public partial class Account
 
     public string AvatarPublicId { get; set; }
 
-    public string? Major { get; set; }
+    public string Major { get; set; }
 
-    public string? Skills { get; set; }
+    public string Skills { get; set; }
 
     public virtual ICollection<AccountRole> AccountRoles { get; set; } = new List<AccountRole>();
 
