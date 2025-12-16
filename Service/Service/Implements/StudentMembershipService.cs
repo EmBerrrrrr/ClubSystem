@@ -44,9 +44,7 @@ namespace Service.Service.Implements
             {
                 FullName = account.FullName,
                 Email = account.Email,
-                Phone = account.Phone,
-                Major = account.Major,
-                Skills = account.Skills
+                Phone = account.Phone
             };
         }
 
@@ -103,7 +101,9 @@ namespace Service.Service.Implements
                 ClubId = dto.ClubId,
                 Status = "Pending",
                 RequestDate = DateTimeExtensions.NowVietnam(),
-                Note = dto.Reason // Lưu lý do tham gia vào Note
+                Note = dto.Reason, // Lưu lý do tham gia vào Note
+                Major = string.IsNullOrWhiteSpace(dto.Major) ? null : dto.Major,
+                Skills = string.IsNullOrWhiteSpace(dto.Skills) ? null : dto.Skills
             };
 
             await _reqRepo.CreateRequestAsync(req);

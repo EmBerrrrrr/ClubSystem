@@ -70,9 +70,6 @@ public partial class StudentClubManagementContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("imageAccount_url");
             entity.Property(e => e.IsActive).HasColumnName("is_active");
-            entity.Property(e => e.Major)
-                .HasMaxLength(150)
-                .HasColumnName("major");
             entity.Property(e => e.PasswordHash)
                 .IsRequired()
                 .HasMaxLength(255)
@@ -80,9 +77,6 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(50)
                 .HasColumnName("phone");
-            entity.Property(e => e.Skills)
-                .HasMaxLength(500)
-                .HasColumnName("skills");
             entity.Property(e => e.Username)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -302,6 +296,12 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.AccountId).HasColumnName("account_id");
             entity.Property(e => e.ClubId).HasColumnName("club_id");
             entity.Property(e => e.Note).HasColumnName("note");
+            entity.Property(e => e.Major)
+                .HasMaxLength(150)
+                .HasColumnName("major");
+            entity.Property(e => e.Skills)
+                .HasMaxLength(500)
+                .HasColumnName("skills");
             entity.Property(e => e.ProcessedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("processed_at");

@@ -57,7 +57,9 @@ namespace Service.Service.Implements
                 FullName = r.Account?.FullName,
                 Email = r.Account?.Email,
                 Phone = r.Account?.Phone,
-                Reason = r.Note // Lý do tham gia được lưu trong Note
+                Reason = r.Note, // Lý do tham gia được lưu trong Note
+                Major = r.Major,
+                Skills = r.Skills
             }).ToList();
         }
 
@@ -84,7 +86,9 @@ namespace Service.Service.Implements
                 FullName = r.Account?.FullName,
                 Email = r.Account?.Email,
                 Phone = r.Account?.Phone,
-                Reason = r.Note // Lý do tham gia được lưu trong Note
+                Reason = r.Note, // Lý do tham gia được lưu trong Note
+                Major = r.Major,
+                Skills = r.Skills
             }).ToList();
         }
 

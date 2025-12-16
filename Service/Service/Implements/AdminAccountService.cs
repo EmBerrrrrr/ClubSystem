@@ -132,8 +132,6 @@ public class AdminAccountService : IAdminAccountService
             Email = acc.Email,
             FullName = acc.FullName,
             Phone = acc.Phone,
-            Major = acc.Major,
-            Skills = acc.Skills,
             IsActive = acc.IsActive ?? false,
             Roles = roles
         };

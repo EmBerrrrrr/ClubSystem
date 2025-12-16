@@ -18,6 +18,8 @@ namespace DTO.DTO.Membership
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public string? Reason { get; set; } // Lý do tham gia (lưu trong Note của request)
+        public string? Major { get; set; }
+        public string? Skills { get; set; }
     }
 
 }

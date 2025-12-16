@@ -43,8 +43,6 @@ public class AuthBusinessService : IAuthBusinessService
             Email = account.Email ?? string.Empty,
             FullName = account.FullName ?? string.Empty,
             Phone = account.Phone,
-            Major = account.Major,
-            Skills = account.Skills,
             Roles = roles
         };
     }
@@ -69,8 +67,6 @@ public class AuthBusinessService : IAuthBusinessService
             PasswordHash = _authService.HashPassword(request.Password),
             FullName = request.FullName,
             Phone = string.IsNullOrWhiteSpace(request.Phone) ? null : request.Phone,
-            Major = string.IsNullOrWhiteSpace(request.Major) ? null : request.Major,
-            Skills = string.IsNullOrWhiteSpace(request.Skills) ? null : request.Skills,
             IsActive = true,
             CreatedAt = DateTime.Now
         };
@@ -100,8 +96,6 @@ public class AuthBusinessService : IAuthBusinessService
             Email = account.Email ?? string.Empty,
             FullName = account.FullName ?? string.Empty,
             Phone = account.Phone,
-            Major = account.Major,
-            Skills = account.Skills,
             Roles = roles
         };
     }
@@ -132,14 +126,6 @@ public class AuthBusinessService : IAuthBusinessService
         if (request.Phone != null && !string.IsNullOrWhiteSpace(request.Phone))
             account.Phone = request.Phone;
 
-        // Major: cập nhật nếu có giá trị
-        if (request.Major != null)
-            account.Major = string.IsNullOrWhiteSpace(request.Major) ? null : request.Major;
-
-        // Skills: cập nhật nếu có giá trị
-        if (request.Skills != null)
-            account.Skills = string.IsNullOrWhiteSpace(request.Skills) ? null : request.Skills;
-
         // 4. Cập nhật password nếu có (hash trước khi lưu)
         bool passwordChanged = false;
         if (!string.IsNullOrWhiteSpace(request.Password))
@@ -164,8 +150,6 @@ public class AuthBusinessService : IAuthBusinessService
             Email = account.Email ?? string.Empty,
             FullName = account.FullName ?? string.Empty,
             Phone = account.Phone,
-            Major = account.Major,
-            Skills = account.Skills,
             Roles = roles,
             PasswordChanged = passwordChanged ? true : null // Chỉ set true nếu có đổi password, null nếu không
         };

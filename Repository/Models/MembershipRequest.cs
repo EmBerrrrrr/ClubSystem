@@ -23,6 +23,10 @@ public partial class MembershipRequest
 
     public string Note { get; set; }
 
+    public string Major { get; set; }
+
+    public string Skills { get; set; }
+
     public virtual Account Account { get; set; }
 
     public virtual Club Club { get; set; }

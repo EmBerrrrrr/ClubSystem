@@ -35,5 +35,15 @@ namespace DTO.DTO.Membership
         /// Số điện thoại (optional - chỉ cần nếu account chưa có thông tin này)
         /// </summary>
         public string? Phone { get; set; }
+        
+        /// <summary>
+        /// Chuyên ngành (optional)
+        /// </summary>
+        public string? Major { get; set; }
+        
+        /// <summary>
+        /// Kỹ năng (optional)
+        /// </summary>
+        public string? Skills { get; set; }
     }
 }
