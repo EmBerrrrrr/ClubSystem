@@ -10,10 +10,13 @@
         public string? AvatarPublicId { get; set; }
         public decimal? MembershipFee { get; set; }
         public string? Status { get; set; }
-        
-        // Thông tin monitoring (chỉ có khi admin xem)
-        public int? MemberCount { get; set; } // Số thành viên active
-        public decimal? TotalRevenue { get; set; } // Tổng doanh thu phí
-    }
+        public string? Location { get; set; }
+        public string? ContactEmail { get; set; }
+        public string? ContactPhone { get; set; }
+        public string? ActivityFrequency { get; set; }
 
+        // Monitoring
+        public int? MemberCount { get; set; }
+        public decimal? TotalRevenue { get; set; }
+    }
 }

@@ -79,7 +79,11 @@ namespace Service.Service.Implements
                     : null,
                 ImageClubsUrl = dto.ImageClubsUrl,
                 MembershipFee = dto.MembershipFee,
-                Status = "Active"
+                Status = "Active",
+                Location = dto.Location,
+                ContactEmail = dto.ContactEmail,
+                ContactPhone = dto.ContactPhone,
+                ActivityFrequency = dto.ActivityFrequency
             };
 
             await _repo.AddAsync(club);
@@ -118,6 +122,10 @@ namespace Service.Service.Implements
             club.ImageClubsUrl = dto.ImageClubsUrl;
             club.MembershipFee = dto.MembershipFee;
             club.Status = dto.Status;
+            club.Location = dto.Location;
+            club.ContactEmail = dto.ContactEmail;
+            club.ContactPhone = dto.ContactPhone;
+            club.ActivityFrequency = dto.ActivityFrequency;
 
             await _repo.UpdateAsync(club);
         }
@@ -179,6 +187,10 @@ namespace Service.Service.Implements
                 Description = club.Description,
                 ImageUrl = club.ImageClubsUrl,
                 Status = club.Status,
+                Location = club.Location,
+                ContactEmail = club.ContactEmail,
+                ContactPhone = club.ContactPhone,
+                ActivityFrequency = club.ActivityFrequency,
 
                 Activities = club.Activities
                     .OrderByDescending(x => x.StartTime)
@@ -211,7 +223,11 @@ namespace Service.Service.Implements
                 AvatarPublicId = c.AvatarPublicId,
                 EstablishedDate = c.EstablishedDate?.ToDateTime(TimeOnly.MinValue),
                 MembershipFee = c.MembershipFee,
-                Status = c.Status
+                Status = c.Status,
+                Location = c.Location,
+                ContactEmail = c.ContactEmail,
+                ContactPhone = c.ContactPhone,
+                ActivityFrequency = c.ActivityFrequency
             };
         }
 

@@ -179,14 +179,26 @@ public partial class StudentClubManagementContext : DbContext
             entity.ToTable("clubs");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ActivityFrequency)
+                .HasMaxLength(100)
+                .HasColumnName("activityFrequency");
             entity.Property(e => e.AvatarPublicId)
                 .HasMaxLength(225)
                 .HasColumnName("avatarPublicId");
+            entity.Property(e => e.ContactEmail)
+                .HasMaxLength(255)
+                .HasColumnName("contactEmail");
+            entity.Property(e => e.ContactPhone)
+                .HasMaxLength(50)
+                .HasColumnName("contactPhone");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.EstablishedDate).HasColumnName("established_date");
             entity.Property(e => e.ImageClubsUrl)
                 .HasMaxLength(255)
                 .HasColumnName("imageClubs_url");
+            entity.Property(e => e.Location)
+                .HasMaxLength(255)
+                .HasColumnName("location");
             entity.Property(e => e.MembershipFee)
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("membership_fee");
@@ -295,13 +307,10 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("account_id");
             entity.Property(e => e.ClubId).HasColumnName("club_id");
-            entity.Property(e => e.Note).HasColumnName("note");
             entity.Property(e => e.Major)
                 .HasMaxLength(150)
                 .HasColumnName("major");
-            entity.Property(e => e.Skills)
-                .HasMaxLength(500)
-                .HasColumnName("skills");
+            entity.Property(e => e.Note).HasColumnName("note");
             entity.Property(e => e.ProcessedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("processed_at");
@@ -309,6 +318,9 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.RequestDate)
                 .HasColumnType("datetime")
                 .HasColumnName("request_date");
+            entity.Property(e => e.Skills)
+                .HasMaxLength(500)
+                .HasColumnName("skills");
             entity.Property(e => e.Status)
                 .HasMaxLength(100)
                 .HasColumnName("status");
