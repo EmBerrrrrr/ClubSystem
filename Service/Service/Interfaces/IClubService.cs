@@ -14,6 +14,8 @@ namespace Service.Services.Interfaces
         Task UpdateAsync(int clubId, UpdateClubDto dto, int accountId, bool isAdmin);
         Task DeleteAsync(int clubId, int accountId, bool isAdmin);
         Task<List<int>> GetLeaderAccountIdsByClubIdAsync(int clubId);
+        Task<Dictionary<int, string?>> GetActiveLeaderNamesByClubIdsAsync(List<int> clubIds);
+
 
     }
 

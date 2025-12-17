@@ -43,30 +43,37 @@ namespace Service.Service.Implements
         public async Task<List<ClubDto>> GetAllClubsForAdminAsync()
         {
             var clubs = await _repo.GetAllAsync();
+            if (!clubs.Any()) return new List<ClubDto>();
+
+            var clubIds = clubs.Select(c => c.Id).ToList();
+
+            var leaderMap = await GetActiveLeaderNamesByClubIdsAsync(clubIds);
+
             var result = new List<ClubDto>();
 
             foreach (var club in clubs)
             {
-                // Validate: Đảm bảo club có thông tin hợp lệ
                 if (club == null || string.IsNullOrEmpty(club.Name))
                     continue;
 
-                // Tính số thành viên active
-                var memberCount = await _membershipRepo.GetActiveMemberCountByClubIdAsync(club.Id);
+                var memberCount = await _membershipRepo
+                    .GetActiveMemberCountByClubIdAsync(club.Id);
 
-                // Tính tổng doanh thu phí (từ payments đã paid)
-                var totalRevenue = await _paymentRepo.GetTotalRevenueFromMembersByClubIdAsync(club.Id);
+                var totalRevenue = await _paymentRepo
+                    .GetTotalRevenueFromMembersByClubIdAsync(club.Id);
 
                 var dto = MapToDto(club);
                 dto.MemberCount = memberCount;
                 dto.TotalRevenue = totalRevenue;
-                
+
+                dto.LeaderName = leaderMap.GetValueOrDefault(club.Id);
+
                 result.Add(dto);
             }
 
-            // Sắp xếp theo tên CLB
             return result.OrderBy(c => c.Name).ToList();
         }
+
 
         public async Task<ClubDto> CreateAsync(CreateClubDto dto, int leaderId)
         {
@@ -238,5 +245,28 @@ namespace Service.Service.Implements
                 .Select(x => x.AccountId)
                 .ToListAsync();
         }
+
+        public async Task<Dictionary<int, string?>> GetActiveLeaderNamesByClubIdsAsync(
+            List<int> clubIds)
+        {
+            return await _context.ClubLeaders
+                .AsNoTracking()
+                .Include(cl => cl.Account)
+                .Where(cl =>
+                    clubIds.Contains(cl.ClubId) &&
+                    cl.IsActive == true)
+                .GroupBy(cl => cl.ClubId)
+                .Select(g => new
+                {
+                    ClubId = g.Key,
+                    LeaderName = g
+                        .Select(x => x.Account.FullName)
+                        .FirstOrDefault()
+                })
+                .ToDictionaryAsync(x => x.ClubId, x => x.LeaderName);
+        }
+
+
+
     }
 }

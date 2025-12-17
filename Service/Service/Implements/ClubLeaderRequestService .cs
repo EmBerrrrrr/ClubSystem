@@ -89,10 +89,17 @@ namespace Service.Service.Implements
             {
                 Id = req.Id,
                 RequestDate = req.RequestDate,
+                Username = req.Account.Username,
+                FullName = req.Account.FullName,
+                Email = req.Account.Email,
+                Phone = req.Account.Phone,
                 Status = req.Status,
                 AdminNote = req.AdminNote,
                 RejectReason = req.RejectReason,
-                //Phone = req.Account?.Phone
+                Motivation = req.Motivation,
+                Experience = req.Experience,
+                Vision = req.Vision,
+                Commitment = req.Commitment
             };
         }
 

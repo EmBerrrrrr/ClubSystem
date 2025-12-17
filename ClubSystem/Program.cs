@@ -27,6 +27,8 @@ public class Program
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+        Console.WriteLine("CONNECTION STRING = " + connectionString);
+
         // DB
         builder.Services.AddDbContext<StudentClubManagementContext>(options =>
             options.UseSqlServer(connectionString));
@@ -58,6 +60,7 @@ public class Program
         builder.Services.AddScoped<IPayOSService, PayOSService>();
         builder.Services.AddScoped<IPhotoService, PhotoService>();
         builder.Services.AddSingleton<INotificationService, InMemoryNotificationService>();
+        builder.Services.AddScoped<IReportService, ReportService>();
 
         builder.Services.AddSingleton(sp =>
         {

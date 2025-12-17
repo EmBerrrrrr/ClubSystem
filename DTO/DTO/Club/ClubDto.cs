@@ -3,6 +3,8 @@
     public class ClubDto
     {
         public int Id { get; set; }
+        public string? LeaderName { get; set; }
+
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public DateTime? EstablishedDate { get; set; }
