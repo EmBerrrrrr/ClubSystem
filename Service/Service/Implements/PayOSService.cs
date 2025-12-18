@@ -66,8 +66,12 @@ namespace Service.Service.Implements
 
             await _paymentRepo.UpdateAsync(payment);  // lưu lại orderCode, status
 
-            // BaseUrl: tránh bị dư dấu '/'
             var baseUrl = (_config["Frontend:BaseUrl"] ?? "").TrimEnd('/');
+
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                baseUrl = "https://swp391-scms.vercel.app";
+            }
 
             string returnUrl = $"{baseUrl}/student/membership-requests";
             string cancelUrl = $"{baseUrl}/student/membership-requests";
