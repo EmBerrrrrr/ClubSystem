@@ -163,10 +163,10 @@ namespace Service.Service.Implements
                             ActivityTitle = participant.Activity.Title ?? "",
                             ClubId = participant.Activity.ClubId,
                             ClubName = participant.Activity.Club?.Name ?? "",
-                            StartTime = participant.Activity.StartTime,
-                            EndTime = participant.Activity.EndTime,
+                            StartTime = participant.Activity.StartTime.ToVietnamTime(),
+                            EndTime = participant.Activity.EndTime.ToVietnamTime(),
                             Location = participant.Activity.Location ?? "",
-                            RegisterTime = participant.RegisterTime,
+                            RegisterTime = participant.RegisterTime.ToVietnamTime(),
                             Attended = participant.Attended,
                             //CancelReason = participant.CancelReason,
                             ActivityStatus = participant.Activity.Status ?? ""

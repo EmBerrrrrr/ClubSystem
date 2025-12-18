@@ -45,5 +45,6 @@ namespace DTO.DTO.Membership
         /// Kỹ năng (optional)
         /// </summary>
         public string? Skills { get; set; }
+        public DateTime RequestDate { get; set; }
     }
 }
