@@ -8,6 +8,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+/// <summary>
+/// Service xử lý các thao tác liên quan đến Activity dành cho sinh viên/student.
+/// 
+/// Chức năng chính:
+/// - Đăng ký / hủy đăng ký tham gia activity (chỉ dành cho thành viên active của CLB)
+/// - Xem lịch sử tham gia activity của bản thân
+/// - Xem danh sách activity để đăng ký (chỉ những activity đang mở đăng ký và thuộc CLB mà mình là member)
+/// - Xem tất cả activity đang mở để xem thông tin (không cần là member)
+/// 
+/// Tương tác quan trọng với Membership:
+/// - Chỉ thành viên có Membership.Status = "active" mới được gọi RegisterForActivityAsync.
+/// - Nếu chưa là member → hướng dẫn gửi MembershipRequest trước.
+/// - Nếu club bị "Locked" → không cho đăng ký activity của club đó.
+/// </summary>
 namespace Service.Service.Implements
 {
     public class StudentActivityService : IStudentActivityService
@@ -32,6 +46,17 @@ namespace Service.Service.Implements
             _clubRepo = clubRepo;
         }
 
+        /// <summary>
+        /// Sinh viên (là thành viên active) đăng ký tham gia một activity.
+        /// 
+        /// API: POST /api/student/activities/{activityId}/register
+        /// Luồng:
+        /// - Front-end gọi → Controller → Method này
+        /// - Kiểm tra: activity tồn tại, club không bị locked, trạng thái activity cho phép đăng ký
+        /// - Kiểm tra người dùng có Membership active của CLB tổ chức activity không
+        /// - Nếu hợp lệ → tạo bản ghi ActivityParticipant (Attended = true, RegisterTime = now)
+        /// - Lưu vào bảng ActivityParticipant trong DB
+        /// </summary>
         // Member đăng ký tham gia activity (không phải student, student phải trở thành member trước)
         public async Task RegisterForActivityAsync(int accountId, int activityId)
         {
@@ -110,6 +135,12 @@ namespace Service.Service.Implements
             await _participantRepo.SaveAsync();
         }
 
+        /// <summary>
+        /// Hủy đăng ký tham gia activity.
+        /// 
+        /// API: DELETE /api/student/activities/{activityId}/cancel
+        /// Luồng: Cập nhật Attended = false trong ActivityParticipant.
+        /// </summary>
         public async Task CancelRegistrationAsync(int accountId, int activityId, string? reason)
         {
             // Kiểm tra activity tồn tại
@@ -143,6 +174,11 @@ namespace Service.Service.Implements
             await _participantRepo.SaveAsync();
         }
 
+        /// <summary>
+        /// Xem lịch sử tham gia activity của bản thân (đã đăng ký, đã hủy, đã tham gia...).
+        /// 
+        /// API: GET /api/student/activities/history
+        /// </summary>
         public async Task<List<ActivityParticipantDto>> GetMyActivityHistoryAsync(int accountId)
         {
             // Lấy tất cả memberships của student
@@ -178,6 +214,12 @@ namespace Service.Service.Implements
             return result.OrderByDescending(r => r.RegisterTime).ToList();
         }
 
+        /// <summary>
+        /// Lấy danh sách activity mà sinh viên (là member của ít nhất một CLB) có thể đăng ký.
+        /// Chỉ hiển thị activity đang mở đăng ký (Status = "Active" hoặc "opened").
+        /// 
+        /// API: GET /api/student/activities/for-registration
+        /// </summary>
         // Lấy activities mà student (đã là member) có thể đăng ký
         public async Task<List<ActivityDto>> GetActivitiesForRegistrationAsync(int accountId)
         {
@@ -212,6 +254,12 @@ namespace Service.Service.Implements
             }).ToList();
         }
 
+        /// <summary>
+        /// Student xem tất cả activities "Active" của tất cả CLB (không cần là member) - chỉ để xem.
+        /// - Luồng: Front-end gọi GET api/student/activities/view-all -> Controller GetAllActivitiesForViewing -> Gọi method này.
+        ///   Lấy từ DB bảng Activity, lọc Status="Active"/"opened", không lưu mới.
+        /// - Tương tác: Không yêu cầu membership, nhưng để register thì phải gọi API membership trước.
+        /// </summary>
         // Student xem tất cả activities "Active" của tất cả CLB (không cần là member) - chỉ để xem
         public async Task<List<ActivityDto>> GetAllActivitiesForViewingAsync()
         {
@@ -250,7 +298,11 @@ namespace Service.Service.Implements
             }).ToList();
         }
 
-        // Student xem activities "Active" của một CLB cụ thể (không cần là member) - chỉ để xem
+        /// <summary>
+        /// Xem activity của một CLB cụ thể (không cần là member - chỉ để xem).
+        /// 
+        /// API: GET /api/student/activities/view-club/{clubId}
+        /// </summary>
         public async Task<List<ActivityDto>> GetActivitiesByClubForViewingAsync(int clubId)
         {
             var activities = await _activityRepo.GetByClubAsync(clubId);

@@ -5,6 +5,19 @@ using System.Collections.Generic;
 
 namespace Repository.Models;
 
+/// <summary>
+/// Bảng Membership: Lưu thông tin thành viên chính thức của một câu lạc bộ.
+/// 
+/// Luồng chính:
+/// - Được tạo tự động khi Club Leader approve MembershipRequest (qua API leader/approve).
+/// - Status có thể là: "active", "locked", "pending_payment".
+/// - Chỉ thành viên có Status = "active" mới được đăng ký tham gia Activity.
+/// 
+/// Tương tác:
+/// - Dùng để kiểm tra quyền register Activity (StudentActivityService.RegisterForActivityAsync).
+/// - Liên kết với ActivityParticipant (một Membership có nhiều ActivityParticipant).
+/// - Liên kết với Payment (nếu có phí tham gia CLB).
+/// </summary>
 public partial class Membership
 {
     public int Id { get; set; }
@@ -13,15 +26,27 @@ public partial class Membership
 
     public int ClubId { get; set; }
 
+    /// <summary>
+    /// Ngày chính thức trở thành thành viên (sau khi approve và thanh toán xong nếu có phí).
+    /// </summary>
     public DateOnly? JoinDate { get; set; }
 
+    /// <summary>
+    /// Trạng thái thành viên: "active" | "locked" | "pending_payment"
+    /// </summary>
     public string Status { get; set; }
 
     public virtual Account Account { get; set; }
 
+    /// <summary>
+    /// Danh sách các hoạt động mà thành viên này đã đăng ký tham gia.
+    /// </summary>
     public virtual ICollection<ActivityParticipant> ActivityParticipants { get; set; } = new List<ActivityParticipant>();
 
     public virtual Club Club { get; set; }
 
+    /// <summary>
+    /// Danh sách thanh toán phí tham gia CLB (nếu có).
+    /// </summary>
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }

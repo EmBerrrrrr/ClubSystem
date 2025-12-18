@@ -13,6 +13,23 @@ using System.Linq;
 
 namespace Service.Service.Implements
 {
+    /// <summary>
+    /// Service quản lý Club (get all, get by id, create/update/delete/lock/unlock).
+    /// 
+    /// Công dụng: Cho leader/admin quản lý CLB, student xem list.
+    /// 
+    /// Luồng chính từ front-end:
+    /// 1. Leader gọi POST /api/club → CreateAsync → Lưu Club vào DB (Status="Active") + Add ClubLeader (IsActive=true).
+    /// 2. Admin gọi GET /api/admin/clubs → GetAllClubsForAdminAsync → Lấy từ DB + Tính memberCount/totalRevenue.
+    /// 3. Student gọi GET /api/clubs → GetAllClubsAsync → Lấy list (lọc active, tính memberCount).
+    /// 4. Leader gọi PUT /api/club/{id} → UpdateAsync → Update fields, không đổi status.
+    /// 5. Admin gọi PUT /api/admin/club/{id}/lock → LockClubAsync → Update Status="Locked" + Push noti cho leaders.
+    /// 
+    /// Tương tác giữa các API:
+    /// - Phải approve leader request trước → User thành leader → Create club.
+    /// - Sau create club → Leader manage activity (API activity/create), membership (approve request → payment).
+    /// - Lock club → Không cho create activity/register/request membership mới.
+    /// </summary>
     public class ClubService : IClubService
     {
         private readonly IClubRepository _repo;

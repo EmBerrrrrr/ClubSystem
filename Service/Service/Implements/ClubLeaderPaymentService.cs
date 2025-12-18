@@ -9,6 +9,21 @@ using System.Threading.Tasks;
 
 namespace Service.Service.Implements
 {
+    /// <summary>
+    /// Service xử lý payment cho Club Leader: Xem payment, debtor (người nợ phí), history.
+    /// 
+    /// Công dụng: Giúp leader theo dõi tình hình thu phí thành viên trong CLB của mình.
+    /// 
+    /// Luồng chính từ front-end:
+    /// 1. Front-end gọi API GET /api/leader/payment/club/{clubId} → Controller GetPaymentsByClub → Method GetPaymentsByClubAsync
+    ///    → Kiểm tra quyền leader → Lấy từ DB bảng Payment (join Membership, Account, Club) → Trả DTO với status "paid"/"pending"/etc.
+    /// 2. Tương tự cho GetDebtorsByClubAsync (pending payments) và GetPaymentHistoryByClubAsync (all status).
+    /// 
+    /// Tương tác giữa các API:
+    /// - Phải approve MembershipRequest trước (API leader/approve) → Tạo Membership với status "pending_payment" nếu có phí → Tạo Payment pending.
+    /// - Student thanh toán (API payment/create-link → PayOS webhook) → Update Payment status "paid" → Membership "active".
+    /// - Leader gọi API này để xem history sau khi có payment.
+    /// </summary>
     public class ClubLeaderPaymentService : IClubLeaderPaymentService
     {
         private readonly IPaymentRepository _paymentRepo;
@@ -22,6 +37,12 @@ namespace Service.Service.Implements
             _clubRepo = clubRepo;
         }
 
+        /// <summary>
+        /// Lấy danh sách tất cả payment của một CLB (đã thanh toán).
+        /// 
+        /// API: GET /api/leader/payment/club/{clubId}/payments
+        /// Luồng: Kiểm tra quyền leader → Lấy từ DB bảng Payment (Status="paid") → Join Membership/Account/Club để lấy info.
+        /// </summary>
         // Xem payments theo CLB
         public async Task<List<PaymentDto>> GetPaymentsByClubAsync(int leaderId, int clubId)
         {
@@ -50,6 +71,12 @@ namespace Service.Service.Implements
             }).ToList();
         }
 
+        /// <summary>
+        /// Lấy danh sách thành viên còn nợ phí (pending payments).
+        /// 
+        /// API: GET /api/leader/payment/club/{clubId}/debtors
+        /// Luồng: Tương tự, lấy Payment với Status="pending".
+        /// </summary>
         // Xem ai còn nợ phí
         public async Task<List<DebtorDto>> GetDebtorsByClubAsync(int leaderId, int clubId)
         {
@@ -76,6 +103,12 @@ namespace Service.Service.Implements
             }).ToList();
         }
 
+        /// <summary>
+        /// Lấy lịch sử tất cả payment của CLB (paid, pending, failed...).
+        /// 
+        /// API: GET /api/leader/payment/club/{clubId}/history
+        /// Luồng: Lấy tất cả Payment của club, không lọc status.
+        /// </summary>
         // Lịch sử thanh toán (tất cả các trạng thái: paid, pending, failed, etc.)
         public async Task<List<PaymentHistoryDto>> GetPaymentHistoryByClubAsync(int leaderId, int clubId)
         {
