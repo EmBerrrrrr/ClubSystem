@@ -47,6 +47,17 @@ namespace Repository.Repo.Implements
                 .ToListAsync();
         }
 
+        public async Task<Dictionary<int, int>> GetActiveMemberCountsByClubIdsAsync(List<int> clubIds)
+        {
+            if (!clubIds.Any())
+                return new Dictionary<int, int>();
+
+            return await _db.Memberships  // Dùng đúng DbSet: Memberships (entity Membership)
+                .Where(m => clubIds.Contains(m.ClubId) && m.Status == "Active")
+                .GroupBy(m => m.ClubId)
+                .ToDictionaryAsync(g => g.Key, g => g.Count());
+        }
+
         public async Task<int> GetActiveMemberCountByClubIdAsync(int clubId)
         {
             return await _db.Memberships
