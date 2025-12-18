@@ -141,7 +141,7 @@ namespace Service.Service.Implements
                 AccountId = accountId,
                 ClubId = dto.ClubId,
                 Status = "Pending",
-                RequestDate = DateTimeExtensions.NowVietnam(),
+                RequestDate = dto.RequestDate,
                 Note = dto.Reason, // Lưu lý do tham gia vào Note
                 Major = string.IsNullOrWhiteSpace(dto.Major) ? null : dto.Major,
                 Skills = string.IsNullOrWhiteSpace(dto.Skills) ? null : dto.Skills
@@ -171,7 +171,7 @@ namespace Service.Service.Implements
                     ClubName = x.Club?.Name ?? "",
                     Status = x.Status,
                     Note = x.Note,
-                    RequestDate = DateTimeExtensions.NowVietnam(),
+                    RequestDate = x.RequestDate,
                     Amount = x.Club?.MembershipFee ?? 0,
                     Major = x.Major,
                     Skills = x.Skills
@@ -222,7 +222,7 @@ namespace Service.Service.Implements
                 ClubName = x.Club?.Name ?? string.Empty,
                 Status = x.Status,
                 Note = x.Note,
-                RequestDate = DateTimeExtensions.NowVietnam(),
+                RequestDate = x.RequestDate,
                 Amount = x.Club?.MembershipFee ?? 0,
                 Major = x.Major,
                 Skills = x.Skills
