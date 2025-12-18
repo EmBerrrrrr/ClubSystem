@@ -1,13 +1,14 @@
-﻿using System;
+﻿using DTO.DTO.Club;
+using DTO.DTO.Membership;
+using Microsoft.EntityFrameworkCore;
+using Repository.Models;
+using Repository.Repo.Interfaces;
+using Service.Helper;
+using Service.Service.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Service.Helper;
-using Repository.Models;
-using Repository.Repo.Interfaces;
-using Service.Service.Interfaces;
-using DTO.DTO.Membership;
-using DTO.DTO.Club;
 
 namespace Service.Service.Implements
 {
@@ -199,6 +200,12 @@ namespace Service.Service.Implements
         {
             var list = await _memberRepo.GetMembershipsAsync(accountId);
 
+            if (!list.Any())
+                return new List<MyMembershipDto>();
+
+            var clubIds = list.Select(x => x.ClubId).Distinct().ToList();
+            var memberCounts = await _memberRepo.GetActiveMemberCountsByClubIdsAsync(clubIds);
+
             return list.Select(x => new MyMembershipDto
             {
                 Membership = new MembershipInfo
@@ -208,22 +215,32 @@ namespace Service.Service.Implements
                     JoinDate = x.JoinDate,
                     Status = x.Status ?? ""
                 },
-                Club = x.Club != null ? new ClubInfo
+                Club = x.Club != null ? new ClubDto
                 {
                     Id = x.Club.Id,
                     Name = x.Club.Name ?? "",
                     Description = x.Club.Description,
                     Status = x.Club.Status ?? "Unknown",
                     MembershipFee = x.Club.MembershipFee,
-                    EstablishedDate = x.Club.EstablishedDate,
+                    EstablishedDate = x.Club.EstablishedDate.HasValue
+                       ? new DateTime(x.Club.EstablishedDate.Value.Year,
+                       x.Club.EstablishedDate.Value.Month,
+                       x.Club.EstablishedDate.Value.Day)
+                       : (DateTime?)null,
                     ImageClubsUrl = x.Club.ImageClubsUrl,
                     AvatarPublicId = x.Club.AvatarPublicId,
                     Location = x.Club.Location,
                     ContactEmail = x.Club.ContactEmail,
                     ContactPhone = x.Club.ContactPhone,
-                    ActivityFrequency = x.Club.ActivityFrequency
+                    ActivityFrequency = x.Club.ActivityFrequency,
+
+                    // THÊM DÒNG NÀY: Gán số thành viên vào trong ClubInfo
+                    MemberCount = memberCounts.GetValueOrDefault(x.ClubId, 0)
                 } : null
+
+                // XÓA DÒNG MemberCount ở cấp ngoài nữa (nếu bạn đã thêm trước đó)
             }).ToList();
         }
     }
 }
+

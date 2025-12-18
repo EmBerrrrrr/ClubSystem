@@ -6,9 +6,9 @@ namespace DTO.DTO.Membership
     {
         // Thông tin membership (status nằm trong object này - frontend bắt theo vị trí)
         public MembershipInfo Membership { get; set; } = new MembershipInfo();
-        
+
         // Thông tin CLB (status của CLB nằm trong object này)
-        public ClubInfo? Club { get; set; }
+        public ClubDto? Club { get; set; }
     }
 
     public class MembershipInfo
