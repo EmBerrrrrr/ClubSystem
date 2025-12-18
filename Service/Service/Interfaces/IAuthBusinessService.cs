@@ -27,7 +27,11 @@ public class AuthBusinessService : IAuthBusinessService
     public async Task<LoginResponseDTO?> LoginAsync(LoginRequestDTO request)
     {
         var account = await _repo.GetAccountByUsernameAsync(request.Username);
-        if (account == null) return null;
+        if (account == null)
+            return null;
+
+        if (account.IsActive == false)
+            throw new Exception("ACCOUNT_LOCKED");
 
         if (!_authService.VerifyPassword(request.Password, account.PasswordHash))
             return null;
@@ -46,6 +50,7 @@ public class AuthBusinessService : IAuthBusinessService
             Roles = roles
         };
     }
+
 
     public async Task<LoginResponseDTO?> RegisterAsync(RegisterRequestDTO request)
     {

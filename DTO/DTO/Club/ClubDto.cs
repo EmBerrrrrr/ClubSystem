@@ -11,7 +11,7 @@
         public string? ImageClubsUrl { get; set; }
         public string? AvatarPublicId { get; set; }
         public decimal? MembershipFee { get; set; }
-        public string? Status { get; set; }
+        public string Status { get; set; } = "Active"; // Đã có, đảm bảo return "Locked" nếu bị khóa        public string? Location { get; set; }
         public string? Location { get; set; }
         public string? ContactEmail { get; set; }
         public string? ContactPhone { get; set; }

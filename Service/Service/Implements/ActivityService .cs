@@ -11,11 +11,13 @@ namespace Service.Service.Implements
     {
         private readonly IActivityRepository _repo;
         private readonly IActivityParticipantRepository _participantRepo;
+        private readonly IClubRepository _clubRepo;  
 
-        public ActivityService(IActivityRepository repo, IActivityParticipantRepository participantRepo)
+        public ActivityService(IActivityRepository repo, IActivityParticipantRepository participantRepo, IClubRepository clubRepo)
         {
             _repo = repo;
             _participantRepo = participantRepo;
+            _clubRepo = clubRepo;
         }
 
         public async Task<List<ActivityDto>> GetAllAsync()
@@ -38,6 +40,10 @@ namespace Service.Service.Implements
 
         public async Task<ActivityDto> CreateAsync(CreateActivityDto dto, int accountId, bool isAdmin)
         {
+            var club = await _clubRepo.GetByIdAsync(dto.ClubId);  
+            if (club == null) throw new Exception("Club not found");
+            if (club.Status == "Locked") throw new Exception("Cannot create activity for locked club");  
+
             if (!isAdmin)
             {
                 var isLeader = await _repo.IsLeaderOfClubAsync(dto.ClubId, accountId);
@@ -64,8 +70,11 @@ namespace Service.Service.Implements
 
         public async Task UpdateAsync(int id, UpdateActivityDto dto, int accountId, bool isAdmin)
         {
-            var entity = await _repo.GetByIdAsync(id)
-                ?? throw new Exception("Activity not found");
+            var entity = await _repo.GetByIdAsync(id);
+            if (entity == null) throw new Exception("Activity not found");
+
+            var club = await _clubRepo.GetByIdAsync(entity.ClubId);  
+            if (club.Status == "Locked") throw new Exception("Cannot update activity for locked club");  
 
             if (!isAdmin)
             {
@@ -86,8 +95,11 @@ namespace Service.Service.Implements
 
         public async Task DeleteAsync(int id, int accountId, bool isAdmin)
         {
-            var entity = await _repo.GetByIdAsync(id)
-                ?? throw new Exception("Activity not found");
+            var entity = await _repo.GetByIdAsync(id);
+            if (entity == null) throw new Exception("Activity not found");
+
+            var club = await _clubRepo.GetByIdAsync(entity.ClubId);  
+            if (club.Status == "Locked") throw new Exception("Cannot delete activity for locked club"); 
 
             if (!isAdmin)
             {
@@ -108,8 +120,11 @@ namespace Service.Service.Implements
 
         public async Task OpenRegistrationAsync(int activityId, int leaderId)
         {
-            var activity = await _repo.GetByIdAsync(activityId)
-                ?? throw new Exception("Không tìm thấy activity.");
+            var activity = await _repo.GetByIdAsync(activityId);
+            if (activity == null) throw new Exception("Activity not found");
+
+            var club = await _clubRepo.GetByIdAsync(activity.ClubId);  
+            if (club.Status == "Locked") throw new Exception("Cannot open registration for activity in locked club");  
 
             if (!await _repo.IsLeaderOfClubAsync(activity.ClubId, leaderId))
                 throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
@@ -126,8 +141,11 @@ namespace Service.Service.Implements
 
         public async Task CloseRegistrationAsync(int activityId, int leaderId)
         {
-            var activity = await _repo.GetByIdAsync(activityId)
-                ?? throw new Exception("Không tìm thấy activity.");
+            var activity = await _repo.GetByIdAsync(activityId);
+            if (activity == null) throw new Exception("Activity not found");
+
+            var club = await _clubRepo.GetByIdAsync(activity.ClubId);  
+            if (club.Status == "Locked") throw new Exception("Cannot close registration for activity in locked club"); 
 
             if (!await _repo.IsLeaderOfClubAsync(activity.ClubId, leaderId))
                 throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
