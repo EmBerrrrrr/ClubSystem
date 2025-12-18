@@ -5,8 +5,9 @@ using DTO.DTO.Clubs;
 using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Repository.Repo.Interfaces;
-using Service.Services.Interfaces;
 using Service.Helper;
+using Service.Service.Interfaces;
+using Service.Services.Interfaces;
 using System;
 using System.Linq;
 
@@ -18,17 +19,20 @@ namespace Service.Service.Implements
         private readonly StudentClubManagementContext _context;
         private readonly IPaymentRepository _paymentRepo;
         private readonly IMembershipRepository _membershipRepo;
+        private readonly INotificationService _noti;
 
         public ClubService(
             IClubRepository repo, 
             StudentClubManagementContext context,
             IPaymentRepository paymentRepo,
-            IMembershipRepository membershipRepo)
+            IMembershipRepository membershipRepo,
+            INotificationService noti)
         {
             _repo = repo;
             _context = context;
             _paymentRepo = paymentRepo;
             _membershipRepo = membershipRepo;
+            _noti = noti;
         }
 
         // FOR CLUB LEADER

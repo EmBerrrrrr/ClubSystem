@@ -1,8 +1,9 @@
-﻿using DTO.DTO.Membership;
+﻿using Azure.Core;
+using DTO.DTO.Membership;
 using Repository.Models;
 using Repository.Repo.Interfaces;
-using Service.Service.Interfaces;
 using Service.Helper;
+using Service.Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -146,11 +147,14 @@ namespace Service.Service.Implements
         }
         public async Task ApproveAsync(int leaderId, int requestId, string? note)
         {
-            var req = await _reqRepo.GetByIdAsync(requestId)
-                ?? throw new Exception("Không tìm thấy request");
+            var req = await _reqRepo.GetByIdAsync(requestId);
+            if (req == null) throw new Exception("Request not found");
+
+            var clubs = await _clubRepo.GetByIdAsync(req.ClubId);  // THÊM
+            if (clubs.Status == "Locked") throw new Exception("Cannot approve request for locked club");  // THÊM
 
             if (!await _clubRepo.IsLeaderOfClubAsync(req.ClubId, leaderId))
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
 
             var club = await _clubRepo.GetByIdAsync(req.ClubId)
                 ?? throw new Exception("Không tìm thấy CLB");
@@ -195,8 +199,11 @@ namespace Service.Service.Implements
         }
         public async Task RejectAsync(int leaderId, int requestId, string? note)
         {
-            var req = await _reqRepo.GetByIdAsync(requestId)
-                ?? throw new Exception("Không tìm thấy request");
+            var req = await _reqRepo.GetByIdAsync(requestId);
+            if (req == null) throw new Exception("Request not found");
+
+            var club = await _clubRepo.GetByIdAsync(req.ClubId);  // THÊM
+            if (club.Status == "Locked") throw new Exception("Cannot reject request for locked club");  // THÊM
 
             req.Status = "Reject";
             req.ProcessedBy = leaderId;
@@ -216,7 +223,10 @@ namespace Service.Service.Implements
         public async Task LockMemberAsync(int leaderId, int membershipId, string? reason)
         {
             var membership = await _membershipRepo.GetMembershipByIdAsync(membershipId)
-                ?? throw new Exception("Không tìm thấy thành viên.");
+                            ?? throw new Exception("Không tìm thấy thành viên.");
+
+            var club = await _clubRepo.GetByIdAsync(membership.ClubId);  // THÊM
+            if (club.Status == "Locked") throw new Exception("Cannot lock member in locked club");  // THÊM
 
             // Kiểm tra leader có quyền với CLB này không
             if (!await _clubRepo.IsLeaderOfClubAsync(membership.ClubId, leaderId))
@@ -234,11 +244,10 @@ namespace Service.Service.Implements
         public async Task UnlockMemberAsync(int leaderId, int membershipId)
         {
             var membership = await _membershipRepo.GetMembershipByIdAsync(membershipId)
-                ?? throw new Exception("Không tìm thấy thành viên.");
+                            ?? throw new Exception("Không tìm thấy thành viên.");
 
-            // Kiểm tra leader có quyền với CLB này không
-            if (!await _clubRepo.IsLeaderOfClubAsync(membership.ClubId, leaderId))
-                throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
+            var club = await _clubRepo.GetByIdAsync(membership.ClubId);  // THÊM
+            if (club.Status == "Locked") throw new Exception("Cannot unlock member in locked club");  // THÊM
 
             if (membership.Status != "locked")
                 throw new Exception("Thành viên không ở trạng thái bị khóa.");
@@ -252,7 +261,10 @@ namespace Service.Service.Implements
         public async Task RemoveMemberAsync(int leaderId, int membershipId, string? reason)
         {
             var membership = await _membershipRepo.GetMembershipByIdAsync(membershipId)
-                ?? throw new Exception("Không tìm thấy thành viên.");
+                            ?? throw new Exception("Không tìm thấy thành viên.");
+
+            var club = await _clubRepo.GetByIdAsync(membership.ClubId);  // THÊM
+            if (club.Status == "Locked") throw new Exception("Cannot remove member from locked club");  // THÊM
 
             // Kiểm tra leader có quyền với CLB này không
             if (!await _clubRepo.IsLeaderOfClubAsync(membership.ClubId, leaderId))
