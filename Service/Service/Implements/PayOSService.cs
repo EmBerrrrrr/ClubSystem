@@ -9,6 +9,22 @@ using Service.Helper;
 
 namespace Service.Service.Implements
 {
+    /// <summary>
+    /// Service tích hợp PayOS cho thanh toán phí membership.
+    /// 
+    /// Công dụng: Tạo link thanh toán, xử lý webhook callback từ PayOS, update status.
+    /// 
+    /// Luồng chính từ front-end:
+    /// 1. Student gọi POST /api/payment/create-link/{paymentId} → CreatePaymentLink → Lấy Payment từ DB → Tạo link PayOS → Redirect user.
+    ///    → Lưu OrderCode, Method="PayOS" vào Payment.
+    /// 2. PayOS gửi webhook POST /api/payment/webhook → HandleWebhook → Tìm Payment bằng orderCode → Update Status="paid"/"failed".
+    ///    → Nếu success: Update Membership "active", MembershipRequest "Paid", Payment PaidDate=now.
+    /// 
+    /// Tương tác giữa các API:
+    /// - Phải approve MembershipRequest trước (nếu có fee) → Tạo Membership "pending_payment" + Payment pending.
+    /// - Student thanh toán → Webhook auto update → Leader xem payment history (API leader/payment/history).
+    /// - ConfirmWebhook để verify webhook URL từ PayOS.
+    /// </summary>
     public class PayOSService : IPayOSService
     {
         private readonly PayOS _payOS;
@@ -37,6 +53,12 @@ namespace Service.Service.Implements
             _accountRepo = accountRepo;
         }
 
+        /// <summary>
+        /// Tạo link thanh toán PayOS cho một payment.
+        /// 
+        /// API: POST /api/payment/create-link/{paymentId}
+        /// Luồng: Lấy Payment từ DB → Tạo ItemData (phí membership) → Gọi PayOS createPaymentLink → Trả link.
+        /// </summary>
         // Tạo link thanh toán cho 1 payment trong DB
         public async Task<string> CreatePaymentLink(int paymentId)
         {
@@ -100,6 +122,15 @@ namespace Service.Service.Implements
 
             return result.checkoutUrl;
         }
+
+        /// <summary>
+        /// Xử lý webhook từ PayOS (thanh toán success/fail).
+        /// 
+        /// API: POST /api/payment/webhook (webhook endpoint)
+        /// Luồng: PayOS post WebhookData → Tìm Payment bằng orderCode → Update status.
+        ///    → Nếu success (code="00"): Payment "paid", Membership "active", Request "Paid".
+        ///    → Nếu fail: Payment "failed", Request "Failed".
+        /// </summary>
         // Xử lý webhook PayOS
         public async Task HandlePaymentWebhook(WebhookType webhookData)
         {
@@ -185,6 +216,12 @@ namespace Service.Service.Implements
             await _paymentRepo.UpdateAsync(payment);
         }
 
+        /// <summary>
+        /// Confirm webhook URL với PayOS (setup ban đầu).
+        /// 
+        /// API: POST /api/payment/confirm-webhook
+        /// Luồng: Gọi PayOS confirmWebhook để verify endpoint webhook.
+        /// </summary>
         public async Task<string> ConfirmWebhook(WebhookURL body)
         {
             return await _payOS.confirmWebhook(body.webhook_url);

@@ -1,14 +1,20 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DTO.DTO.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Service.Service.Interfaces;
-using Service.Helper;
-using Service.Services;
-using DTO;
-using DTO.DTO.Auth;
+using Microsoft.EntityFrameworkCore;
 using Repository.Models;
+using Service.Helper;
+using Service.Service.Interfaces;
+using Service.Services;
 
 namespace ClubSystem.Controller
 {
+    /// <summary>
+    /// Controller xử lý thông tin tài khoản cá nhân (avatar, profile).
+    /// 
+    /// Quyền: Chỉ người dùng đã đăng nhập mới được truy cập.
+    /// Bảo mật: User chỉ có thể cập nhật chính mình (lấy accountId từ token).
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -18,131 +24,109 @@ namespace ClubSystem.Controller
         private readonly IPhotoService _photoService;
         private readonly IAuthBusinessService _authService;
 
-        public AccountController(StudentClubManagementContext context, IPhotoService photoService, IAuthBusinessService authService)
+        public AccountController(
+            StudentClubManagementContext context,
+            IPhotoService photoService,
+            IAuthBusinessService authService)
         {
             _context = context;
             _photoService = photoService;
             _authService = authService;
         }
 
+        /// <summary>
+        /// Upload avatar cho tài khoản hiện tại.
+        /// 
+        /// API: POST /api/account/upload-avatar
+        /// Bảo mật: Chỉ cho phép user upload avatar của chính mình.
+        /// Luồng: Upload Cloudinary → Lưu URL & PublicId vào DB → Xóa ảnh cũ.
+        /// </summary>
         [HttpPost("upload-avatar")]
         public async Task<IActionResult> UploadAvatar(IFormFile file)
         {
+            if (file == null || file.Length == 0)
+                return BadRequest("Vui lòng chọn file ảnh để upload.");
+
+            var currentAccountId = User.GetAccountId();
+
+            var account = await _context.Accounts.FindAsync(currentAccountId);
+            if (account == null)
+                return NotFound("Tài khoản không tồn tại.");
+
+            string? oldPublicId = account.AvatarPublicId;
+            string? newPublicId = null;
+
             try
             {
-                var currentAccountId = User.GetAccountId();
-                
-                // Chỉ cho phép user update avatar của chính mình - không có tham số id trong route
-                // Không ai có quyền update avatar của người khác, kể cả admin
-                var account = await _context.Accounts.FindAsync(currentAccountId);
-                if (account == null)
-                    return NotFound("Account not found");
+                var (url, publicId) = await _photoService.UploadImageAsync(file);
 
-                Console.WriteLine($"[AccountController] Upload avatar for account ID: {currentAccountId}");
+                newPublicId = publicId;
 
-                string? oldPublicId = account.AvatarPublicId;
-                string? newPublicId = null;
-                string? newUrl = null;
+                // Cập nhật DB
+                account.ImageAccountUrl = url;
+                account.AvatarPublicId = publicId;
+                await _context.SaveChangesAsync();
 
-                try
+                // Xóa ảnh cũ sau khi lưu thành công
+                if (!string.IsNullOrEmpty(oldPublicId))
                 {
-                    // 2. Upload ảnh mới (validation đã được thực hiện trong PhotoService)
-                    Console.WriteLine($"[AccountController] Uploading new image...");
-                    var (url, publicId) = await _photoService.UploadImageAsync(file);
-
-                    if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(publicId))
+                    try { await _photoService.DeleteImageAsync(oldPublicId); }
+                    catch (Exception ex)
                     {
-                        Console.WriteLine($"[AccountController] Upload returned null URL or PublicId");
-                        return BadRequest("Upload failed: No URL or PublicId returned");
+                        // Log nhưng không làm hỏng flow chính
+                        Console.WriteLine($"[AccountController] Warning: Failed to delete old avatar {oldPublicId}: {ex.Message}");
                     }
-
-                    newUrl = url;
-                    newPublicId = publicId;
-                    Console.WriteLine($"[AccountController] Upload successful. URL: {url}, PublicId: {publicId}");
-
-                    // 3. Lưu DB
-                    account.ImageAccountUrl = url;
-                    account.AvatarPublicId = publicId;
-
-                    await _context.SaveChangesAsync();
-                    Console.WriteLine($"[AccountController] Database updated successfully");
-
-                    // 4. Xóa ảnh cũ sau khi lưu DB thành công
-                    if (!string.IsNullOrEmpty(oldPublicId))
-                    {
-                        try
-                        {
-                            Console.WriteLine($"[AccountController] Deleting old image: {oldPublicId}");
-                            await _photoService.DeleteImageAsync(oldPublicId);
-                        }
-                        catch (Exception deleteEx)
-                        {
-                            // Log nhưng không throw - ảnh cũ có thể đã bị xóa hoặc không tồn tại
-                            Console.WriteLine($"[AccountController] Warning: Failed to delete old image: {deleteEx.Message}");
-                        }
-                    }
-
-                    return Ok(new
-                    {
-                        Message = "Upload successful",
-                        AvatarUrl = url,
-                        PublicId = publicId
-                    });
                 }
-                catch (Exception)
+
+                return Ok(new
                 {
-                    // 7. Rollback: Nếu lưu DB thất bại, xóa ảnh đã upload
-                    if (!string.IsNullOrEmpty(newPublicId))
-                    {
-                        try
-                        {
-                            Console.WriteLine($"[AccountController] Rollback: Deleting uploaded image {newPublicId} due to DB save failure");
-                            await _photoService.DeleteImageAsync(newPublicId);
-                        }
-                        catch (Exception rollbackEx)
-                        {
-                            Console.WriteLine($"[AccountController] Rollback failed: {rollbackEx.Message}");
-                        }
-                    }
-                    throw; // Re-throw để xử lý ở catch bên ngoài
-                }
+                    message = "Upload avatar thành công.",
+                    avatarUrl = url,
+                    publicId
+                });
             }
             catch (ArgumentException ex)
             {
-                // Validation errors
-                Console.WriteLine($"[AccountController] Validation error: {ex.Message}");
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[AccountController] Error: {ex.Message}");
-                Console.WriteLine($"[AccountController] StackTrace: {ex.StackTrace}");
-                return BadRequest($"Upload failed: {ex.Message}");
+                // Rollback: xóa ảnh mới nếu có lỗi sau upload
+                if (!string.IsNullOrEmpty(newPublicId))
+                {
+                    try { await _photoService.DeleteImageAsync(newPublicId); }
+                    catch { /* Ignore rollback failure */ }
+                }
+
+                return BadRequest($"Upload thất bại: {ex.Message}");
             }
         }
 
+        /// <summary>
+        /// Cập nhật thông tin profile (FullName, Email, Phone...).
+        /// 
+        /// API: PUT /api/account/profile
+        /// Bảo mật: Chỉ cập nhật chính tài khoản của user đang đăng nhập.
+        /// </summary>
         [HttpPut("profile")]
-        public async Task<ActionResult<LoginResponseDTO>> UpdateProfile([FromBody] UpdateAccountRequestDto request)
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateAccountRequestDto request)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
+            var accountId = User.GetAccountId();
 
             try
             {
-                // Tự động lấy accountId từ token - user chỉ có thể update chính mình
-                var accountId = User.GetAccountId();
                 var result = await _authService.UpdateAccountAsync(accountId, request);
-                if (result == null) return NotFound("Account not found.");
-
-                return Ok(result);
+                return result == null
+                    ? NotFound("Tài khoản không tồn tại.")
+                    : Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
-
     }
 }

@@ -12,6 +12,24 @@ using System.Threading.Tasks;
 
 namespace Service.Service.Implements
 {
+    /// <summary>
+    /// Service xử lý các thao tác liên quan đến membership dành cho sinh viên (student).
+    /// 
+    /// Các chức năng chính:
+    /// - Lấy thông tin cá nhân để điền form yêu cầu tham gia CLB
+    /// - Gửi yêu cầu tham gia CLB (MembershipRequest)
+    /// - Xem danh sách các yêu cầu đã gửi
+    /// - Xem chi tiết một yêu cầu
+    /// - Xem danh sách các CLB mà sinh viên đã là thành viên chính thức
+    /// 
+    /// Luồng chính của hệ thống membership:
+    /// 1. Student → POST /api/student/membership/request → SendMembershipRequestAsync
+    ///    → Tạo MembershipRequest (Status = "Pending")
+    /// 2. Club Leader → POST /api/leader/membership/{id}/approve
+    ///    → Cập nhật MembershipRequest + Tạo Membership (Status = "active" hoặc "pending_payment")
+    /// 3. Nếu có phí → Student thanh toán → Membership.Status = "active"
+    /// 4. Chỉ khi Membership.Status = "active" → Student mới được register Activity
+    /// </summary>
     public class StudentMembershipService : IStudentMembershipService
     {
         private readonly IMembershipRequestRepository _reqRepo;
@@ -34,6 +52,13 @@ namespace Service.Service.Implements
             _paymentRepo = paymentRepo;
         }
 
+        /// <summary>
+        /// Lấy thông tin cơ bản của tài khoản để tự động điền vào form gửi yêu cầu tham gia CLB.
+        /// 
+        /// API: GET /api/student/membership/account-info
+        /// Luồng: Front-end gọi → Controller → Method này → Trả về FullName, Email, Phone từ bảng Account.
+        /// Không thay đổi dữ liệu trong DB.
+        /// </summary>
         // 0) Lấy thông tin account để pre-fill form
         public async Task<AccountInfoDto> GetAccountInfoAsync(int accountId)
         {
@@ -49,6 +74,21 @@ namespace Service.Service.Implements
             };
         }
 
+        /// <summary>
+        /// Sinh viên gửi yêu cầu tham gia một câu lạc bộ.
+        /// 
+        /// API: POST /api/student/membership/request
+        /// Luồng dữ liệu:
+        /// - Front-end gửi DTO (ClubId, Reason, Major, Skills, có thể có FullName/Email/Phone)
+        /// - Kiểm tra: Club tồn tại? Club có bị locked? Đã là member chưa? Đã có request pending chưa?
+        /// - Cập nhật thông tin cá nhân nếu chưa có (FullName, Email, Phone)
+        /// - Tạo bản ghi MembershipRequest mới với Status = "Pending"
+        /// - Lưu vào bảng MembershipRequest trong DB
+        /// 
+        /// Tương tác:
+        /// - Đây là bước đầu tiên để trở thành thành viên.
+        /// - Sau khi gửi, leader sẽ approve → tạo Membership → mới được register Activity.
+        /// </summary>
         // 1) Student gửi request tham gia CLB
         public async Task SendMembershipRequestAsync(int accountId, CreateMembershipRequestDto dto)
         {
@@ -111,6 +151,12 @@ namespace Service.Service.Implements
             await _reqRepo.SaveAsync();
         }
 
+        /// <summary>
+        /// Xem danh sách tất cả các yêu cầu tham gia CLB của sinh viên hiện tại.
+        /// 
+        /// API: GET /api/student/membership/requests
+        /// Luồng: Lấy từ bảng MembershipRequest → Join với Club để lấy tên CLB và phí → Nếu Status = "Awaiting Payment" thì lấy thêm thông tin Payment.
+        /// </summary>
         // 2) Student xem status các request
         public async Task<List<MembershipRequestDto>> GetMyRequestsAsync(int accountId)
         {
@@ -156,6 +202,11 @@ namespace Service.Service.Implements
             return result;
         }
 
+        /// <summary>
+        /// Xem chi tiết một yêu cầu tham gia cụ thể (chỉ cho phép xem request của chính mình).
+        /// 
+        /// API: GET /api/student/membership/{id}
+        /// </summary>
         public async Task<MembershipRequestDto> GetRequestDetailAsync(int requestId, int accountId)
         {
             // tuỳ repo, có thể là GetByIdAsync hoặc GetDetailAsync kèm include Club, Account
@@ -195,6 +246,12 @@ namespace Service.Service.Implements
             return dto;
         }
 
+        /// <summary>
+        /// Xem danh sách các câu lạc bộ mà sinh viên đã là thành viên chính thức (Membership.Status = "active").
+        /// 
+        /// API: GET /api/student/membership/my-clubs
+        /// Luồng: Lấy từ bảng Membership → Join Club → Lấy thêm số lượng thành viên active của từng CLB.
+        /// </summary>
         // 3) Student xem CLB mình đã tham gia
         public async Task<List<MyMembershipDto>> GetMyMembershipsAsync(int accountId)
         {

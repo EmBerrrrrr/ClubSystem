@@ -10,6 +10,21 @@ namespace Service.Service.Implements
 {
     public class ClubLeaderRequestService : IClubLeaderRequestService
     {
+        /// <summary>
+        /// Service quản lý request trở thành Club Leader (từ student gửi → admin approve/reject).
+        /// 
+        /// Công dụng: Xử lý flow student muốn thành leader: gửi request, admin duyệt, add role "clubleader".
+        /// 
+        /// Luồng chính từ front-end:
+        /// 1. Student gọi POST /api/leader/request → CreateRequestAsync → Lưu vào DB bảng ClubLeaderRequest (Status="pending") + Push noti cho admin.
+        /// 2. Admin gọi GET /api/admin/leader-requests/pending → GetPendingRequestsAsync → Lấy từ DB (Status="pending").
+        /// 3. Admin gọi POST /api/admin/leader-request/{id}/approve → ApproveAsync → Update Status="approved", add role "clubleader" vào AccountRole, push noti cho student.
+        /// 4. Tương tự cho RejectAsync (Status="rejected").
+        /// 
+        /// Tương tác giữa các API:
+        /// - Sau approve, user thành leader → Có quyền create club (API club/create) → Manage activity/membership/payment.
+        /// - Noti được push qua INotificationService (in-memory hoặc DB tùy implement).
+        /// </summary>
         private readonly StudentClubManagementContext _db;
         private readonly IClubLeaderRequestRepository _repo;
         private readonly INotificationService _noti;
