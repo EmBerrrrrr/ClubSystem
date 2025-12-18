@@ -11,9 +11,14 @@ namespace Service.Helper
         {
             if (!dt.HasValue) return null;
 
-            var unspecified = DateTime.SpecifyKind(dt.Value, DateTimeKind.Unspecified);
-            return TimeZoneInfo.ConvertTime(unspecified, VietnamTimeZone);
+            if (dt.Value.Kind == DateTimeKind.Utc)
+            {
+                return TimeZoneInfo.ConvertTimeFromUtc(dt.Value, VietnamTimeZone);
+            }
+
+            return TimeZoneInfo.ConvertTime(dt.Value, VietnamTimeZone);
         }
+
 
         public static DateTime NowVietnam()
         {

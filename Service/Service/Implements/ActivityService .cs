@@ -99,8 +99,8 @@ namespace Service.Service.Implements
                 ClubId = dto.ClubId,
                 Title = dto.Title,
                 Description = dto.Description,
-                StartTime = dto.StartTime.ToVietnamTime(),
-                EndTime = dto.EndTime.ToVietnamTime(),
+                StartTime = dto.StartTime,
+                EndTime = dto.EndTime,
                 Location = dto.Location,
                 Status = "Not_yet_open",
                 CreatedBy = accountId
@@ -134,8 +134,8 @@ namespace Service.Service.Implements
 
             entity.Title = dto.Title;
             entity.Description = dto.Description;
-            entity.StartTime = dto.StartTime.ToVietnamTime();
-            entity.EndTime = dto.EndTime.ToVietnamTime();
+            entity.StartTime = dto.StartTime;
+            entity.EndTime = dto.EndTime;
             entity.Location = dto.Location;
             entity.Status = dto.Status ?? entity.Status;
 

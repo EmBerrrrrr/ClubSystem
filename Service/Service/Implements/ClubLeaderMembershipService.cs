@@ -186,7 +186,7 @@ namespace Service.Service.Implements
 
             req.Status = "Awaiting Payment";
             req.ProcessedBy = leaderId;
-            req.ProcessedAt = DateTimeExtensions.NowVietnam();
+            req.ProcessedAt = DateTime.UtcNow;
             req.Note = note;
 
             await _reqRepo.UpdateAsync(req);
@@ -207,7 +207,7 @@ namespace Service.Service.Implements
 
             req.Status = "Reject";
             req.ProcessedBy = leaderId;
-            req.ProcessedAt = DateTimeExtensions.NowVietnam();
+            req.ProcessedAt = DateTime.UtcNow;
             req.Note = note;
 
             await _reqRepo.UpdateAsync(req);

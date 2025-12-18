@@ -127,7 +127,7 @@ namespace Service.Service.Implements
             {
                 ActivityId = activityId,
                 MembershipId = membership.Id,
-                RegisterTime = DateTimeExtensions.NowVietnam(),
+                RegisterTime = DateTime.UtcNow,
                 Attended = true // Set "attend" ngay khi đăng ký
             };
 
