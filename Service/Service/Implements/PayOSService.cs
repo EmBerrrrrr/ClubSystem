@@ -67,10 +67,10 @@ namespace Service.Service.Implements
             await _paymentRepo.UpdateAsync(payment);  // lưu lại orderCode, status
 
             // BaseUrl: tránh bị dư dấu '/'
-            var baseUrl = (_config["Frontend:BaseUrl"] ?? "").TrimEnd('/'); 
+            var baseUrl = (_config["Frontend:BaseUrl"] ?? "").TrimEnd('/');
 
-            string returnUrl = $"{baseUrl}/pay-success?order={orderCode}";
-            string cancelUrl = $"{baseUrl}/pay-cancel?order={orderCode}";
+            string returnUrl = $"{baseUrl}/student/membership-requests";
+            string cancelUrl = $"{baseUrl}/student/membership-requests";
 
             int amount = (int)payment.Amount; // PayOS cần int
             // (Có thể log ra để debug nếu cần)
