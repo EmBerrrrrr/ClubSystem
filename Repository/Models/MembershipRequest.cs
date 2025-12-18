@@ -5,6 +5,21 @@ using System.Collections.Generic;
 
 namespace Repository.Models;
 
+/// <summary>
+/// Bảng MembershipRequest: Lưu yêu cầu tham gia CLB từ sinh viên.
+/// 
+/// Luồng chính:
+/// 1. Student gọi POST /api/student/membership/request → StudentMembershipService.SendMembershipRequestAsync
+///    → Tạo bản ghi mới với Status = "Pending"
+/// 2. Club Leader xem danh sách pending → gọi POST /api/leader/membership/{id}/approve hoặc reject
+///    → Cập nhật Status thành "Approved", "Rejected", hoặc "Awaiting Payment"
+/// 3. Nếu "Approved" và có phí → tạo Membership với Status = "pending_payment"
+/// 4. Sau khi thanh toán thành công → cập nhật Membership.Status = "active"
+/// 
+/// Tương tác quan trọng:
+/// - Là bước bắt buộc trước khi trở thành thành viên chính thức.
+/// - Ảnh hưởng trực tiếp đến việc register Activity (phải có Membership active).
+/// </summary>
 public partial class MembershipRequest
 {
     public int Id { get; set; }
@@ -15,12 +30,18 @@ public partial class MembershipRequest
 
     public DateTime RequestDate { get; set; }
 
+    /// <summary>
+    /// Trạng thái yêu cầu: "Pending" | "Approved" | "Rejected" | "Awaiting Payment"
+    /// </summary>
     public string Status { get; set; }
 
     public int? ProcessedBy { get; set; }
 
     public DateTime? ProcessedAt { get; set; }
 
+    /// <summary>
+    /// Lý do tham gia hoặc ghi chú từ leader khi reject/approve.
+    /// </summary>
     public string Note { get; set; }
 
     public string Major { get; set; }

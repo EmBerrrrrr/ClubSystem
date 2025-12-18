@@ -1,4 +1,3 @@
-using System;
 using DTO.DTO.Activity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +6,14 @@ using Service.Service.Interfaces;
 
 namespace ClubSystem.Controller
 {
+    /// <summary>
+    /// Controller xử lý Activity dành cho sinh viên (role: student).
+    /// 
+    /// Các endpoint:
+    /// - Xem activity (public/viewing)
+    /// - Đăng ký/hủy đăng ký (chỉ member active mới được)
+    /// - Xem lịch sử tham gia
+    /// </summary>
     [ApiController]
     [Route("api/student/activities")]
     [Authorize(Roles = "student")]
@@ -19,52 +26,40 @@ namespace ClubSystem.Controller
             _service = service;
         }
 
-        // Xem tất cả activities của tất cả CLB (không cần là member) - chỉ để xem
+        /// <summary>
+        /// Xem tất cả activity đang mở đăng ký (không cần là member - chỉ để xem).
+        /// </summary>
         [HttpGet("view-all")]
         public async Task<IActionResult> GetAllActivitiesForViewing()
         {
-            try
-            {
-                var result = await _service.GetAllActivitiesForViewingAsync();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var result = await _service.GetAllActivitiesForViewingAsync();
+            return Ok(result);
         }
 
-        // Xem activities của một CLB cụ thể (không cần là member) - chỉ để xem
+        /// <summary>
+        /// Xem activity của một CLB cụ thể (không cần là member).
+        /// </summary>
         [HttpGet("view-club/{clubId}")]
         public async Task<IActionResult> GetActivitiesByClubForViewing(int clubId)
         {
-            try
-            {
-                var result = await _service.GetActivitiesByClubForViewingAsync(clubId);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var result = await _service.GetActivitiesByClubForViewingAsync(clubId);
+            return Ok(result);
         }
 
-        // Lấy activities mà student (đã là member) có thể đăng ký
+        /// <summary>
+        /// Lấy danh sách activity mà student có thể đăng ký (chỉ những CLB mình là member active).
+        /// </summary>
         [HttpGet("for-registration")]
         public async Task<IActionResult> GetActivitiesForRegistration()
         {
             var accountId = User.GetAccountId();
-            try
-            {
-                var result = await _service.GetActivitiesForRegistrationAsync(accountId);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var result = await _service.GetActivitiesForRegistrationAsync(accountId);
+            return Ok(result);
         }
 
+        /// <summary>
+        /// Đăng ký tham gia activity (phải là member active).
+        /// </summary>
         [HttpPost("{activityId}/register")]
         public async Task<IActionResult> RegisterForActivity(int activityId)
         {
@@ -72,14 +67,17 @@ namespace ClubSystem.Controller
             try
             {
                 await _service.RegisterForActivityAsync(accountId, activityId);
-                return Ok("Đăng ký tham gia hoạt động thành công (trạng thái: attend).");
+                return Ok(new { message = "Đăng ký tham gia hoạt động thành công." });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
+        /// <summary>
+        /// Hủy đăng ký tham gia activity.
+        /// </summary>
         [HttpDelete("{activityId}/cancel")]
         public async Task<IActionResult> CancelRegistration(int activityId, [FromBody] CancelActivityRegistrationDto? dto)
         {
@@ -87,28 +85,23 @@ namespace ClubSystem.Controller
             try
             {
                 await _service.CancelRegistrationAsync(accountId, activityId, dto?.Reason);
-                return Ok("Hủy đăng ký thành công (trạng thái: cancel).");
+                return Ok(new { message = "Hủy đăng ký thành công." });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
+        /// <summary>
+        /// Xem lịch sử tham gia activity của bản thân.
+        /// </summary>
         [HttpGet("history")]
         public async Task<IActionResult> GetMyActivityHistory()
         {
             var accountId = User.GetAccountId();
-            try
-            {
-                var result = await _service.GetMyActivityHistoryAsync(accountId);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var result = await _service.GetMyActivityHistoryAsync(accountId);
+            return Ok(result);
         }
     }
 }
-

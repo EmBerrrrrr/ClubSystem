@@ -7,6 +7,22 @@ using Service.Helper;
 
 namespace Service.Service.Implements
 {
+    /// <summary>
+    /// Service xử lý các thao tác liên quan đến Activity dành cho Club Leader và Admin.
+    /// 
+    /// Chức năng chính:
+    /// - Tạo, sửa, xóa activity
+    /// - Mở/đóng đăng ký tham gia
+    /// - Xem danh sách người tham gia activity
+    /// 
+    /// Quyền truy cập:
+    /// - Chỉ Club Leader của CLB tổ chức hoặc Admin mới được thực hiện các thao tác.
+    /// - Nếu Club bị "Locked" → không cho phép bất kỳ thao tác nào liên quan đến activity của club đó.
+    /// 
+    /// Tương tác với Membership:
+    /// - Activity chỉ cho phép member active đăng ký (xử lý ở StudentActivityService).
+    /// - Leader không cần kiểm tra membership vì họ quản lý CLB.
+    /// </summary>
     public class ActivityService : IActivityService
     {
         private readonly IActivityRepository _repo;
@@ -20,24 +36,51 @@ namespace Service.Service.Implements
             _clubRepo = clubRepo;
         }
 
+        /// <summary>
+        /// Lấy tất cả activity (dùng cho admin hoặc hiển thị public).
+        /// 
+        /// API: GET /api/activities
+        /// Luồng: Lấy từ DB → tính status động → trả về DTO.
+        /// </summary>
         public async Task<List<ActivityDto>> GetAllAsync()
         {
             var list = await _repo.GetAllAsync();
             return list.Select(Map).ToList();
         }
 
+        /// <summary>
+        /// Lấy activity theo clubId.
+        /// 
+        /// API: GET /api/activities/club/{clubId}
+        /// </summary>
         public async Task<List<ActivityDto>> GetByClubAsync(int clubId)
         {
             var list = await _repo.GetByClubAsync(clubId);
             return list.Select(Map).ToList();
         }
 
+        /// <summary>
+        /// Lấy chi tiết một activity.
+        /// 
+        /// API: GET /api/activities/{id}
+        /// </summary>
         public async Task<ActivityDto?> GetDetailAsync(int id)
         {
             var entity = await _repo.GetByIdAsync(id);
             return entity == null ? null : Map(entity);
         }
 
+        /// <summary>
+        /// Tạo activity mới.
+        /// 
+        /// API: POST /api/activities
+        /// Luồng:
+        /// - Front-end gửi CreateActivityDto → Leader gọi API
+        /// - Kiểm tra club tồn tại và không bị locked
+        /// - Kiểm tra quyền: phải là leader của club hoặc admin
+        /// - Tạo entity Activity với Status = "Not_yet_open"
+        /// - Lưu vào bảng Activity trong DB
+        /// </summary>
         public async Task<ActivityDto> CreateAsync(CreateActivityDto dto, int accountId, bool isAdmin)
         {
             var club = await _clubRepo.GetByIdAsync(dto.ClubId);  
@@ -68,6 +111,12 @@ namespace Service.Service.Implements
             return Map(entity);
         }
 
+        /// <summary>
+        /// Cập nhật activity.
+        /// 
+        /// API: PUT /api/activities/{id}
+        /// Luồng: Cập nhật các field, có thể thay đổi Status (leader tự quản lý).
+        /// </summary>
         public async Task UpdateAsync(int id, UpdateActivityDto dto, int accountId, bool isAdmin)
         {
             var entity = await _repo.GetByIdAsync(id);
@@ -93,6 +142,12 @@ namespace Service.Service.Implements
             await _repo.UpdateAsync(entity);
         }
 
+        /// <summary>
+        /// Xóa activity (chỉ khi đã Cancelled hoặc Completed).
+        /// 
+        /// API: DELETE /api/activities/{id}
+        /// Luồng: Xóa tất cả participant trước → xóa activity.
+        /// </summary>
         public async Task DeleteAsync(int id, int accountId, bool isAdmin)
         {
             var entity = await _repo.GetByIdAsync(id);
@@ -118,6 +173,12 @@ namespace Service.Service.Implements
             await _repo.DeleteAsync(entity);
         }
 
+        /// <summary>
+        /// Mở đăng ký tham gia activity.
+        /// 
+        /// API: PUT /api/activities/{id}/open-registration
+        /// Luồng: Chỉ leader mới được gọi → đổi Status thành "Active".
+        /// </summary>
         public async Task OpenRegistrationAsync(int activityId, int leaderId)
         {
             var activity = await _repo.GetByIdAsync(activityId);
@@ -139,6 +200,11 @@ namespace Service.Service.Implements
             await _repo.UpdateAsync(activity);
         }
 
+        /// <summary>
+        /// Đóng đăng ký tham gia activity.
+        /// 
+        /// API: PUT /api/activities/{id}/close-registration
+        /// </summary>
         public async Task CloseRegistrationAsync(int activityId, int leaderId)
         {
             var activity = await _repo.GetByIdAsync(activityId);
@@ -157,6 +223,12 @@ namespace Service.Service.Implements
             await _repo.UpdateAsync(activity);
         }
 
+        /// <summary>
+        /// Leader xem danh sách người tham gia activity.
+        /// 
+        /// API: GET /api/activities/{id}/participants
+        /// Luồng: Lấy từ ActivityParticipant → join Membership → Account để lấy thông tin cá nhân.
+        /// </summary>
         public async Task<List<ActivityParticipantForLeaderDto>> GetActivityParticipantsAsync(int activityId, int leaderId)
         {
             var activity = await _repo.GetByIdAsync(activityId)
