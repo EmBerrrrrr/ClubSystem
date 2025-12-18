@@ -101,10 +101,13 @@ public class Program
         {
             options.AddPolicy("AllowFE", policy =>
             {
-                policy.WithOrigins(corsOrigins)
-                      .AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .AllowCredentials();
+                policy.WithOrigins(
+                        "http://localhost:5173",
+                        "https://swp391-scms.vercel.app",
+                        "https://student-club-management-admin.vercel.app"
+                    )
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
             });
         });
 
@@ -236,10 +239,11 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseCors("AllowFE");
+
         app.UseAuthentication();
         app.UseMiddleware<AccountStatusMiddleware>();
         app.UseAuthorization();
-        app.UseCors("AllowFE");
 
         app.MapControllers();
 
