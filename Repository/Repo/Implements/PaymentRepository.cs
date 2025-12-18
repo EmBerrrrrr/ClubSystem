@@ -7,6 +7,32 @@ using Repository.Repo.Interfaces;
 
 namespace Repository.Repo.Implements
 {
+    /// <summary>
+    /// Repository xử lý thanh toán (Payment): CRUD và truy vấn theo account/club/orderCode.
+    /// 
+    /// Công dụng: Quản lý payment phí membership (pending/paid/failed).
+    /// 
+    /// Luồng dữ liệu:
+    /// - AddAsync → AddAsync vào DbSet Payments.
+    /// - GetByIdAsync → FindAsync theo Id.
+    /// - GetByMembershipIdAsync → FirstOrDefault theo MembershipId, AsNoTracking.
+    /// - GetByOrderCodeAsync → FirstOrDefault theo OrderCode (cho webhook).
+    /// - GetPaymentsByClubIdAsync → Lấy paid theo ClubId, include Club/Membership/Account.
+    /// - GetPendingPaymentsByClubIdAsync → Lấy pending theo ClubId, include tương tự.
+    /// - GetPaymentHistoryByClubIdAsync → Lấy all theo ClubId, include tương tự.
+    /// - GetPaidPaymentsByAccountIdAsync → Lấy paid theo AccountId (qua Membership), include Club/Membership/Account.
+    /// - GetPendingPaymentsByAccountIdAsync → Lấy pending theo AccountId.
+    /// - GetPaymentHistoryByAccountIdAsync → Lấy all theo AccountId.
+    /// - UpdateAsync → Update + SaveChangesAsync.
+    /// - SaveAsync → Commit thay đổi.
+    /// 
+    /// Tương tác giữa các API/service:
+    /// - Tạo payment khi approve request có phí: AddAsync + SaveAsync (Status="pending").
+    /// - Student thanh toán: GetByIdAsync → Create link PayOS → Webhook: GetByOrderCodeAsync → Update Status="paid" + UpdateAsync.
+    /// - Leader xem payment: GetPaymentsByClubIdAsync / GetPendingPaymentsByClubIdAsync.
+    /// - Student xem debts/history: GetPendingPaymentsByAccountIdAsync / GetPaymentHistoryByAccountIdAsync.
+    /// - Admin monitoring revenue: GetTotalRevenueFromMembersByClubIdAsync (sum Amount của paid).
+    /// </summary>
     public class PaymentRepository : IPaymentRepository
     {
         private readonly StudentClubManagementContext _db;
