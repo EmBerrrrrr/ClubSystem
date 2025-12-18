@@ -88,7 +88,7 @@ namespace Service.Service.Implements
             return new MyLeaderRequestDto
             {
                 Id = req.Id,
-                RequestDate = req.RequestDate,
+                RequestDate = DateTimeExtensions.NowVietnam(),
                 Username = req.Account.Username,
                 FullName = req.Account.FullName,
                 Email = req.Account.Email,
@@ -120,7 +120,7 @@ namespace Service.Service.Implements
                 FullName = x.Account.FullName,
                 Email = x.Account.Email,
                 Phone = x.Account.Phone,
-                RequestDate = x.RequestDate,
+                RequestDate = DateTimeExtensions.NowVietnam(),
                 Status = x.Status,
                 Motivation = x.Motivation,
                 Experience = x.Experience,
@@ -179,7 +179,7 @@ namespace Service.Service.Implements
             request.Status = "approved";
             request.AdminNote = adminNote;
             request.ProcessedBy = adminId;
-            request.ProcessedAt = DateTimeExtensions.NowVietnam();
+            request.ProcessedAt = DateTime.UtcNow;
 
             var role = await _db.Roles.FirstAsync(x => x.Name == "clubleader");
 
@@ -211,7 +211,7 @@ namespace Service.Service.Implements
             request.Status = "rejected";
             request.RejectReason = rejectReason;
             request.ProcessedBy = adminId;
-            request.ProcessedAt = DateTimeExtensions.NowVietnam();
+            request.ProcessedAt = DateTime.UtcNow;
 
             await _repo.SaveAsync();
 
@@ -243,7 +243,7 @@ namespace Service.Service.Implements
                 FullName = x.Account?.FullName,
                 Email = x.Account?.Email,
                 Phone = x.Account?.Phone,
-                RequestDate = x.RequestDate,
+                RequestDate = DateTimeExtensions.NowVietnam(),
                 Status = x.Status,
                 AdminNote = x.AdminNote,
                 RejectReason = x.RejectReason,

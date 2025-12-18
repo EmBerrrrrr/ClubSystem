@@ -124,7 +124,7 @@ namespace Service.Service.Implements
                     ClubName = x.Club?.Name ?? "",
                     Status = x.Status,
                     Note = x.Note,
-                    RequestDate = x.RequestDate,
+                    RequestDate = DateTimeExtensions.NowVietnam(),
                     Amount = x.Club?.MembershipFee ?? 0,
                     Major = x.Major,
                     Skills = x.Skills
@@ -170,7 +170,7 @@ namespace Service.Service.Implements
                 ClubName = x.Club?.Name ?? string.Empty,
                 Status = x.Status,
                 Note = x.Note,
-                RequestDate = x.RequestDate,
+                RequestDate = DateTimeExtensions.NowVietnam(),
                 Amount = x.Club?.MembershipFee ?? 0,
                 Major = x.Major,
                 Skills = x.Skills
