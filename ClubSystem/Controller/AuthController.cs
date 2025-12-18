@@ -20,13 +20,23 @@ public class AuthController : ControllerBase
 
     // POST: api/auth/login
     [HttpPost("login")]
-    public async Task<ActionResult<LoginResponseDTO>> Login([FromBody] LoginRequestDTO request)
+    public async Task<ActionResult<LoginResponseDTO>> Login(LoginRequestDTO request)
     {
-        var result = await _service.LoginAsync(request);
-        if (result == null) return Unauthorized("Invalid username or password.");
+        try
+        {
+            var result = await _service.LoginAsync(request);
 
-        return Ok(result);
+            if (result == null)
+                return Unauthorized("Invalid username or password");
+
+            return Ok(result);
+        }
+        catch (Exception ex) when (ex.Message == "ACCOUNT_LOCKED")
+        {
+            return StatusCode(403, "Account has been locked by administrator");
+        }
     }
+
 
     [HttpPost("register")]
     public async Task<ActionResult<LoginResponseDTO>> Register([FromBody] RegisterRequestDTO request)

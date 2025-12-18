@@ -16,17 +16,20 @@ namespace Service.Service.Implements
         private readonly IActivityRepository _activityRepo;
         private readonly IMembershipRepository _membershipRepo;
         private readonly IMembershipRequestRepository _membershipRequestRepo;
+        private readonly IClubRepository _clubRepo;  // THÊM: Để check club status
 
         public StudentActivityService(
             IActivityParticipantRepository participantRepo,
             IActivityRepository activityRepo,
             IMembershipRepository membershipRepo,
-            IMembershipRequestRepository membershipRequestRepo)
+            IMembershipRequestRepository membershipRequestRepo,
+            IClubRepository clubRepo)
         {
             _participantRepo = participantRepo;
             _activityRepo = activityRepo;
             _membershipRepo = membershipRepo;
             _membershipRequestRepo = membershipRequestRepo;
+            _clubRepo = clubRepo;
         }
 
         // Member đăng ký tham gia activity (không phải student, student phải trở thành member trước)
@@ -34,8 +37,11 @@ namespace Service.Service.Implements
         {
             // 1. Kiểm tra activity tồn tại
             var activity = await _activityRepo.GetByIdAsync(activityId);
-            if (activity == null)
-                throw new Exception("Hoạt động không tồn tại.");
+            if (activity == null) throw new Exception("Hoạt động không tồn tại");
+
+            var club = await _clubRepo.GetByIdAsync(activity.ClubId);  // THÊM: Get club từ activity
+            if (club == null) throw new Exception("Câu lạc bộ không tồn tại");
+            if (club.Status == "Locked") throw new Exception("Bạn không thể đăng kí vào câu lạc bộ đã bị khóa.");  // THÊM
 
             // 2. Tính status thực tế dựa trên thời gian
             var actualStatus = CalculateActivityStatus(activity);
@@ -108,8 +114,10 @@ namespace Service.Service.Implements
         {
             // Kiểm tra activity tồn tại
             var activity = await _activityRepo.GetByIdAsync(activityId);
-            if (activity == null)
-                throw new Exception("Hoạt động không tồn tại.");
+            if (activity == null) throw new Exception("Hoạt động không tồn tại");
+
+            var club = await _clubRepo.GetByIdAsync(activity.ClubId);  // THÊM
+            if (club.Status == "Locked") throw new Exception("Không thể hủy khi câu lạc bộ đang bị khóa");  // THÊM
 
             // Kiểm tra account có phải member của CLB không
             var memberships = await _membershipRepo.GetMembershipsAsync(accountId);

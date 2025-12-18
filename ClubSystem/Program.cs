@@ -42,6 +42,7 @@ public class Program
         builder.Services.AddScoped<IMembershipRequestRepository, MembershipRequestRepository>();
         builder.Services.AddScoped<IActivityParticipantRepository, ActivityParticipantRepository>();
         builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+        builder.Services.AddScoped<IClubRepository, ClubRepository>();
 
 
         // SERVICES
@@ -241,6 +242,7 @@ public class Program
         app.UseCors("AllowFE");
 
         app.UseAuthentication();
+        app.UseMiddleware<AccountStatusMiddleware>();
         app.UseAuthorization();
 
         app.MapControllers();

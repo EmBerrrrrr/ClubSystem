@@ -52,9 +52,9 @@ namespace Service.Service.Implements
         public async Task SendMembershipRequestAsync(int accountId, CreateMembershipRequestDto dto)
         {
             // Club tồn tại không?
-            var club = await _clubRepo.GetByIdAsync(dto.ClubId);
-            if (club == null)
-                throw new Exception("Câu lạc bộ không tồn tại.");
+            var club = await _clubRepo.GetByIdAsync(dto.ClubId);  // THÊM: Get club
+            if (club == null) throw new Exception("Club not found");
+            if (club.Status == "Locked") throw new Exception("Cannot request to join locked club");  // THÊM: Check locked
 
             // Đã là member chưa?
             if (await _memberRepo.IsMemberAsync(accountId, dto.ClubId))
