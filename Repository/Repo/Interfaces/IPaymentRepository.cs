@@ -31,5 +31,6 @@ namespace Repository.Repo.Interfaces
         Task UpdateAsync(Payment payment);
 
         Task SaveAsync();
+        Task<bool> ExistsOrderCodeAsync(int code);
     }
 }

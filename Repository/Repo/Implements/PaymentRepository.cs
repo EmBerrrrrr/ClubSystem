@@ -176,5 +176,11 @@ namespace Repository.Repo.Implements
         {
             await _db.SaveChangesAsync();
         }
+
+        public async Task<bool> ExistsOrderCodeAsync(int code)
+        {
+            return await _db.Payments.AnyAsync(p => p.OrderCode == code);
+        }
+
     }
 }

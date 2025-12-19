@@ -82,7 +82,7 @@ namespace Service.Service.Implements
             var account = await _accountRepo.GetAccountByIdAsync(membership.AccountId)
                 ?? throw new Exception("Không tìm thấy account.");
             payment.Description =
-                $"Đơn của {account.FullName}";
+                $"Đơn Phí Gia Nhập";
 
             payment.Status = "pending";
 

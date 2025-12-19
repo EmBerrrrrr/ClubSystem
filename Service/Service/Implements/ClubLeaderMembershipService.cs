@@ -171,6 +171,8 @@ namespace Service.Service.Implements
             await _membershipRepo.AddMembershipAsync(membership);
             await _membershipRepo.SaveAsync();
 
+            var orderCode = await GenerateUniqueOrderCodeAsync();
+
             var payment = new Payment
             {
                 MembershipId = membership.Id,
@@ -178,11 +180,12 @@ namespace Service.Service.Implements
                 Amount = club.MembershipFee ?? 0,
                 Status = "pending",
                 Method = "payos",
-                OrderCode = _rnd.Next(100000000, 999999999)
+                OrderCode = orderCode
             };
 
             await _paymentRepo.AddAsync(payment);
             await _paymentRepo.SaveAsync();
+
 
             req.Status = "Awaiting Payment";
             req.ProcessedBy = leaderId;
@@ -197,6 +200,22 @@ namespace Service.Service.Implements
                 $"Bạn đã được chấp nhận vào CLB {club.Name}"
             );
         }
+
+        private async Task<int> GenerateUniqueOrderCodeAsync()
+        {
+            const int maxRetry = 5;
+            for (int i = 0; i < maxRetry; i++)
+            {
+                var code = _rnd.Next(100000000, 999999999);
+
+                var exists = await _paymentRepo.ExistsOrderCodeAsync(code);
+                if (!exists)
+                    return code;
+            }
+
+            throw new Exception("Không tạo được OrderCode duy nhất, vui lòng thử lại.");
+        }
+
         public async Task RejectAsync(int leaderId, int requestId, string? note)
         {
             var req = await _reqRepo.GetByIdAsync(requestId);
