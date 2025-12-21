@@ -1,4 +1,5 @@
-﻿using DTO.DTO.Report;
+﻿using System;
+using DTO.DTO.Report;
 using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Service.Service.Interfaces;
@@ -45,7 +46,26 @@ namespace Service.Service.Implements
 
             var activeMembers = await _context.Memberships
                 .CountAsync(m => m.ClubId == clubId &&
-                             m.Status.Equals("active", StringComparison.OrdinalIgnoreCase));
+                             m.Status != null &&
+                             m.Status.ToLower() == "active"); // Đã fix lỗi translate trước đó
+
+            // === Tính NewMembers: thành viên mới trong tháng hiện tại ===
+            var currentDate = DateTime.Today;
+            var startOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+            var newMembers = await _context.Memberships
+                .CountAsync(m => m.ClubId == clubId &&
+                                 m.JoinDate.HasValue &&
+                                 m.JoinDate.Value >= DateOnly.FromDateTime(startOfMonth) &&
+                                 m.JoinDate.Value <= DateOnly.FromDateTime(endOfMonth));
+
+            // === Tính TotalIncome: tổng tiền từ các Payment đã thanh toán thành công ===
+            var totalIncome = await _context.Payments
+                .Where(p => p.ClubId == clubId &&
+                            p.Status != null &&
+                            p.Status.ToLower() == "paid")
+                .SumAsync(p => p.Amount);
 
             var activities = await _context.Activities
                 .Where(a => a.ClubId == clubId)
@@ -76,9 +96,9 @@ namespace Service.Service.Implements
                 {
                     TotalMembers = totalMembers,
                     ActiveMembers = activeMembers,
-                    NewMembers = 0, // Có thể mở rộng sau
+                    NewMembers = newMembers,        // Đã tính thực tế
                     TotalActivities = activities.Count,
-                    TotalIncome = 0 // Có thể mở rộng khi có payment
+                    TotalIncome = totalIncome       // Đã tính từ Payment paid
                 },
                 Activities = activities
             };
