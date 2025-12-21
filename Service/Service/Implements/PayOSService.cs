@@ -53,6 +53,13 @@ namespace Service.Service.Implements
             _accountRepo = accountRepo;
         }
 
+        private long GenerateOrderCode()
+        {
+            // 13 chữ số, luôn unique, nằm trong long
+            return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        }
+
+
         /// <summary>
         /// Tạo link thanh toán PayOS cho một payment.
         /// 
@@ -65,63 +72,42 @@ namespace Service.Service.Implements
             var payment = await _paymentRepo.GetByIdAsync(paymentId)
                 ?? throw new Exception("Không tìm thấy payment.");
 
-            // Lấy orderCode từ DB, nếu chưa có / không hợp lệ thì dùng payment.Id
-            long orderCode = payment.OrderCode ?? 0;
+            //  LUÔN tạo orderCode MỚI
+            long orderCode = GenerateOrderCode();
 
-            if (orderCode <= 0 || orderCode > int.MaxValue) //đảm bảo trong range
-            {
-                orderCode = payment.Id; // luôn nhỏ, unique theo bảng payments //MỚI
-            }
-
-            payment.OrderCode = orderCode;  
+            payment.OrderCode = orderCode;
             payment.Method = "PayOS";
-            var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId)
-                ?? throw new Exception("Không tìm thấy membership.");
-            var club = await _clubRepo.GetByIdAsync(membership.ClubId)
-                ?? throw new Exception("Không tìm thấy club.");
-            var account = await _accountRepo.GetAccountByIdAsync(membership.AccountId)
-                ?? throw new Exception("Không tìm thấy account.");
-            payment.Description =
-                $"Đơn Phí Gia Nhập";
-
             payment.Status = "pending";
+            payment.Description = "Don Phi Gia Nhap"; //  <= 25 ký tự
 
-            await _paymentRepo.UpdateAsync(payment);  // lưu lại orderCode, status
+            await _paymentRepo.UpdateAsync(payment);
 
-            // BaseUrl: tránh bị dư dấu '/'
             var baseUrl = (_config["Frontend:BaseUrl"] ?? "").TrimEnd('/');
-
             string returnUrl = $"{baseUrl}/student/membership-requests";
             string cancelUrl = $"{baseUrl}/student/membership-requests";
 
-            int amount = (int)payment.Amount; // PayOS cần int
-            // (Có thể log ra để debug nếu cần)
+            int amount = (int)payment.Amount;
+
             Console.WriteLine($"[PayOS] CreatePaymentLink: paymentId={paymentId}, orderCode={orderCode}, amount={amount}");
-            var req = new PaymentLinkRequest()
-            {
-                orderCode = orderCode,
-                amount = amount,
-                description = payment.Description,
-                returnUrl = returnUrl,
-                cancelUrl = cancelUrl
-            };
-            // Gọi PayOS SDK
-            CreatePaymentResult result = await _payOS.createPaymentLink(
+
+            var result = await _payOS.createPaymentLink(
                 new PaymentData(
-                    orderCode: req.orderCode,
-                    amount: req.amount,
-                    description: req.description,
+                    orderCode: orderCode,
+                    amount: amount,
+                    description: payment.Description,
                     items: new List<ItemData>
                     {
-                        new ItemData(req.description, 1, req.amount)
+                new ItemData(payment.Description, 1, amount)
                     },
-                    cancelUrl: req.cancelUrl,
-                    returnUrl: req.returnUrl
+                    cancelUrl: cancelUrl,
+                    returnUrl: returnUrl
                 )
             );
 
             return result.checkoutUrl;
         }
+
+
 
         /// <summary>
         /// Xử lý webhook từ PayOS (thanh toán success/fail).
