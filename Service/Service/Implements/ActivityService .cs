@@ -247,7 +247,7 @@ namespace Service.Service.Implements
                 FullName = p.Membership?.Account?.FullName ?? "",
                 Email = p.Membership?.Account?.Email ?? "",
                 Phone = p.Membership?.Account?.Phone ?? "",
-                RegisterTime = p.RegisterTime,
+                RegisterTime = p.RegisterTime.ToVietnamTime(),
                 Attended = p.Attended,
             }).ToList();
         }

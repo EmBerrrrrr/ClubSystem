@@ -57,7 +57,7 @@ namespace Service.Service.Implements
                 ClubId = p.ClubId,
                 ClubName = p.Club?.Name ?? "",
                 Amount = p.Amount,
-                PaidDate = p.PaidDate.ToVietnamTime(),
+                PaidDate = p.PaidDate,
                 Method = p.Method ?? "",
                 Status = p.Status ?? "",
                 OrderCode = p.OrderCode,
@@ -83,11 +83,11 @@ namespace Service.Service.Implements
                 ClubId = p.ClubId,
                 ClubName = p.Club?.Name ?? "",
                 Amount = p.Amount,
-                PaidDate = p.PaidDate.ToVietnamTime(),
+                PaidDate = p.PaidDate,
                 Status = p.Status ?? "",
                 OrderCode = p.OrderCode,
                 Description = p.Description ?? "",
-                CreatedDate = p.PaidDate.ToVietnamTime(), // Có thể dùng PaidDate hoặc tạo field CreatedDate riêng
+                CreatedDate = p.PaidDate, // Có thể dùng PaidDate hoặc tạo field CreatedDate riêng
             }).ToList();
         }
 
@@ -109,7 +109,7 @@ namespace Service.Service.Implements
                 ClubId = p.ClubId,
                 ClubName = p.Club?.Name ?? "",
                 Amount = p.Amount,
-                PaidDate = p.PaidDate.ToVietnamTime(),
+                PaidDate = p.PaidDate,
                 Method = p.Method ?? "",
                 Status = p.Status ?? "",
                 Description = p.Description ?? "",
