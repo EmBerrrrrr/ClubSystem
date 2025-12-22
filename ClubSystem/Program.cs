@@ -246,7 +246,7 @@ public class Program
         app.UseAuthorization();
 
         app.MapControllers();
-
+        app.MapHub<PaymentHub>("/hubs/payment");
         app.MapHub<NotificationHub>("/notiHub");
 
         app.Run();

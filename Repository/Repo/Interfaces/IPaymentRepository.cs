@@ -38,6 +38,6 @@ namespace Repository.Repo.Interfaces
         /// Trả về true nếu update thành công (tức là trước đó vẫn đang pending),
         /// false nếu payment đã không còn pending (đã có webhook khác xử lý).
         /// </summary>
-        Task<bool> TryMarkPaymentPaidAsync(long? orderCode, DateTime paidDate);
+       // Task<bool> TryMarkPaymentPaidAsync(long? orderCode, DateTime paidDate);
     }
 }
