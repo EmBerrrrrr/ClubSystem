@@ -171,16 +171,14 @@ namespace Service.Service.Implements
             await _membershipRepo.AddMembershipAsync(membership);
             await _membershipRepo.SaveAsync();
 
-            var orderCode = await GenerateUniqueOrderCodeAsync();
-
             var payment = new Payment
             {
                 MembershipId = membership.Id,
                 ClubId = club.Id,
                 Amount = club.MembershipFee ?? 0,
-                Status = "pending",
-                Method = "payos",
-                OrderCode = orderCode
+                Status = "created",
+                Method = null,
+                OrderCode = null
             };
 
             await _paymentRepo.AddAsync(payment);

@@ -77,20 +77,26 @@ namespace Service.Service.Implements
             var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId)
                 ?? throw new Exception("Không tìm thấy membership.");
 
+            // 🚫 Membership đã active
             if (membership.Status == "active")
                 throw new Exception("Membership đã được thanh toán.");
 
+            // 🚫 Payment đã trả tiền
             if (payment.Status == "paid")
                 throw new Exception("Đơn này đã được thanh toán.");
 
-            // 🔒 LOCK & CHECK
+            // 🚫 Nếu payment này ĐÃ có QR
+            if (payment.Status == "pending")
+                throw new Exception("Đang có mã QR thanh toán.");
+
+            // 🔒 Lock & check payment khác đang pending
             var existingPending = await _paymentRepo
                 .GetPendingPaymentForUpdate(payment.MembershipId);
 
-            if (existingPending != null && existingPending.Id != payment.Id)
+            if (existingPending != null)
                 throw new Exception("Đang có mã QR thanh toán khác.");
 
-            // ✅ TẠO ORDER CODE
+            // ✅ TẠO QR
             payment.OrderCode = GenerateOrderCode();
             payment.Status = "pending";
             payment.Method = "PayOS";
@@ -99,8 +105,8 @@ namespace Service.Service.Implements
             await _paymentRepo.UpdateAsync(payment);
             await transaction.CommitAsync();
 
-            // 🚀 Sau khi commit mới gọi PayOS
             var baseUrl = (_config["Frontend:BaseUrl"] ?? "").TrimEnd('/');
+
             var result = await _payOS.createPaymentLink(
                 new PaymentData(
                     orderCode: payment.OrderCode.Value,
