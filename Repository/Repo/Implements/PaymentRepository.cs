@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Repository.Models;
 using Repository.Repo.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Repository.Repo.Implements
 {
@@ -202,6 +203,19 @@ namespace Repository.Repo.Implements
         //    return rows > 0;
         //}
 
+        public async Task<Payment?> GetPendingPaymentForUpdate(int membershipId)
+        {
+            return await _db.Payments
+                .FromSqlRaw(@"
+            SELECT * FROM Payments WITH (UPDLOCK, HOLDLOCK)
+            WHERE MembershipId = {0} AND Status = 'pending'
+        ", membershipId)
+                .FirstOrDefaultAsync();
+        }
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _db.Database.BeginTransactionAsync();
+        }
 
     }
 }

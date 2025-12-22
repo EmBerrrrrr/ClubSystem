@@ -69,53 +69,50 @@ namespace Service.Service.Implements
         // Tạo link thanh toán cho 1 payment trong DB
         public async Task<string> CreatePaymentLink(int paymentId)
         {
+            using var transaction = await _paymentRepo.BeginTransactionAsync();
+
             var payment = await _paymentRepo.GetByIdAsync(paymentId)
-            ?? throw new Exception("Không tìm thấy payment.");
+                ?? throw new Exception("Không tìm thấy payment.");
 
             var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId)
-            ?? throw new Exception("Không tìm thấy membership.");
+                ?? throw new Exception("Không tìm thấy membership.");
 
-            // 🚨 ĐÃ ACTIVE → CẤM TẠO LINK
             if (membership.Status == "active")
                 throw new Exception("Membership đã được thanh toán.");
 
-            // 🚨 PAYMENT NÀY ĐÃ PAID
             if (payment.Status == "paid")
                 throw new Exception("Đơn này đã được thanh toán.");
 
-            // 🚨 CHỈ CHO 1 PAYMENT PENDING
-            bool hasPending = await _paymentRepo
-            .HasOtherPendingPayment(payment.MembershipId, payment.Id);
+            // 🔒 LOCK & CHECK
+            var existingPending = await _paymentRepo
+                .GetPendingPaymentForUpdate(payment.MembershipId);
 
-            if (hasPending)
-                throw new Exception("Đang có đơn thanh toán khác đang chờ xử lý.");
+            if (existingPending != null && existingPending.Id != payment.Id)
+                throw new Exception("Đang có mã QR thanh toán khác.");
 
-            // ✅ TẠO orderCode MỚI
-            long orderCode = GenerateOrderCode();
-
-            payment.OrderCode = orderCode;
-            payment.Method = "PayOS";
+            // ✅ TẠO ORDER CODE
+            payment.OrderCode = GenerateOrderCode();
             payment.Status = "pending";
+            payment.Method = "PayOS";
             payment.Description = "Don Phi Gia Nhap";
 
             await _paymentRepo.UpdateAsync(payment);
+            await transaction.CommitAsync();
 
+            // 🚀 Sau khi commit mới gọi PayOS
             var baseUrl = (_config["Frontend:BaseUrl"] ?? "").TrimEnd('/');
-            string returnUrl = $"{baseUrl}/student/membership-requests";
-            string cancelUrl = $"{baseUrl}/student/membership-requests";
-
             var result = await _payOS.createPaymentLink(
-            new PaymentData(
-            orderCode: orderCode,
-            amount: (int)payment.Amount,
-            description: payment.Description,
-            items: new List<ItemData>
-            {
-new ItemData(payment.Description, 1, (int)payment.Amount)
-            },
-            cancelUrl: cancelUrl,
-            returnUrl: returnUrl
-            )
+                new PaymentData(
+                    orderCode: payment.OrderCode.Value,
+                    amount: (int)payment.Amount,
+                    description: payment.Description,
+                    items: new List<ItemData>
+                    {
+                new ItemData(payment.Description, 1, (int)payment.Amount)
+                    },
+                    cancelUrl: $"{baseUrl}/student/membership-requests",
+                    returnUrl: $"{baseUrl}/student/membership-requests"
+                )
             );
 
             return result.checkoutUrl;

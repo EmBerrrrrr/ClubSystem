@@ -1,4 +1,5 @@
-﻿using Repository.Models;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using Repository.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -33,6 +34,9 @@ namespace Repository.Repo.Interfaces
         Task SaveAsync();
         Task<bool> ExistsOrderCodeAsync(int code);
         Task<bool> HasOtherPendingPayment(int membershipId, int excludePaymentId);
+        Task<IDbContextTransaction> BeginTransactionAsync();
+        Task<Payment?> GetPendingPaymentForUpdate(int membershipId);
+
         /// <summary>
         /// Đổi status payment từ 'pending' sang 'paid' một cách atomic.
         /// Trả về true nếu update thành công (tức là trước đó vẫn đang pending),
