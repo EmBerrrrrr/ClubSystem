@@ -52,12 +52,39 @@ namespace Service.Service.Implements
             _noti = noti;
         }
 
-        // FOR CLUB LEADER
+        // FOR CLUB LEADER - Bổ sung memberCount và totalRevenue
         public async Task<List<ClubDto>> GetMyClubsAsync(int accountId)
         {
             var clubs = await _repo.GetByLeaderIdAsync(accountId);
+            if (!clubs.Any()) return new List<ClubDto>();
 
-            return clubs.Select(c => MapToDto(c)).ToList();
+            var clubIds = clubs.Select(c => c.Id).ToList();
+
+            // Lấy tên leader (ở đây là chính leader đang đăng nhập, nên có thể hardcode hoặc lấy từ DB)
+            var leaderMap = await GetActiveLeaderNamesByClubIdsAsync(clubIds);
+
+            var result = new List<ClubDto>();
+
+            foreach (var club in clubs)
+            {
+                if (club == null || string.IsNullOrEmpty(club.Name))
+                    continue;
+
+                var memberCount = await _membershipRepo
+                    .GetActiveMemberCountByClubIdAsync(club.Id);
+
+                var totalRevenue = await _paymentRepo
+                    .GetTotalRevenueFromMembersByClubIdAsync(club.Id);
+
+                var dto = MapToDto(club);
+                dto.MemberCount = memberCount;
+                dto.TotalRevenue = totalRevenue;
+                dto.LeaderName = leaderMap.GetValueOrDefault(club.Id); // Thường là tên của chính leader
+
+                result.Add(dto);
+            }
+
+            return result.OrderBy(c => c.Name).ToList();
         }
 
         // FOR ADMIN - Bao gồm thông tin monitoring (memberCount, totalRevenue)

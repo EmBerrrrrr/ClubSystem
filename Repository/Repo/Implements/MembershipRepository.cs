@@ -164,6 +164,10 @@ namespace Repository.Repo.Implements
             _db.Memberships.Update(membership);
         }
 
+        public async Task DeleteMembership(Membership membership)
+        {
+            _db.Memberships.Remove(membership);
+        }
         /// <summary>
         /// Lưu thay đổi (commit DB).
         /// 

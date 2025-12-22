@@ -16,6 +16,7 @@ namespace Repository.Repo.Interfaces
         Task<Membership?> GetMembershipByIdAsync(int membershipId);
         Task AddMembershipAsync(Membership member);
         void UpdateMembership(Membership membership);
+        Task DeleteMembership(Membership membership);
         Task SaveAsync();
     }
 }
