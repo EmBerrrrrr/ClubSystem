@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using DTO.DTO.Membership;
+using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Repository.Repo.Interfaces;
 using Service.Helper;
@@ -170,15 +171,15 @@ namespace Service.Service.Implements
 
             await _membershipRepo.AddMembershipAsync(membership);
             await _membershipRepo.SaveAsync();
-
+            var orderCode = await GenerateUniqueOrderCodeAsync();
             var payment = new Payment
             {
                 MembershipId = membership.Id,
                 ClubId = club.Id,
                 Amount = club.MembershipFee ?? 0,
-                Status = "created",
-                Method = null,
-                OrderCode = null
+                Status = "pending",
+                Method = "payos",
+                OrderCode = orderCode
             };
 
             await _paymentRepo.AddAsync(payment);
@@ -274,26 +275,34 @@ namespace Service.Service.Implements
             await _membershipRepo.SaveAsync();
         }
 
-        // Hủy/Remove member khỏi CLB (set status = "removed")
+        // Hủy/Remove member khỏi CLB (XÓA CỨNG - hard delete)
+        // Hủy/Remove member khỏi CLB (XÓA CỨNG + gửi thông báo kèm lý do)
         public async Task RemoveMemberAsync(int leaderId, int membershipId, string? reason)
         {
             var membership = await _membershipRepo.GetMembershipByIdAsync(membershipId)
                             ?? throw new Exception("Không tìm thấy thành viên.");
 
-            var club = await _clubRepo.GetByIdAsync(membership.ClubId);  // THÊM
-            if (club.Status == "Locked") throw new Exception("Cannot remove member from locked club");  // THÊM
+            var club = await _clubRepo.GetByIdAsync(membership.ClubId);
+            if (club.Status == "Locked")
+                throw new Exception("Cannot remove member from locked club");
 
-            // Kiểm tra leader có quyền với CLB này không
+            // Kiểm tra quyền leader
             if (!await _clubRepo.IsLeaderOfClubAsync(membership.ClubId, leaderId))
                 throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
 
-            if (membership.Status == "removed")
-                throw new Exception("Thành viên đã bị hủy khỏi CLB.");
-
-            membership.Status = "removed";
-            _membershipRepo.UpdateMembership(membership);
+            // 1. Xóa cứng membership khỏi DB
+            _membershipRepo.DeleteMembership(membership);
             await _membershipRepo.SaveAsync();
+
+            // 2. Gửi thông báo cho sinh viên bị remove (lý do được lưu trong noti in-memory)
+            string title = $"Bạn đã bị xóa khỏi CLB \"{club.Name}\"";
+            string message = !string.IsNullOrWhiteSpace(reason)
+                ? $"Lý do: {reason.Trim()}"
+                : "CLB không cung cấp lý do cụ thể. Vui lòng liên hệ leader để biết thêm thông tin.";
+
+            _noti.Push(membership.AccountId, title, message);
         }
+
         public async Task NotifyLeaderWhenRequestCreated(int clubId, int studentId)
         {
             var leaderIds = await _clubRepo.GetLeaderAccountIdsByClubIdAsync(clubId);
