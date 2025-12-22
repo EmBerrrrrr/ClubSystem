@@ -33,6 +33,11 @@ namespace Repository.Repo.Interfaces
         Task SaveAsync();
         Task<bool> ExistsOrderCodeAsync(int code);
         Task<bool> HasOtherPendingPayment(int membershipId, int excludePaymentId);
-
+        /// <summary>
+        /// Đổi status payment từ 'pending' sang 'paid' một cách atomic.
+        /// Trả về true nếu update thành công (tức là trước đó vẫn đang pending),
+        /// false nếu payment đã không còn pending (đã có webhook khác xử lý).
+        /// </summary>
+        Task<bool> TryMarkPaymentPaidAsync(long? orderCode, DateTime paidDate);
     }
 }

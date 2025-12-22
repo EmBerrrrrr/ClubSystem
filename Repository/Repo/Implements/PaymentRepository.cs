@@ -190,6 +190,18 @@ namespace Repository.Repo.Implements
                 p.Id != excludePaymentId
             );
         }
+        public async Task<bool> TryMarkPaymentPaidAsync(long? orderCode, DateTime paidDate)
+        {
+            // Chỉ update nếu payment đang ở trạng thái 'pending'
+            var rows = await _db.Database.ExecuteSqlRawAsync(
+                @"UPDATE Payments
+                SET Status = 'paid', PaidDate = {1}
+                WHERE OrderCode = {0} AND Status = 'pending'",
+                orderCode, paidDate);
+
+            return rows > 0;
+        }
+
 
     }
 }

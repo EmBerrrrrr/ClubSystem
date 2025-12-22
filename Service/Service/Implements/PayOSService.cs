@@ -70,27 +70,28 @@ namespace Service.Service.Implements
         public async Task<string> CreatePaymentLink(int paymentId)
         {
             var payment = await _paymentRepo.GetByIdAsync(paymentId)
-        ?? throw new Exception("Không tìm thấy payment.");
+                ?? throw new Exception("Không tìm thấy payment.");
 
             var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId)
                 ?? throw new Exception("Không tìm thấy membership.");
 
-            // 🚨 ĐÃ ACTIVE → CẤM TẠO LINK
+            // Membership đã active thì không cho thanh toán
             if (membership.Status == "active")
                 throw new Exception("Membership đã được thanh toán.");
-                
-            // 🚨 PAYMENT NÀY ĐÃ PAID
+
+            // Payment này đã paid thì không cho tạo link nữa
             if (payment.Status == "paid")
                 throw new Exception("Đơn này đã được thanh toán.");
 
-            // 🚨 CHỈ CHO 1 PAYMENT PENDING
+            // Không cho tồn tại payment khác đang pending cho cùng membership
             bool hasPending = await _paymentRepo
                 .HasOtherPendingPayment(payment.MembershipId, payment.Id);
 
             if (hasPending)
                 throw new Exception("Đang có đơn thanh toán khác đang chờ xử lý.");
 
-            // ✅ TẠO orderCode MỚI
+            // Nếu payment này đã từng tạo QR và đang pending thì có thể dùng lại orderCode cũ
+            // hoặc bạn muốn luôn tạo orderCode mới thì để như bên dưới
             long orderCode = GenerateOrderCode();
 
             payment.OrderCode = orderCode;
@@ -111,7 +112,7 @@ namespace Service.Service.Implements
                     description: payment.Description,
                     items: new List<ItemData>
                     {
-                new ItemData(payment.Description, 1, (int)payment.Amount)
+                        new ItemData(payment.Description, 1, (int)payment.Amount)
                     },
                     cancelUrl: cancelUrl,
                     returnUrl: returnUrl
@@ -120,7 +121,6 @@ namespace Service.Service.Implements
 
             return result.checkoutUrl;
         }
-
         /// <summary>
         /// Xử lý webhook từ PayOS (thanh toán success/fail).
         /// 
@@ -139,24 +139,25 @@ namespace Service.Service.Implements
             }
             catch
             {
+                // Sai chữ ký hoặc dữ liệu webhook không hợp lệ → bỏ qua
                 return;
             }
 
-            // 1️⃣ Tìm payment
+            // 1. Tìm payment theo orderCode
             var payment = await _paymentRepo.GetByOrderCodeAsync(data.orderCode);
             if (payment == null)
                 return;
 
-            // 2️⃣ Nếu payment đã xử lý rồi → bỏ
-            if (payment.Status == "paid" || payment.Status == "failed")
+            // 2. Nếu payment này đã xử lý xong rồi thì bỏ
+            if (payment.Status == "paid" || payment.Status == "failed" || payment.Status == "cancelled")
                 return;
 
-            // 3️⃣ Lấy membership
+            // 3. Lấy membership
             var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId);
             if (membership == null)
                 return;
 
-            // 🚨 CHẶN CỨNG: membership đã active thì KHÔNG cho payment nào nữa
+            // Nếu membership đã active thì không cho bất kỳ payment nào nữa "ăn"
             if (membership.Status == "active")
             {
                 payment.Status = "cancelled";
@@ -164,21 +165,35 @@ namespace Service.Service.Implements
                 return;
             }
 
-            // 4️⃣ Xử lý theo kết quả PayOS
+            // 4. Nếu PayOS báo thành công
             if (data.code == "00")
             {
-                // ✅ CHỈ 1 payment đầu tiên vào được đây
-                payment.Status = "paid";
-                payment.PaidDate = DateTimeExtensions.NowVietnam();
+                var paidDate = DateTimeExtensions.NowVietnam();
 
+                // *** ĐIỂM QUAN TRỌNG: chỉ update payment nếu còn đang pending ***
+                var ok = await _paymentRepo.TryMarkPaymentPaidAsync(payment.OrderCode, paidDate);
+
+                if (!ok)
+                {
+                    // Có webhook khác chạy trước, hoặc payment không còn pending
+                    // → không làm gì nữa, không được set membership active nữa
+                    return;
+                }
+
+                // Re-load payment nếu cần, hoặc set lại trong memory
+                payment.Status = "paid";
+                payment.PaidDate = paidDate;
+
+                // Lúc này chắc chắn payment này là payment đầu tiên chuyển từ pending → paid
+                // mới được phép active membership
                 membership.Status = "active";
 
-                await _paymentRepo.UpdateAsync(payment);
                 _membershipRepo.UpdateMembership(membership);
                 await _membershipRepo.SaveAsync();
             }
             else
             {
+                // Thanh toán thất bại từ PayOS
                 payment.Status = "failed";
                 await _paymentRepo.UpdateAsync(payment);
             }
