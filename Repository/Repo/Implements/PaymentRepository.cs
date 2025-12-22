@@ -182,5 +182,14 @@ namespace Repository.Repo.Implements
             return await _db.Payments.AnyAsync(p => p.OrderCode == code);
         }
 
+        public async Task<bool> HasOtherPendingPayment(int membershipId, int excludePaymentId)
+        {
+            return await _db.Payments.AnyAsync(p =>
+                p.MembershipId == membershipId &&
+                p.Status == "pending" &&
+                p.Id != excludePaymentId
+            );
+        }
+
     }
 }

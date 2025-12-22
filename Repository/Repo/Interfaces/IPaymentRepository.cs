@@ -32,5 +32,7 @@ namespace Repository.Repo.Interfaces
 
         Task SaveAsync();
         Task<bool> ExistsOrderCodeAsync(int code);
+        Task<bool> HasOtherPendingPayment(int membershipId, int excludePaymentId);
+
     }
 }

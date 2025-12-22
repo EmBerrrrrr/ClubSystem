@@ -72,32 +72,46 @@ namespace Service.Service.Implements
             var payment = await _paymentRepo.GetByIdAsync(paymentId)
                 ?? throw new Exception("Không tìm thấy payment.");
 
-            //  LUÔN tạo orderCode MỚI
+            var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId)
+                ?? throw new Exception("Không tìm thấy membership.");
+
+            // 🚨 CHẶN NẾU ĐÃ ACTIVE
+            if (membership.Status == "active")
+                throw new Exception("Membership đã được thanh toán.");
+
+            // 🚨 CHẶN NẾU PAYMENT ĐÃ PAID
+            if (payment.Status == "paid")
+                throw new Exception("Đơn này đã được thanh toán.");
+
+            // 🚨 CHẶN NẾU ĐÃ CÓ PAYMENT PENDING KHÁC
+            bool hasOtherPending = await _paymentRepo
+                .HasOtherPendingPayment(payment.MembershipId, payment.Id);
+
+            if (hasOtherPending)
+                throw new Exception("Đang có đơn thanh toán khác đang chờ xử lý.");
+
+            // ✅ TẠO orderCode MỚI
             long orderCode = GenerateOrderCode();
 
             payment.OrderCode = orderCode;
             payment.Method = "PayOS";
             payment.Status = "pending";
-            payment.Description = "Don Phi Gia Nhap"; //  <= 25 ký tự
+            payment.Description = "Don Phi Gia Nhap";
 
             await _paymentRepo.UpdateAsync(payment);
 
             var baseUrl = (_config["Frontend:BaseUrl"] ?? "").TrimEnd('/');
             string returnUrl = $"{baseUrl}/student/membership-requests";
-            string cancelUrl = $"{baseUrl}/student/membership-requests";
-
-            int amount = (int)payment.Amount;
-
-            Console.WriteLine($"[PayOS] CreatePaymentLink: paymentId={paymentId}, orderCode={orderCode}, amount={amount}");
+            string cancelUrl = returnUrl;
 
             var result = await _payOS.createPaymentLink(
                 new PaymentData(
                     orderCode: orderCode,
-                    amount: amount,
+                    amount: (int)payment.Amount,
                     description: payment.Description,
                     items: new List<ItemData>
                     {
-                new ItemData(payment.Description, 1, amount)
+                new ItemData(payment.Description, 1, (int)payment.Amount)
                     },
                     cancelUrl: cancelUrl,
                     returnUrl: returnUrl
@@ -106,8 +120,6 @@ namespace Service.Service.Implements
 
             return result.checkoutUrl;
         }
-
-
 
         /// <summary>
         /// Xử lý webhook từ PayOS (thanh toán success/fail).
@@ -170,14 +182,22 @@ namespace Service.Service.Implements
             // Thanh toán thành công
             if (data.code == "00")
             {
+                // 🚨 ĐÃ XỬ LÝ RỒI → BỎ QUA
+                if (payment.Status == "paid")
+                    return;
+
                 payment.Status = "paid";
                 payment.PaidDate = DateTimeExtensions.NowVietnam();
 
                 if (membership != null)
                 {
-                    membership.Status = "active";
-                    _membershipRepo.UpdateMembership(membership);
-                    await _membershipRepo.SaveAsync();
+                    // 🚨 NẾU ĐÃ ACTIVE → KHÔNG XỬ LÝ TIẾP
+                    if (membership.Status != "active")
+                    {
+                        membership.Status = "active";
+                        _membershipRepo.UpdateMembership(membership);
+                        await _membershipRepo.SaveAsync();
+                    }
                 }
 
                 if (request != null)
@@ -186,6 +206,7 @@ namespace Service.Service.Implements
                     await _membershipRequestRepo.UpdateAsync(request);
                 }
             }
+
             else
             {
                 // Thanh toán thất bại / hủy
