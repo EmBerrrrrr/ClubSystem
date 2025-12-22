@@ -1,6 +1,5 @@
 ﻿using Azure.Core;
 using DTO.DTO.PayOS;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Net.payOS;
 using Net.payOS.Types;
@@ -30,7 +29,6 @@ namespace Service.Service.Implements
     {
         private readonly PayOS _payOS;
         private readonly IPaymentRepository _paymentRepo;
-        private readonly IHubContext<PaymentHub> _paymentHub;
         private readonly IConfiguration _config;
         private readonly IMembershipRepository _membershipRepo;
         private readonly IMembershipRequestRepository _membershipRequestRepo;
@@ -44,8 +42,7 @@ namespace Service.Service.Implements
         IMembershipRepository membershipRepo,
         IMembershipRequestRepository membershipRequestRepo,
         IClubRepository clubRepo,
-        IAuthRepository accountRepo,
-        IHubContext<PaymentHub> paymentHub)
+        IAuthRepository accountRepo)
         {
             _payOS = payOS;
             _paymentRepo = paymentRepo;
@@ -54,7 +51,6 @@ namespace Service.Service.Implements
             _membershipRequestRepo = membershipRequestRepo;
             _clubRepo = clubRepo;
             _accountRepo = accountRepo;
-            _paymentHub = paymentHub;
         }
 
         private long GenerateOrderCode()
@@ -146,65 +142,45 @@ new ItemData(payment.Description, 1, (int)payment.Amount)
                 return;
             }
 
+            // 1️⃣ Tìm payment
             var payment = await _paymentRepo.GetByOrderCodeAsync(data.orderCode);
-            if (payment == null) return;
+            if (payment == null)
+                return;
 
+            // 2️⃣ Nếu payment đã xử lý rồi → bỏ
+            if (payment.Status == "paid" || payment.Status == "failed")
+                return;
+
+            // 3️⃣ Lấy membership
             var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId);
-            if (membership == null) return;
+            if (membership == null)
+                return;
 
-            // Mặc định status cũ
-            var oldStatus = payment.Status;
-
-            // Nếu membership đã active → cancel payment này
+            // 🚨 CHẶN CỨNG: membership đã active thì KHÔNG cho payment nào nữa
             if (membership.Status == "active")
             {
                 payment.Status = "cancelled";
                 await _paymentRepo.UpdateAsync(payment);
-
-                await _paymentHub.Clients
-                    .Group($"payment-{payment.Id}")
-                    .SendAsync("PaymentUpdated", new
-                    {
-                        paymentId = payment.Id,
-                        status = payment.Status,
-                        redirectUrl = "/student/membership-requests"
-                    });
-
                 return;
             }
 
+            // 4️⃣ Xử lý theo kết quả PayOS
             if (data.code == "00")
             {
+                // ✅ CHỈ 1 payment đầu tiên vào được đây
                 payment.Status = "paid";
                 payment.PaidDate = DateTimeExtensions.NowVietnam();
+
                 membership.Status = "active";
 
                 await _paymentRepo.UpdateAsync(payment);
                 _membershipRepo.UpdateMembership(membership);
                 await _membershipRepo.SaveAsync();
-
-                await _paymentHub.Clients
-                    .Group($"payment-{payment.Id}")
-                    .SendAsync("PaymentUpdated", new
-                    {
-                        paymentId = payment.Id,
-                        status = payment.Status,
-                        redirectUrl = "/student/membership-requests"
-                    });
             }
             else
             {
                 payment.Status = "failed";
                 await _paymentRepo.UpdateAsync(payment);
-
-                await _paymentHub.Clients
-                    .Group($"payment-{payment.Id}")
-                    .SendAsync("PaymentUpdated", new
-                    {
-                        paymentId = payment.Id,
-                        status = payment.Status,
-                        redirectUrl = "/student/membership-requests"
-                    });
             }
         }
 
