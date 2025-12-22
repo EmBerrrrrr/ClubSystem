@@ -70,24 +70,24 @@ namespace Service.Service.Implements
         public async Task<string> CreatePaymentLink(int paymentId)
         {
             var payment = await _paymentRepo.GetByIdAsync(paymentId)
-                ?? throw new Exception("Không tìm thấy payment.");
+        ?? throw new Exception("Không tìm thấy payment.");
 
             var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId)
                 ?? throw new Exception("Không tìm thấy membership.");
 
-            // 🚨 CHẶN NẾU ĐÃ ACTIVE
+            // 🚨 ĐÃ ACTIVE → CẤM TẠO LINK
             if (membership.Status == "active")
                 throw new Exception("Membership đã được thanh toán.");
-
-            // 🚨 CHẶN NẾU PAYMENT ĐÃ PAID
+                
+            // 🚨 PAYMENT NÀY ĐÃ PAID
             if (payment.Status == "paid")
                 throw new Exception("Đơn này đã được thanh toán.");
 
-            // 🚨 CHẶN NẾU ĐÃ CÓ PAYMENT PENDING KHÁC
-            bool hasOtherPending = await _paymentRepo
+            // 🚨 CHỈ CHO 1 PAYMENT PENDING
+            bool hasPending = await _paymentRepo
                 .HasOtherPendingPayment(payment.MembershipId, payment.Id);
 
-            if (hasOtherPending)
+            if (hasPending)
                 throw new Exception("Đang có đơn thanh toán khác đang chờ xử lý.");
 
             // ✅ TẠO orderCode MỚI
@@ -102,7 +102,7 @@ namespace Service.Service.Implements
 
             var baseUrl = (_config["Frontend:BaseUrl"] ?? "").TrimEnd('/');
             string returnUrl = $"{baseUrl}/student/membership-requests";
-            string cancelUrl = returnUrl;
+            string cancelUrl = $"{baseUrl}/student/membership-requests";
 
             var result = await _payOS.createPaymentLink(
                 new PaymentData(
@@ -133,94 +133,55 @@ namespace Service.Service.Implements
         public async Task HandlePaymentWebhook(WebhookType webhookData)
         {
             WebhookData data;
-
             try
             {
-                // Xác thực chữ ký & parse webhook
                 data = _payOS.verifyPaymentWebhookData(webhookData);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[PayOS Webhook] Verify failed: {ex.Message}");
-                return;
-            }
-
-            Console.WriteLine($"[PayOS Webhook] code={data.code}, orderCode={data.orderCode}, amount={data.amount}");
-
-            // Tìm payment theo orderCode
-            var payment = await _paymentRepo.GetByOrderCodeAsync(data.orderCode);
-
-            // Nếu không có payment trong DB -> có thể là webhook test -> bỏ qua, KHÔNG throw
-            if (payment == null)
-            {
-                Console.WriteLine($"[PayOS Webhook] Payment not found for orderCode={data.orderCode} (maybe test webhook).");
-                return;
-            }
-
-            // Lấy membership tương ứng
-            Membership? membership = null;
-            try
-            {
-                membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId);
             }
             catch
             {
-                // nếu method trả null thì xử lý tiếp phía dưới
+                return;
             }
 
-            // Nếu có membership thì tìm request tương ứng (theo account + club)
-            MembershipRequest? request = null;
-            if (membership != null)
+            // 1️⃣ Tìm payment
+            var payment = await _paymentRepo.GetByOrderCodeAsync(data.orderCode);
+            if (payment == null)
+                return;
+
+            // 2️⃣ Nếu payment đã xử lý rồi → bỏ
+            if (payment.Status == "paid" || payment.Status == "failed")
+                return;
+
+            // 3️⃣ Lấy membership
+            var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId);
+            if (membership == null)
+                return;
+
+            // 🚨 CHẶN CỨNG: membership đã active thì KHÔNG cho payment nào nữa
+            if (membership.Status == "active")
             {
-                var requests = await _membershipRequestRepo.GetRequestsOfAccountAsync(membership.AccountId);
-                request = requests
-                    .Where(r => r.ClubId == membership.ClubId)
-                    .OrderByDescending(r => r.RequestDate)
-                    .FirstOrDefault();
+                payment.Status = "cancelled";
+                await _paymentRepo.UpdateAsync(payment);
+                return;
             }
 
-            // Thanh toán thành công
+            // 4️⃣ Xử lý theo kết quả PayOS
             if (data.code == "00")
             {
-                // 🚨 ĐÃ XỬ LÝ RỒI → BỎ QUA
-                if (payment.Status == "paid")
-                    return;
-
+                // ✅ CHỈ 1 payment đầu tiên vào được đây
                 payment.Status = "paid";
                 payment.PaidDate = DateTimeExtensions.NowVietnam();
 
-                if (membership != null)
-                {
-                    // 🚨 NẾU ĐÃ ACTIVE → KHÔNG XỬ LÝ TIẾP
-                    if (membership.Status != "active")
-                    {
-                        membership.Status = "active";
-                        _membershipRepo.UpdateMembership(membership);
-                        await _membershipRepo.SaveAsync();
-                    }
-                }
+                membership.Status = "active";
 
-                if (request != null)
-                {
-                    request.Status = "Paid";
-                    await _membershipRequestRepo.UpdateAsync(request);
-                }
+                await _paymentRepo.UpdateAsync(payment);
+                _membershipRepo.UpdateMembership(membership);
+                await _membershipRepo.SaveAsync();
             }
-
             else
             {
-                // Thanh toán thất bại / hủy
                 payment.Status = "failed";
-
-                if (request != null)
-                {
-                    request.Status = "Failed";
-                    await _membershipRequestRepo.UpdateAsync(request);
-                }
-                // membership.status giữ nguyên "pending_payment" để có thể thanh toán lại
+                await _paymentRepo.UpdateAsync(payment);
             }
-
-            await _paymentRepo.UpdateAsync(payment);
         }
 
         /// <summary>
