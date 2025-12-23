@@ -2,7 +2,7 @@ namespace DTO.DTO.Payment
 {
     public class DebtorDto
     {
-        public int MembershipId { get; set; }
+        public int? MembershipId { get; set; }
         public int AccountId { get; set; }
         public string? FullName { get; set; }
         public string? Email { get; set; }

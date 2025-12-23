@@ -31,7 +31,7 @@ public partial class Activity
 
     public virtual ICollection<ActivityParticipant> ActivityParticipants { get; set; } = new List<ActivityParticipant>();
 
-    public virtual Club Club { get; set; }
+    public virtual Club? Club { get; set; }
 
     public virtual Account CreatedByNavigation { get; set; }
 }

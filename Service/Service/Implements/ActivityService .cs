@@ -242,7 +242,7 @@ namespace Service.Service.Implements
             return participants.Select(p => new ActivityParticipantForLeaderDto
             {
                 ParticipantId = p.Id,
-                MembershipId = p.MembershipId,
+                MembershipId = (int)p.MembershipId,
                 AccountId = p.Membership?.AccountId ?? 0,
                 FullName = p.Membership?.Account?.FullName ?? "",
                 Email = p.Membership?.Account?.Email ?? "",

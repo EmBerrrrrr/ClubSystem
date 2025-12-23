@@ -3,7 +3,7 @@ namespace DTO.DTO.Payment
     public class PaymentDto
     {
         public int Id { get; set; }
-        public int MembershipId { get; set; }
+        public int? MembershipId { get; set; }
         public int ClubId { get; set; }
         public string? ClubName { get; set; }
         public decimal Amount { get; set; }

@@ -3,7 +3,7 @@ namespace DTO.DTO.Activity
     public class ActivityParticipantDto
     {
         public int Id { get; set; }
-        public int ActivityId { get; set; }
+        public int? ActivityId { get; set; }
         public string ActivityTitle { get; set; } = string.Empty;
         public int ClubId { get; set; }
         public string ClubName { get; set; } = string.Empty;

@@ -206,8 +206,8 @@ namespace Service.Service.Implements
 
             var activityParticipants = _context.ActivityParticipants
                 .Where(x =>
-                    activityIds.Contains(x.ActivityId) ||
-                    membershipIds.Contains(x.MembershipId));
+                    activityIds.Contains((int)x.ActivityId) ||
+                    membershipIds.Contains((int)x.MembershipId));
 
             _context.ActivityParticipants.RemoveRange(activityParticipants);
 

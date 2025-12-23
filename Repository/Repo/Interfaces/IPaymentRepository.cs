@@ -9,7 +9,7 @@ namespace Repository.Repo.Interfaces
     {
         Task AddAsync(Payment payment);
 
-        Task<Payment?> GetByIdAsync(int id); 
+        Task<Payment?> GetByIdAsync(int id);
 
         Task<Payment?> GetByMembershipIdAsync(int membershipId);
 

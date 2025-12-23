@@ -152,6 +152,7 @@ public partial class StudentClubManagementContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__activity__3213E83F2098AB49");
 
             entity.ToTable("activity_participants");
+            entity.Property(e => e.AccountId).HasColumnName("account_id");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ActivityId).HasColumnName("activity_id");

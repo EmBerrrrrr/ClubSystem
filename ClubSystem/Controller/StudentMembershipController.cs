@@ -97,5 +97,20 @@ namespace WebApi.Controllers
             var result = await _service.GetMyMembershipsAsync(accountId);
             return Ok(result);
         }
+
+        [HttpPost("leave/{clubId}")]
+        public async Task<IActionResult> LeaveClub(int clubId)
+        {
+            try
+            {
+                var accountId = User.GetAccountId();
+                await _service.LeaveClubAsync(accountId, clubId);
+                return Ok("Bạn đã rời khỏi câu lạc bộ thành công.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

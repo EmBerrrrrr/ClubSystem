@@ -9,15 +9,20 @@ public partial class ActivityParticipant
 {
     public int Id { get; set; }
 
-    public int ActivityId { get; set; }
+    public int? ActivityId { get; set; }
 
-    public int MembershipId { get; set; }
+    public int? MembershipId { get; set; }
 
-    public DateTime? RegisterTime { get; set; }
+    public int? AccountId { get; set; }
 
-    public bool? Attended { get; set; }
+    public DateTime? RegisterTime { get; set; }  // ← THÊM ? (nullable)
 
-    public virtual Activity Activity { get; set; }
+    public bool? Attended { get; set; }          // ← THÊM ? (nullable) — nếu DB cho phép NULL
 
-    public virtual Membership Membership { get; set; }
+    // Navigation
+    public virtual Activity? Activity { get; set; } = null!;
+
+    public virtual Membership? Membership { get; set; }
+
+    public virtual Account? Account { get; set; }
 }

@@ -133,5 +133,17 @@ namespace Repository.Repo.Implements
             _context.ActivityParticipants.RemoveRange(list);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<ActivityParticipant>> GetByAccountIdAsync(int? accountId)
+        {
+            if (!accountId.HasValue)
+                return new List<ActivityParticipant>();
+
+            return await _context.ActivityParticipants
+                .Include(p => p.Activity)
+                    .ThenInclude(a => a.Club)
+                .Where(p => p.AccountId == accountId.Value)
+                .ToListAsync();
+        }
     }
 }

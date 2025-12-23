@@ -37,19 +37,21 @@ namespace Service.Service.Implements
         private readonly IClubRepository _clubRepo;
         private readonly IAuthRepository _authRepo;
         private readonly IPaymentRepository _paymentRepo;
-
+        private readonly INotificationService _noti;  // THÊM DÒNG NÀY
         public StudentMembershipService(
             IMembershipRequestRepository reqRepo,
             IMembershipRepository memberRepo,
             IClubRepository clubRepo,
             IAuthRepository authRepo,
-            IPaymentRepository paymentRepo)
+            IPaymentRepository paymentRepo,
+            INotificationService noti)
         {
             _reqRepo = reqRepo;
             _memberRepo = memberRepo;
             _clubRepo = clubRepo;
             _authRepo = authRepo;
             _paymentRepo = paymentRepo;
+            _noti = noti;
         }
 
         /// <summary>
@@ -297,6 +299,39 @@ namespace Service.Service.Implements
 
                 // XÓA DÒNG MemberCount ở cấp ngoài nữa (nếu bạn đã thêm trước đó)
             }).ToList();
+        }
+
+        public async Task LeaveClubAsync(int accountId, int clubId)
+        {
+            // 1. Validate: Phải là member active của CLB đó
+            var membership = await _memberRepo.GetMembershipByAccountAndClubAsync(accountId, clubId)
+                            ?? throw new Exception("Bạn không phải thành viên của câu lạc bộ này.");
+
+            if (!"active".Equals(membership.Status, StringComparison.OrdinalIgnoreCase))
+                throw new Exception("Bạn không thể rời khỏi CLB vì trạng thái thành viên không active.");
+
+            // 2. Check CLB không bị locked (tùy chọn - có thể cho rời dù locked)
+            var club = await _clubRepo.GetByIdAsync(clubId);
+            if (club.Status == "Locked")
+                throw new Exception("Câu lạc bộ đang bị khóa, bạn không thể rời lúc này.");
+
+            // 3. Xóa cứng Membership → activity_participants và payments sẽ set membership_id = NULL (không xóa bản ghi)
+            _memberRepo.DeleteMembership(membership);
+            await _memberRepo.SaveAsync();
+
+            // 4. Gửi noti cho leader(s) của CLB
+            var leaderIds = await _clubRepo.GetLeaderAccountIdsByClubIdAsync(clubId);
+            foreach (var leaderId in leaderIds)
+            {
+                _noti.Push(leaderId,
+                    "Thành viên rời CLB",
+                    $"Thành viên {membership.Account?.FullName ?? "ID " + accountId} đã tự nguyện rời khỏi CLB {club.Name}.");
+            }
+
+            // 5. Gửi noti cho chính student
+            _noti.Push(accountId,
+                "Rời CLB thành công",
+                $"Bạn đã rời khỏi CLB {club.Name} thành công.");
         }
     }
 }

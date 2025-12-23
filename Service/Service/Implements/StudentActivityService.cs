@@ -127,6 +127,7 @@ namespace Service.Service.Implements
             {
                 ActivityId = activityId,
                 MembershipId = membership.Id,
+                AccountId = accountId,
                 RegisterTime = DateTime.UtcNow,
                 Attended = true // Set "attend" ngay khi đăng ký
             };
@@ -181,39 +182,26 @@ namespace Service.Service.Implements
         /// </summary>
         public async Task<List<ActivityParticipantDto>> GetMyActivityHistoryAsync(int accountId)
         {
-            // Lấy tất cả memberships của student
-            var memberships = await _membershipRepo.GetMembershipsAsync(accountId);
-            var result = new List<ActivityParticipantDto>();
+            // Query trực tiếp theo AccountId (bao gồm cả bản ghi membership_id = NULL sau khi rời CLB)
+            var participants = await _participantRepo.GetByAccountIdAsync(accountId);
 
-            foreach (var membership in memberships)
+            var result = participants.Select(p => new ActivityParticipantDto
             {
-                var participants = await _participantRepo.GetByMembershipIdAsync(membership.Id);
-                foreach (var participant in participants)
-                {
-                    if (participant.Activity != null)
-                    {
-                        result.Add(new ActivityParticipantDto
-                        {
-                            Id = participant.Id,
-                            ActivityId = participant.ActivityId,
-                            ActivityTitle = participant.Activity.Title ?? "",
-                            ClubId = participant.Activity.ClubId,
-                            ClubName = participant.Activity.Club?.Name ?? "",
-                            StartTime = participant.Activity.StartTime.ToVietnamTime(),
-                            EndTime = participant.Activity.EndTime.ToVietnamTime(),
-                            Location = participant.Activity.Location ?? "",
-                            RegisterTime = participant.RegisterTime.ToVietnamTime(),
-                            Attended = participant.Attended,
-                            //CancelReason = participant.CancelReason,
-                            ActivityStatus = participant.Activity.Status ?? ""
-                        });
-                    }
-                }
-            }
+                Id = p.Id,
+                ActivityId = p.ActivityId,
+                ActivityTitle = p.Activity?.Title ?? "",
+                ClubId = p.Activity?.ClubId ?? 0,
+                ClubName = p.Activity?.Club?.Name ?? "CLB đã rời",
+                StartTime = p.Activity?.StartTime.ToVietnamTime(),
+                EndTime = p.Activity?.EndTime.ToVietnamTime(),
+                Location = p.Activity?.Location ?? "",
+                RegisterTime = p.RegisterTime.ToVietnamTime(),
+                Attended = p.Attended,
+                ActivityStatus = CalculateActivityStatus(p.Activity) // Dùng hàm bạn đã có
+            }).ToList();
 
             return result.OrderByDescending(r => r.RegisterTime).ToList();
         }
-
         /// <summary>
         /// Lấy danh sách activity mà sinh viên (là member của ít nhất một CLB) có thể đăng ký.
         /// Chỉ hiển thị activity đang mở đăng ký (Status = "Active" hoặc "opened").
