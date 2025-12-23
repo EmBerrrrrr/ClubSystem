@@ -63,6 +63,8 @@ public class Program
         builder.Services.AddSingleton<INotificationService, InMemoryNotificationService>();
         builder.Services.AddScoped<IReportService, ReportService>();
 
+        builder.Services.AddSingleton<INotificationService, InMemoryNotificationService>();
+
         builder.Services.AddSingleton(sp =>
         {
             var cfg = sp.GetRequiredService<IConfiguration>();

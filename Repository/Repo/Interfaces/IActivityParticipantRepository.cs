@@ -14,6 +14,7 @@ namespace Repository.Repo.Interfaces
         Task UpdateParticipantAsync(ActivityParticipant participant);
         Task SaveAsync();
         Task DeleteByActivityIdAsync(int activityId);
+        Task<List<ActivityParticipant>> GetByAccountIdAsync(int? accountId);
 
     }
 }
