@@ -1,6 +1,7 @@
 ﻿using DTO.DTO.PayOS;
 using Microsoft.AspNetCore.Mvc;
 using Net.payOS.Types;
+using Service.Service.Implements;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -19,6 +20,14 @@ public class PayOSController : ControllerBase
         var url = await _service.CreatePaymentLink(paymentId);
         return Ok(url);
     }
+
+    [HttpPost("cancel/{paymentId}")]
+    public async Task<IActionResult> CancelPayment(int paymentId)
+    {
+        await _service.CancelPaymentAsync(paymentId);
+        return Ok();
+    }
+
 
     [HttpPost("webhook")]
     public async Task<IActionResult> Webhook([FromBody] WebhookType data)

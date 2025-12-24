@@ -179,9 +179,9 @@ namespace Service.Service.Implements
                 ClubId = club.Id,
                 AccountId = membership.AccountId,
                 Amount = club.MembershipFee ?? 0,
-                Status = "pending",
+                Status = "created",  
                 Method = "payos",
-                OrderCode = orderCode
+                OrderCode = null     
             };
 
             await _paymentRepo.AddAsync(payment);

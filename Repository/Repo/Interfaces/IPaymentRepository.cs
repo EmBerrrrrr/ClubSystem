@@ -36,6 +36,7 @@ namespace Repository.Repo.Interfaces
         Task<bool> HasOtherPendingPayment(int membershipId, int excludePaymentId);
         Task<IDbContextTransaction> BeginTransactionAsync();
         Task<Payment?> GetPendingPaymentForUpdate(int membershipId);
+        Task<Payment?> GetLatestPendingPaymentByMembershipAsync(int membershipId);
 
         /// <summary>
         /// Đổi status payment từ 'pending' sang 'paid' một cách atomic.
