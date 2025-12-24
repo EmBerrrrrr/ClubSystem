@@ -224,5 +224,13 @@ namespace Repository.Repo.Implements
             return await _db.Database.BeginTransactionAsync();
         }
 
+        public async Task<Payment?> GetLatestPendingPaymentByMembershipAsync(int membershipId)
+        {
+            return await _db.Payments
+                .Where(p => p.MembershipId == membershipId && p.Status == "pending")
+                .OrderByDescending(p => p.Id)
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

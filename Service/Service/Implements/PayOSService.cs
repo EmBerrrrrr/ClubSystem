@@ -70,35 +70,38 @@ namespace Service.Service.Implements
         public async Task<string> CreatePaymentLink(int paymentId)
         {
             var payment = await _paymentRepo.GetByIdAsync(paymentId)
-            ?? throw new Exception("Không tìm thấy payment.");
+                ?? throw new Exception("Không tìm thấy payment.");
 
             var membershipId = payment.MembershipId
                 ?? throw new Exception("Payment không còn gắn với membership.");
 
             var membership = await _membershipRepo.GetMembershipByIdAsync(membershipId)
-            ?? throw new Exception("Không tìm thấy membership.");
+                ?? throw new Exception("Không tìm thấy membership.");
 
-            // 🚨 ĐÃ ACTIVE → CẤM TẠO LINK
             if (membership.Status == "active")
                 throw new Exception("Membership đã được thanh toán.");
 
-            // 🚨 PAYMENT NÀY ĐÃ PAID
-            if (payment.Status == "paid")
-                throw new Exception("Đơn này đã được thanh toán.");
+            // ❗ Chỉ cho tạo link khi payment đang ở trạng thái 'created' hoặc 'pending'
+            if (payment.Status != "created" && payment.Status != "pending")
+                throw new Exception("Trạng thái payment không hợp lệ để tạo link.");
 
-            // 🚨 CHỈ CHO 1 PAYMENT PENDING
-            bool hasPending = await _paymentRepo
-            .HasOtherPendingPayment(membershipId, payment.Id);
+            // 1️⃣ Check có payment pending khác không (cùng membership)
+            var existingPending = await _paymentRepo
+                .GetLatestPendingPaymentByMembershipAsync(membershipId);
 
-            if (hasPending)
+            if (existingPending != null && existingPending.Id != payment.Id)
                 throw new Exception("Đang có đơn thanh toán khác đang chờ xử lý.");
 
-            // ✅ TẠO orderCode MỚI
+            // 2️⃣ Nếu chính payment này đã pending và đã có orderCode → không tạo QR mới
+            if (payment.Status == "pending" && payment.OrderCode.HasValue)
+                throw new Exception("Đơn thanh toán này đã có mã QR đang chờ xử lý, vui lòng dùng lại mã cũ.");
+
+            // 3️⃣ Nếu tới đây thì được phép tạo mới link cho payment này
             long orderCode = GenerateOrderCode();
 
             payment.OrderCode = orderCode;
             payment.Method = "PayOS";
-            payment.Status = "pending";
+            payment.Status = "pending";          // từ created -> pending lần đầu tạo link
             payment.Description = "Don Phi Gia Nhap";
 
             await _paymentRepo.UpdateAsync(payment);
@@ -108,17 +111,17 @@ namespace Service.Service.Implements
             string cancelUrl = $"{baseUrl}/student/membership-requests";
 
             var result = await _payOS.createPaymentLink(
-            new PaymentData(
-            orderCode: orderCode,
-            amount: (int)payment.Amount,
-            description: payment.Description,
-            items: new List<ItemData>
-            {
-new ItemData(payment.Description, 1, (int)payment.Amount)
-            },
-            cancelUrl: cancelUrl,
-            returnUrl: returnUrl
-            )
+                new PaymentData(
+                    orderCode: orderCode,
+                    amount: (int)payment.Amount,
+                    description: payment.Description,
+                    items: new List<ItemData>
+                    {
+                new ItemData(payment.Description, 1, (int)payment.Amount)
+                    },
+                    cancelUrl: cancelUrl,
+                    returnUrl: returnUrl
+                )
             );
 
             return result.checkoutUrl;
