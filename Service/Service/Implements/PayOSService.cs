@@ -81,27 +81,34 @@ namespace Service.Service.Implements
             if (membership.Status == "active")
                 throw new Exception("Membership đã được thanh toán.");
 
-            // ❗ Chỉ cho tạo link khi payment đang ở trạng thái 'created' hoặc 'pending'
-            if (payment.Status != "created" && payment.Status != "pending")
+            // Chỉ cho tạo link khi:
+            // - created  → lần đầu tạo QR
+            // - cancelled → đã hủy trước đó, tạo QR mới
+            // - pending nhưng CHƯA có orderCode (phòng trường hợp data lỗi)
+            if (payment.Status != "created" &&
+                payment.Status != "cancelled" &&
+                payment.Status != "pending") // pending nhưng tới đây chắc chắn OrderCode null
+            {
                 throw new Exception("Trạng thái payment không hợp lệ để tạo link.");
+            }
 
-            // 1️⃣ Check có payment pending khác không (cùng membership)
+            // 1️⃣ Check có payment pending khác cùng membership
             var existingPending = await _paymentRepo
                 .GetLatestPendingPaymentByMembershipAsync(membershipId);
 
             if (existingPending != null && existingPending.Id != payment.Id)
                 throw new Exception("Đang có đơn thanh toán khác đang chờ xử lý.");
 
-            // 2️⃣ Nếu chính payment này đã pending và đã có orderCode → không tạo QR mới
+            // 2️⃣ Nếu chính payment này đã pending + có orderCode → không tạo QR mới
             if (payment.Status == "pending" && payment.OrderCode.HasValue)
                 throw new Exception("Đơn thanh toán này đã có mã QR đang chờ xử lý, vui lòng dùng lại mã cũ.");
 
-            // 3️⃣ Nếu tới đây thì được phép tạo mới link cho payment này
+            // 3️⃣ Lần đầu tạo link cho payment này
             long orderCode = GenerateOrderCode();
 
             payment.OrderCode = orderCode;
             payment.Method = "PayOS";
-            payment.Status = "pending";          // từ created -> pending lần đầu tạo link
+            payment.Status = "pending";
             payment.Description = "Don Phi Gia Nhap";
 
             await _paymentRepo.UpdateAsync(payment);
@@ -125,6 +132,27 @@ namespace Service.Service.Implements
             );
 
             return result.checkoutUrl;
+        }
+        public async Task CancelPaymentAsync(int paymentId)
+        {
+            var payment = await _paymentRepo.GetByIdAsync(paymentId)
+                ?? throw new Exception("Không tìm thấy payment.");
+
+            if (payment.Status != "pending")
+                throw new Exception("Chỉ hủy được đơn đang chờ thanh toán.");
+
+            if (!payment.OrderCode.HasValue)
+                throw new Exception("Đơn này chưa có mã thanh toán.");
+
+            // Hủy link bên payOS (nếu đã tạo)
+            await _payOS.cancelPaymentLink(payment.OrderCode.Value, "User cancelled");
+
+            // Cập nhật trạng thái trong hệ thống:
+            // ➜ Đưa về cancelled và xóa orderCode để lần sau tạo lại QR mới với cùng paymentId
+            payment.Status = "cancelled";
+            payment.OrderCode = null;
+
+            await _paymentRepo.UpdateAsync(payment);
         }
 
         /// <summary>
