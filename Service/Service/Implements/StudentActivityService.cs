@@ -66,7 +66,7 @@ namespace Service.Service.Implements
 
             var club = await _clubRepo.GetByIdAsync(activity.ClubId);  // THÊM: Get club từ activity
             if (club == null) throw new Exception("Câu lạc bộ không tồn tại");
-            if (club.Status == "Locked") throw new Exception("Bạn không thể đăng kí vào câu lạc bộ đã bị khóa.");  // THÊM
+            if (club.Status != null && club.Status.ToLower() == "locked") throw new Exception("Bạn không thể đăng kí vào câu lạc bộ đã bị khóa.");  // THÊM
 
             // 2. Tính status thực tế dựa trên thời gian
             var actualStatus = CalculateActivityStatus(activity);
@@ -81,20 +81,20 @@ namespace Service.Service.Implements
             if (actualStatus == "Ongoing")
                 throw new Exception("Hoạt động này đang diễn ra, không thể đăng ký thêm.");
 
-            if (activity.Status == "Active_Closed" || activity.Status == "closed")
+            if (activity.Status != null && (activity.Status.ToLower() == "active_closed" || activity.Status.ToLower() == "closed"))
                 throw new Exception("Đăng ký cho hoạt động này đã được đóng.");
 
-            if (activity.Status == "Not_yet_open" || activity.Status == "draft")
+            if (activity.Status != null && (activity.Status.ToLower() == "not_yet_open" || activity.Status.ToLower() == "draft"))
                 throw new Exception("Hoạt động này chưa mở đăng ký.");
 
-            if (activity.Status != "Active" && activity.Status != "opened")
+            if (activity.Status == null || (activity.Status.ToLower() != "active" && activity.Status.ToLower() != "opened"))
                 throw new Exception("Hoạt động này chưa mở đăng ký.");
 
             // 4. Kiểm tra account có phải member active của CLB không
             // CHỈ MEMBER mới được đăng ký tham gia activity
             // Student muốn tham gia activity thì phải trở thành member của CLB đó trước
             var memberships = await _membershipRepo.GetMembershipsAsync(accountId);
-            var membership = memberships.FirstOrDefault(m => m.ClubId == activity.ClubId && m.Status == "active");
+            var membership = memberships.FirstOrDefault(m => m.ClubId == activity.ClubId && m.Status != null && m.Status.ToLower() == "active");
             
             if (membership == null)
             {
@@ -150,11 +150,11 @@ namespace Service.Service.Implements
 
             var club = await _clubRepo.GetByIdAsync(activity.ClubId);  // THÊM
             if (club == null) throw new Exception("Câu lạc bộ không tồn tại");
-            if (club.Status == "Locked") throw new Exception("Không thể hủy khi câu lạc bộ đang bị khóa");  // THÊM
+            if (club.Status != null && club.Status.ToLower() == "locked") throw new Exception("Không thể hủy khi câu lạc bộ đang bị khóa");  // THÊM
 
             // Kiểm tra account có phải member của CLB không
             var memberships = await _membershipRepo.GetMembershipsAsync(accountId);
-            var membership = memberships.FirstOrDefault(m => m.ClubId == activity.ClubId && m.Status == "active");
+            var membership = memberships.FirstOrDefault(m => m.ClubId == activity.ClubId && m.Status != null && m.Status.ToLower() == "active");
             if (membership == null)
                 throw new Exception("Bạn không phải thành viên của câu lạc bộ này.");
 
@@ -225,7 +225,7 @@ namespace Service.Service.Implements
             var now = DateTimeExtensions.NowVietnam();
             var availableActivities = allActivities
                 .Where(a => clubIds.Contains(a.ClubId) && 
-                           (a.Status == "Active" || a.Status == "opened") && // Chỉ hiển thị activities đang mở đăng ký
+                           a.Status != null && (a.Status.ToLower() == "active" || a.Status.ToLower() == "opened") && // Chỉ hiển thị activities đang mở đăng ký
                            (!a.StartTime.HasValue || a.StartTime.Value > now)) // Chưa bắt đầu
                 .ToList();
 
@@ -299,7 +299,7 @@ namespace Service.Service.Implements
             // Chỉ hiển thị activities có status "Active" hoặc "opened" (đang mở đăng ký)
             // Không lọc theo StartTime vì đây là endpoint để xem, không phải để đăng ký
             var filteredActivities = activities
-                .Where(a => a.Status == "Active" || a.Status == "opened")
+                .Where(a => a.Status != null && (a.Status.ToLower() == "active" || a.Status.ToLower() == "opened"))
                 .OrderByDescending(a => a.StartTime)
                 .ToList();
 
@@ -325,7 +325,7 @@ namespace Service.Service.Implements
             var now = DateTimeExtensions.NowVietnam();
 
             // Nếu status là Cancelled hoặc Completed, giữ nguyên
-            if (a.Status == "Cancelled" || a.Status == "Completed")
+            if (a.Status != null && (a.Status.ToLower() == "cancelled" || a.Status.ToLower() == "completed"))
                 return a.Status;
 
             // Kiểm tra nếu activity đang diễn ra
@@ -349,14 +349,14 @@ namespace Service.Service.Implements
             if (a.EndTime.HasValue && now > a.EndTime.Value)
             {
                 // Chỉ tự động set Completed nếu status hiện tại là Active hoặc Active_Closed hoặc Ongoing
-                if (a.Status == "Active" || a.Status == "Active_Closed" || a.Status == "Ongoing")
+                if (a.Status != null && (a.Status.ToLower() == "active" || a.Status.ToLower() == "active_closed" || a.Status.ToLower() == "ongoing"))
                 {
                     return "Completed";
                 }
             }
 
             // Trả về status gốc (Not_yet_open, Active, Active_Closed)
-            return a.Status;
+            return a.Status ?? string.Empty;
         }
     }
 }

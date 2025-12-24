@@ -79,11 +79,11 @@ namespace Service.Service.Implements
             ?? throw new Exception("Không tìm thấy membership.");
 
             // 🚨 ĐÃ ACTIVE → CẤM TẠO LINK
-            if (membership.Status == "active")
+            if (membership.Status != null && membership.Status.ToLower() == "active")
                 throw new Exception("Membership đã được thanh toán.");
 
             // 🚨 PAYMENT NÀY ĐÃ PAID
-            if (payment.Status == "paid")
+            if (payment.Status != null && payment.Status.ToLower() == "paid")
                 throw new Exception("Đơn này đã được thanh toán.");
 
             // 🚨 CHỈ CHO 1 PAYMENT PENDING
@@ -151,7 +151,7 @@ new ItemData(payment.Description, 1, (int)payment.Amount)
                 return;
 
             // 2️⃣ Nếu payment đã xử lý rồi → bỏ
-            if (payment.Status == "paid" || payment.Status == "failed")
+            if (payment.Status != null && (payment.Status.ToLower() == "paid" || payment.Status.ToLower() == "failed"))
                 return;
 
             // 3️⃣ Lấy membership
@@ -163,7 +163,7 @@ new ItemData(payment.Description, 1, (int)payment.Amount)
                 return;
 
             // 🚨 CHẶN CỨNG: membership đã active thì KHÔNG cho payment nào nữa
-            if (membership.Status == "active")
+            if (membership.Status != null && membership.Status.ToLower() == "active")
             {
                 payment.Status = "cancelled";
                 await _paymentRepo.UpdateAsync(payment);
@@ -187,7 +187,7 @@ new ItemData(payment.Description, 1, (int)payment.Amount)
                 var requestsOfAccount = await _membershipRequestRepo.GetRequestsOfAccountAsync(membership.AccountId);
                 var relatedRequest = requestsOfAccount
                     .FirstOrDefault(r => r.ClubId == membership.ClubId &&
-                                         (r.Status == "Awaiting Payment" || r.Status == "Pending"));
+                                         r.Status != null && (r.Status.ToLower() == "awaiting payment" || r.Status.ToLower() == "pending"));
                 if (relatedRequest != null)
                 {
                     relatedRequest.Status = "Paid";
@@ -203,7 +203,7 @@ new ItemData(payment.Description, 1, (int)payment.Amount)
                 var requestsOfAccount = await _membershipRequestRepo.GetRequestsOfAccountAsync(membership.AccountId);
                 var relatedRequest = requestsOfAccount
                     .FirstOrDefault(r => r.ClubId == membership.ClubId &&
-                                         (r.Status == "Awaiting Payment" || r.Status == "Pending"));
+                                         r.Status != null && (r.Status.ToLower() == "awaiting payment" || r.Status.ToLower() == "pending"));
                 if (relatedRequest != null)
                 {
                     relatedRequest.Status = "Failed";

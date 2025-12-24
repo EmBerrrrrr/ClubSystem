@@ -101,7 +101,9 @@ namespace Repository.Repo.Implements
         public async Task<List<Payment>> GetPendingPaymentsByClubIdAsync(int clubId)
         {
             return await _db.Payments
-                .Where(p => p.ClubId == clubId && p.Status != null && p.Status.Equals("pending", StringComparison.OrdinalIgnoreCase))
+                .Where(p => p.ClubId == clubId
+                         && p.Status != null
+                         && p.Status.ToLower() == "pending")
                 .Include(p => p.Club)
                 .Include(p => p.Membership!)
                     .ThenInclude(m => m.Account)
@@ -114,7 +116,9 @@ namespace Repository.Repo.Implements
         public async Task<decimal> GetTotalRevenueFromMembersByClubIdAsync(int clubId)
         {
             return await _db.Payments
-                .Where(p => p.ClubId == clubId && p.Status != null && p.Status.Equals("paid", StringComparison.OrdinalIgnoreCase))
+                .Where(p => p.ClubId == clubId
+                         && p.Status != null
+                         && p.Status.ToLower() == "paid")
                 .SumAsync(p => p.Amount);
         }
 
@@ -137,7 +141,9 @@ namespace Repository.Repo.Implements
         public async Task<List<Payment>> GetPaidPaymentsByAccountIdAsync(int accountId)
         {
             return await _db.Payments
-                .Where(p => p.AccountId == accountId && p.Status != null && p.Status.Equals("paid", StringComparison.OrdinalIgnoreCase))
+                .Where(p => p.AccountId == accountId
+                         && p.Status != null
+                         && p.Status.ToLower() == "paid")
                 .Include(p => p.Club)
                 .Include(p => p.Membership!)
                     .ThenInclude(m => m.Account)
@@ -150,7 +156,9 @@ namespace Repository.Repo.Implements
         public async Task<List<Payment>> GetPendingPaymentsByAccountIdAsync(int accountId)
         {
             return await _db.Payments
-                .Where(p => p.AccountId == accountId && p.Status != null && p.Status.Equals("pending", StringComparison.OrdinalIgnoreCase))
+                .Where(p => p.AccountId == accountId
+                         && p.Status != null
+                         && p.Status.ToLower() == "pending")
                 .Include(p => p.Club)
                 .Include(p => p.Membership!)
                     .ThenInclude(m => m.Account)
@@ -194,7 +202,8 @@ namespace Repository.Repo.Implements
         {
             return await _db.Payments.AnyAsync(p =>
                 p.MembershipId == membershipId &&
-                p.Status == "pending" &&
+                p.Status != null &&
+                p.Status.ToLower() == "pending" &&
                 p.Id != excludePaymentId
             );
         }
@@ -215,7 +224,7 @@ namespace Repository.Repo.Implements
             return await _db.Payments
                 .FromSqlRaw(@"
             SELECT * FROM Payments WITH (UPDLOCK, HOLDLOCK)
-            WHERE MembershipId = {0} AND Status = 'pending'
+            WHERE MembershipId = {0} AND LOWER(Status) = 'pending'
         ", membershipId)
                 .FirstOrDefaultAsync();
         }
