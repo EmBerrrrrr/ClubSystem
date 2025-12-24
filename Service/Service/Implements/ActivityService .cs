@@ -122,7 +122,8 @@ namespace Service.Service.Implements
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Activity not found");
 
-            var club = await _clubRepo.GetByIdAsync(entity.ClubId);  
+            var club = await _clubRepo.GetByIdAsync(entity.ClubId) 
+                ?? throw new Exception("Club not found");
             if (club.Status == "Locked") throw new Exception("Cannot update activity for locked club");  
 
             if (!isAdmin)
@@ -153,7 +154,8 @@ namespace Service.Service.Implements
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Activity not found");
 
-            var club = await _clubRepo.GetByIdAsync(entity.ClubId);  
+            var club = await _clubRepo.GetByIdAsync(entity.ClubId) 
+                ?? throw new Exception("Club not found");
             if (club.Status == "Locked") throw new Exception("Cannot delete activity for locked club"); 
 
             if (!isAdmin)
@@ -184,7 +186,8 @@ namespace Service.Service.Implements
             var activity = await _repo.GetByIdAsync(activityId);
             if (activity == null) throw new Exception("Activity not found");
 
-            var club = await _clubRepo.GetByIdAsync(activity.ClubId);  
+            var club = await _clubRepo.GetByIdAsync(activity.ClubId) 
+                ?? throw new Exception("Club not found");
             if (club.Status == "Locked") throw new Exception("Cannot open registration for activity in locked club");  
 
             if (!await _repo.IsLeaderOfClubAsync(activity.ClubId, leaderId))
@@ -210,7 +213,8 @@ namespace Service.Service.Implements
             var activity = await _repo.GetByIdAsync(activityId);
             if (activity == null) throw new Exception("Activity not found");
 
-            var club = await _clubRepo.GetByIdAsync(activity.ClubId);  
+            var club = await _clubRepo.GetByIdAsync(activity.ClubId) 
+                ?? throw new Exception("Club not found");
             if (club.Status == "Locked") throw new Exception("Cannot close registration for activity in locked club"); 
 
             if (!await _repo.IsLeaderOfClubAsync(activity.ClubId, leaderId))
@@ -242,7 +246,7 @@ namespace Service.Service.Implements
             return participants.Select(p => new ActivityParticipantForLeaderDto
             {
                 ParticipantId = p.Id,
-                MembershipId = (int)p.MembershipId,
+                MembershipId = p.MembershipId ?? 0,
                 AccountId = p.Membership?.AccountId ?? 0,
                 FullName = p.Membership?.Account?.FullName ?? "",
                 Email = p.Membership?.Account?.Email ?? "",

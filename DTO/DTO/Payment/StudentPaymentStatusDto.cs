@@ -4,7 +4,7 @@ namespace DTO.DTO.Payment
     public class StudentPaidPaymentDto
     {
         public int Id { get; set; }
-        public int MembershipId { get; set; }
+        public int? MembershipId { get; set; }
         public int ClubId { get; set; }
         public string? ClubName { get; set; }
         public decimal Amount { get; set; }
@@ -19,7 +19,7 @@ namespace DTO.DTO.Payment
     public class StudentDebtDto
     {
         public int Id { get; set; }
-        public int MembershipId { get; set; }
+        public int? MembershipId { get; set; }
         public int ClubId { get; set; }
         public string? ClubName { get; set; }
         public decimal Amount { get; set; }

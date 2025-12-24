@@ -77,8 +77,9 @@ namespace Repository.Repo.Implements
             return await _db.Payments
                 .Where(p => p.ClubId == clubId)
                 .Include(p => p.Club)
-                .Include(p => p.Membership)
+                .Include(p => p.Membership!)
                     .ThenInclude(m => m.Account)
+                .Include(p => p.Account)
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
         }
@@ -89,8 +90,9 @@ namespace Repository.Repo.Implements
             return await _db.Payments
                 .Where(p => p.ClubId == clubId)
                 .Include(p => p.Club)
-                .Include(p => p.Membership)
+                .Include(p => p.Membership!)
                     .ThenInclude(m => m.Account)
+                .Include(p => p.Account)
                 .OrderByDescending(p => p.Id) // Sắp xếp theo Id giảm dần (mới nhất trước)
                 .ToListAsync();
         }
@@ -99,10 +101,11 @@ namespace Repository.Repo.Implements
         public async Task<List<Payment>> GetPendingPaymentsByClubIdAsync(int clubId)
         {
             return await _db.Payments
-                .Where(p => p.ClubId == clubId && p.Status.ToLower() == "pending")
+                .Where(p => p.ClubId == clubId && p.Status != null && p.Status.Equals("pending", StringComparison.OrdinalIgnoreCase))
                 .Include(p => p.Club)
-                .Include(p => p.Membership)
+                .Include(p => p.Membership!)
                     .ThenInclude(m => m.Account)
+                .Include(p => p.Account)
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
         }
@@ -111,7 +114,7 @@ namespace Repository.Repo.Implements
         public async Task<decimal> GetTotalRevenueFromMembersByClubIdAsync(int clubId)
         {
             return await _db.Payments
-                .Where(p => p.ClubId == clubId && p.Status.ToLower() == "paid")
+                .Where(p => p.ClubId == clubId && p.Status != null && p.Status.Equals("paid", StringComparison.OrdinalIgnoreCase))
                 .SumAsync(p => p.Amount);
         }
 
@@ -121,10 +124,11 @@ namespace Repository.Repo.Implements
         public async Task<List<Payment>> GetPaymentsByAccountIdAsync(int accountId)
         {
             return await _db.Payments
-                .Where(p => p.Membership.AccountId == accountId)
+                .Where(p => p.AccountId == accountId)
                 .Include(p => p.Club)
-                .Include(p => p.Membership)
+                .Include(p => p.Membership!)
                     .ThenInclude(m => m.Account)
+                .Include(p => p.Account)
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
         }
@@ -133,10 +137,11 @@ namespace Repository.Repo.Implements
         public async Task<List<Payment>> GetPaidPaymentsByAccountIdAsync(int accountId)
         {
             return await _db.Payments
-                .Where(p => p.Membership.AccountId == accountId && p.Status.ToLower() == "paid")
+                .Where(p => p.AccountId == accountId && p.Status != null && p.Status.Equals("paid", StringComparison.OrdinalIgnoreCase))
                 .Include(p => p.Club)
-                .Include(p => p.Membership)
+                .Include(p => p.Membership!)
                     .ThenInclude(m => m.Account)
+                .Include(p => p.Account)
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
         }
@@ -145,10 +150,11 @@ namespace Repository.Repo.Implements
         public async Task<List<Payment>> GetPendingPaymentsByAccountIdAsync(int accountId)
         {
             return await _db.Payments
-                .Where(p => p.Membership.AccountId == accountId && p.Status.ToLower() == "pending")
+                .Where(p => p.AccountId == accountId && p.Status != null && p.Status.Equals("pending", StringComparison.OrdinalIgnoreCase))
                 .Include(p => p.Club)
-                .Include(p => p.Membership)
+                .Include(p => p.Membership!)
                     .ThenInclude(m => m.Account)
+                .Include(p => p.Account)
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
         }
@@ -157,10 +163,11 @@ namespace Repository.Repo.Implements
         public async Task<List<Payment>> GetPaymentHistoryByAccountIdAsync(int accountId)
         {
             return await _db.Payments
-                .Where(p => p.Membership.AccountId == accountId)
+                .Where(p => p.AccountId == accountId)
                 .Include(p => p.Club)
-                .Include(p => p.Membership)
+                .Include(p => p.Membership!)
                     .ThenInclude(m => m.Account)
+                .Include(p => p.Account)
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
         }

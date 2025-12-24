@@ -42,4 +42,8 @@ public partial class Account
     public virtual ICollection<MembershipRequest> MembershipRequestProcessedByNavigations { get; set; } = new List<MembershipRequest>();
 
     public virtual ICollection<Membership> Memberships { get; set; } = new List<Membership>();
+
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+    public virtual ICollection<ActivityParticipant> ActivityParticipants { get; set; } = new List<ActivityParticipant>();
 }

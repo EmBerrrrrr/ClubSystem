@@ -191,7 +191,7 @@ namespace Service.Service.Implements
                         if (payment != null)
                         {
                             dto.PaymentId = payment.Id;
-                            dto.Status = payment.Status;
+                            dto.Status = payment.Status ?? dto.Status;
                             dto.OrderCode = payment.OrderCode;
                             // nếu bạn muốn: dto.PaymentMethod = payment.Method;
                         }
@@ -209,7 +209,7 @@ namespace Service.Service.Implements
         /// 
         /// API: GET /api/student/membership/{id}
         /// </summary>
-        public async Task<MembershipRequestDto> GetRequestDetailAsync(int requestId, int accountId)
+        public async Task<MembershipRequestDto?> GetRequestDetailAsync(int requestId, int accountId)
         {
             // tuỳ repo, có thể là GetByIdAsync hoặc GetDetailAsync kèm include Club, Account
             var x = await _reqRepo.GetByIdAsync(requestId);
@@ -240,7 +240,7 @@ namespace Service.Service.Implements
                 if (payment != null)
                 {
                     dto.PaymentId = payment.Id;
-                    dto.Status = payment.Status;
+                    dto.Status = payment.Status ?? dto.Status;
                     dto.OrderCode = payment.OrderCode;
                 }
             }
@@ -312,14 +312,26 @@ namespace Service.Service.Implements
 
             // 2. Check CLB không bị locked (tùy chọn - có thể cho rời dù locked)
             var club = await _clubRepo.GetByIdAsync(clubId);
+            if (club == null)
+                throw new Exception("Không tìm thấy câu lạc bộ.");
             if (club.Status == "Locked")
                 throw new Exception("Câu lạc bộ đang bị khóa, bạn không thể rời lúc này.");
 
-            // 3. Xóa cứng Membership → activity_participants và payments sẽ set membership_id = NULL (không xóa bản ghi)
-            _memberRepo.DeleteMembership(membership);
+            // 3. Đảm bảo payments giữ được truy vết qua account khi xóa membership
+            var payments = await _paymentRepo.GetPaymentHistoryByAccountIdAsync(accountId);
+            var relatedPayments = payments.Where(p => p.MembershipId == membership.Id).ToList();
+            foreach (var p in relatedPayments)
+            {
+                p.MembershipId = null;
+                p.AccountId = accountId;
+                await _paymentRepo.UpdateAsync(p);
+            }
+
+            // 4. Xóa cứng Membership (FK payments/activity_participants đã SET NULL)
+            await _memberRepo.DeleteMembership(membership);
             await _memberRepo.SaveAsync();
 
-            // 4. Gửi noti cho leader(s) của CLB
+            // 5. Gửi noti cho leader(s) của CLB
             var leaderIds = await _clubRepo.GetLeaderAccountIdsByClubIdAsync(clubId);
             foreach (var leaderId in leaderIds)
             {
@@ -328,7 +340,7 @@ namespace Service.Service.Implements
                     $"Thành viên {membership.Account?.FullName ?? "ID " + accountId} đã tự nguyện rời khỏi CLB {club.Name}.");
             }
 
-            // 5. Gửi noti cho chính student
+            // 6. Gửi noti cho chính student
             _noti.Push(accountId,
                 "Rời CLB thành công",
                 $"Bạn đã rời khỏi CLB {club.Name} thành công.");

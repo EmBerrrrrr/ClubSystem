@@ -72,7 +72,10 @@ namespace Service.Service.Implements
             var payment = await _paymentRepo.GetByIdAsync(paymentId)
             ?? throw new Exception("Không tìm thấy payment.");
 
-            var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId)
+            var membershipId = payment.MembershipId
+                ?? throw new Exception("Payment không còn gắn với membership.");
+
+            var membership = await _membershipRepo.GetMembershipByIdAsync(membershipId)
             ?? throw new Exception("Không tìm thấy membership.");
 
             // 🚨 ĐÃ ACTIVE → CẤM TẠO LINK
@@ -85,7 +88,7 @@ namespace Service.Service.Implements
 
             // 🚨 CHỈ CHO 1 PAYMENT PENDING
             bool hasPending = await _paymentRepo
-            .HasOtherPendingPayment(payment.MembershipId, payment.Id);
+            .HasOtherPendingPayment(membershipId, payment.Id);
 
             if (hasPending)
                 throw new Exception("Đang có đơn thanh toán khác đang chờ xử lý.");
@@ -152,7 +155,10 @@ new ItemData(payment.Description, 1, (int)payment.Amount)
                 return;
 
             // 3️⃣ Lấy membership
-            var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId);
+            if (!payment.MembershipId.HasValue)
+                return;
+
+            var membership = await _membershipRepo.GetMembershipByIdAsync(payment.MembershipId.Value);
             if (membership == null)
                 return;
 
@@ -176,11 +182,33 @@ new ItemData(payment.Description, 1, (int)payment.Amount)
                 await _paymentRepo.UpdateAsync(payment);
                 _membershipRepo.UpdateMembership(membership);
                 await _membershipRepo.SaveAsync();
+
+                // Cập nhật MembershipRequest tương ứng (nếu có) về trạng thái đã thanh toán
+                var requestsOfAccount = await _membershipRequestRepo.GetRequestsOfAccountAsync(membership.AccountId);
+                var relatedRequest = requestsOfAccount
+                    .FirstOrDefault(r => r.ClubId == membership.ClubId &&
+                                         (r.Status == "Awaiting Payment" || r.Status == "Pending"));
+                if (relatedRequest != null)
+                {
+                    relatedRequest.Status = "Paid";
+                    await _membershipRequestRepo.UpdateAsync(relatedRequest);
+                }
             }
             else
             {
                 payment.Status = "failed";
                 await _paymentRepo.UpdateAsync(payment);
+
+                // Nếu thanh toán thất bại, cập nhật request (nếu đang chờ thanh toán) về Failed
+                var requestsOfAccount = await _membershipRequestRepo.GetRequestsOfAccountAsync(membership.AccountId);
+                var relatedRequest = requestsOfAccount
+                    .FirstOrDefault(r => r.ClubId == membership.ClubId &&
+                                         (r.Status == "Awaiting Payment" || r.Status == "Pending"));
+                if (relatedRequest != null)
+                {
+                    relatedRequest.Status = "Failed";
+                    await _membershipRequestRepo.UpdateAsync(relatedRequest);
+                }
             }
         }
 
