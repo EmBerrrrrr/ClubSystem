@@ -153,7 +153,6 @@ public partial class StudentClubManagementContext : DbContext
 
             entity.ToTable("activity_participants");
             entity.Property(e => e.AccountId).HasColumnName("account_id");
-
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ActivityId).HasColumnName("activity_id");
             entity.Property(e => e.Attended).HasColumnName("attended");
@@ -169,8 +168,12 @@ public partial class StudentClubManagementContext : DbContext
 
             entity.HasOne(d => d.Membership).WithMany(p => p.ActivityParticipants)
                 .HasForeignKey(d => d.MembershipId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_act_part_membership");
+
+            entity.HasOne(d => d.Account).WithMany(p => p.ActivityParticipants)
+                .HasForeignKey(d => d.AccountId)
+                .HasConstraintName("FK_activity_participants_account");
         });
 
         modelBuilder.Entity<Club>(entity =>
@@ -351,6 +354,7 @@ public partial class StudentClubManagementContext : DbContext
             entity.Property(e => e.Amount)
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("amount");
+            entity.Property(e => e.AccountId).HasColumnName("account_id");
             entity.Property(e => e.ClubId).HasColumnName("club_id");
             entity.Property(e => e.Description)
                 .HasMaxLength(255)
@@ -367,6 +371,11 @@ public partial class StudentClubManagementContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("status");
 
+            entity.HasOne(d => d.Account).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.AccountId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_payments_account");
+
             entity.HasOne(d => d.Club).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.ClubId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -374,7 +383,7 @@ public partial class StudentClubManagementContext : DbContext
 
             entity.HasOne(d => d.Membership).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.MembershipId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_payments_membership");
         });
 

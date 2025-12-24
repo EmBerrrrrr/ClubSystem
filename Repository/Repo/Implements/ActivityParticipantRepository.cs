@@ -53,9 +53,9 @@ namespace Repository.Repo.Implements
         public async Task<ActivityParticipant?> GetByIdAsync(int id)
         {
             return await _context.ActivityParticipants
-                .Include(ap => ap.Activity)
-                .Include(ap => ap.Membership)
-                .ThenInclude(m => m.Club)
+                .Include(ap => ap.Activity!)
+                .Include(ap => ap.Membership!)
+                .ThenInclude(m => m.Club!)
                 .FirstOrDefaultAsync(ap => ap.Id == id);
         }
 
@@ -67,8 +67,8 @@ namespace Repository.Repo.Implements
         public async Task<List<ActivityParticipant>> GetByMembershipIdAsync(int membershipId)
         {
             return await _context.ActivityParticipants
-                .Include(ap => ap.Activity)
-                .ThenInclude(a => a.Club)
+                .Include(ap => ap.Activity!)
+                .ThenInclude(a => a.Club!)
                 .Where(ap => ap.MembershipId == membershipId)
                 .OrderByDescending(ap => ap.RegisterTime)
                 .ToListAsync();
@@ -82,8 +82,8 @@ namespace Repository.Repo.Implements
         public async Task<List<ActivityParticipant>> GetByActivityIdAsync(int activityId)
         {
             return await _context.ActivityParticipants
-                .Include(ap => ap.Membership)
-                .ThenInclude(m => m.Account)
+                .Include(ap => ap.Membership!)
+                .ThenInclude(m => m.Account!)
                 .Where(ap => ap.ActivityId == activityId)
                 .ToListAsync();
         }
@@ -140,8 +140,8 @@ namespace Repository.Repo.Implements
                 return new List<ActivityParticipant>();
 
             return await _context.ActivityParticipants
-                .Include(p => p.Activity)
-                    .ThenInclude(a => a.Club)
+                .Include(p => p.Activity!)
+                    .ThenInclude(a => a.Club!)
                 .Where(p => p.AccountId == accountId.Value)
                 .ToListAsync();
         }

@@ -149,6 +149,7 @@ namespace Service.Service.Implements
             if (activity == null) throw new Exception("Hoạt động không tồn tại");
 
             var club = await _clubRepo.GetByIdAsync(activity.ClubId);  // THÊM
+            if (club == null) throw new Exception("Câu lạc bộ không tồn tại");
             if (club.Status == "Locked") throw new Exception("Không thể hủy khi câu lạc bộ đang bị khóa");  // THÊM
 
             // Kiểm tra account có phải member của CLB không
@@ -317,8 +318,10 @@ namespace Service.Service.Implements
         }
 
         // Tính status của activity dựa trên thời gian hiện tại
-        private static string CalculateActivityStatus(Activity a)
+        private static string CalculateActivityStatus(Activity? a)
         {
+            if (a == null) return "Unknown";
+
             var now = DateTimeExtensions.NowVietnam();
 
             // Nếu status là Cancelled hoặc Completed, giữ nguyên
