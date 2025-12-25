@@ -194,6 +194,7 @@ namespace Service.Service.Implements
                             dto.Status = payment.Status ?? dto.Status;
                             dto.OrderCode = payment.OrderCode;
                             // nếu bạn muốn: dto.PaymentMethod = payment.Method;
+                            dto.Amount = payment.Amount;
                         }
                     }
                 }
