@@ -64,10 +64,10 @@ namespace Service.Service.Implements
                 Status = p.Status ?? "",
                 OrderCode = p.OrderCode,
                 Description = p.Description ?? "",
-                AccountId = p.Membership?.AccountId ?? 0,
-                FullName = p.Membership?.Account?.FullName ?? "",
-                Email = p.Membership?.Account?.Email ?? "",
-                Phone = p.Membership?.Account?.Phone ?? ""
+                AccountId = p.AccountId,
+                FullName = p.Account?.FullName ?? p.Membership?.Account?.FullName ?? "",
+                Email = p.Account?.Email ?? p.Membership?.Account?.Email ?? "",
+                Phone = p.Account?.Phone ?? p.Membership?.Account?.Phone ?? ""
             }).ToList();
         }
 
@@ -89,10 +89,10 @@ namespace Service.Service.Implements
             return pendingPayments.Select(p => new DebtorDto
             {
                 MembershipId = p.MembershipId,
-                AccountId = p.Membership?.AccountId ?? 0,
-                FullName = p.Membership?.Account?.FullName ?? "",
-                Email = p.Membership?.Account?.Email ?? "",
-                Phone = p.Membership?.Account?.Phone ?? "",
+                AccountId = p.AccountId,
+                FullName = p.Account?.FullName ?? p.Membership?.Account?.FullName ?? "",
+                Email = p.Account?.Email ?? p.Membership?.Account?.Email ?? "",
+                Phone = p.Account?.Phone ?? p.Membership?.Account?.Phone ?? "",
                 ClubId = p.ClubId,
                 ClubName = p.Club?.Name ?? "",
                 Amount = p.Amount,
@@ -129,9 +129,9 @@ namespace Service.Service.Implements
                 Method = p.Method ?? "",
                 Status = p.Status ?? "",
                 Description = p.Description ?? "",
-                AccountId = p.Membership?.AccountId ?? 0,
-                FullName = p.Membership?.Account?.FullName ?? "",
-                Email = p.Membership?.Account?.Email ?? ""
+                AccountId = p.AccountId,
+                FullName = p.Account?.FullName ?? p.Membership?.Account?.FullName ?? "",
+                Email = p.Account?.Email ?? p.Membership?.Account?.Email ?? ""
             }).ToList();
         }
     }

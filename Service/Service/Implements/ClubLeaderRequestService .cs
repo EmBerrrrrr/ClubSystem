@@ -1,4 +1,4 @@
-﻿using DTO.DTO.ClubLeader;
+using DTO.DTO.ClubLeader;
 using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Repository.Repo.Interfaces;
@@ -52,7 +52,7 @@ namespace Service.Service.Implements
 
             bool exists = await _db.ClubLeaderRequests
                 .AnyAsync(x => x.AccountId == accountId &&
-                               x.Status != null && x.Status.ToLower() == "pending");
+                               x.Status == "pending");
 
             if (exists)
                 throw new Exception("Bạn đã gửi request và đang chờ duyệt");
@@ -123,7 +123,7 @@ namespace Service.Service.Implements
         {
             var requests = await _db.ClubLeaderRequests
                 .Include(x => x.Account)
-                .Where(x => x.Status != null && x.Status.ToLower() == "pending")
+                .Where(x => x.Status == "pending")
                 .OrderByDescending(x => x.RequestDate)
                 .ToListAsync();
 
@@ -150,7 +150,7 @@ namespace Service.Service.Implements
             var requests = await _db.ClubLeaderRequests
                 .Include(x => x.Account)
                 .Include(x => x.ProcessedByNavigation)
-                .Where(x => x.Status != null && x.Status.ToLower() == "approved")
+                .Where(x => x.Status == "approved")
                 .OrderByDescending(x => x.ProcessedAt)
                 .ToListAsync();
 
@@ -163,7 +163,7 @@ namespace Service.Service.Implements
             var requests = await _db.ClubLeaderRequests
                 .Include(x => x.Account)
                 .Include(x => x.ProcessedByNavigation)
-                .Where(x => x.Status != null && x.Status.ToLower() == "rejected")
+                .Where(x => x.Status == "rejected")
                 .OrderByDescending(x => x.ProcessedAt)
                 .ToListAsync();
 
@@ -175,9 +175,9 @@ namespace Service.Service.Implements
         {
             return new LeaderRequestStatsDto
             {
-                TotalApproved = await _db.ClubLeaderRequests.CountAsync(x => x.Status != null && x.Status.ToLower() == "approved"),
-                TotalRejected = await _db.ClubLeaderRequests.CountAsync(x => x.Status != null && x.Status.ToLower() == "rejected"),
-                TotalPending = await _db.ClubLeaderRequests.CountAsync(x => x.Status != null && x.Status.ToLower() == "pending"),
+                TotalApproved = await _db.ClubLeaderRequests.CountAsync(x => x.Status == "approved"),
+                TotalRejected = await _db.ClubLeaderRequests.CountAsync(x => x.Status == "rejected"),
+                TotalPending = await _db.ClubLeaderRequests.CountAsync(x => x.Status == "pending"),
                 Total = await _db.ClubLeaderRequests.CountAsync()
             };
         }
@@ -188,7 +188,7 @@ namespace Service.Service.Implements
             var request = await _repo.GetByIdAsync(requestId)
                 ?? throw new Exception("Request không tồn tại");
 
-            if (request.Status == null || request.Status.ToLower() != "pending")
+            if (request.Status != "pending")
                 throw new Exception("Request đã xử lý");
 
             request.Status = "approved";

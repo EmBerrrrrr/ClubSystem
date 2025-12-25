@@ -33,10 +33,12 @@ namespace Service.Service.Implements
     public class StudentPaymentService : IStudentPaymentService
     {
         private readonly IPaymentRepository _paymentRepo;
+        private readonly IAuthRepository _authRepo;
 
-        public StudentPaymentService(IPaymentRepository paymentRepo)
+        public StudentPaymentService(IPaymentRepository paymentRepo, IAuthRepository authRepo)
         {
             _paymentRepo = paymentRepo;
+            _authRepo = authRepo;
         }
 
         /// <summary>
@@ -101,22 +103,53 @@ namespace Service.Service.Implements
         public async Task<List<PaymentHistoryDto>> GetPaymentHistoryAsync(int accountId)
         {
             var payments = await _paymentRepo.GetPaymentHistoryByAccountIdAsync(accountId);
+            var result = new List<PaymentHistoryDto>();
 
-            return payments.Select(p => new PaymentHistoryDto
+            foreach (var p in payments)
             {
-                Id = p.Id,
-                MembershipId = p.MembershipId,
-                ClubId = p.ClubId,
-                ClubName = p.Club?.Name ?? "",
-                Amount = p.Amount,
-                PaidDate = p.PaidDate,
-                Method = p.Method ?? "",
-                Status = p.Status ?? "",
-                Description = p.Description ?? "",
-                AccountId = p.Membership?.AccountId ?? 0,
-                FullName = p.Membership?.Account?.FullName ?? "",
-                Email = p.Membership?.Account?.Email ?? ""
-            }).ToList();
+                // Lấy FullName và Email từ Account navigation property hoặc query riêng nếu null
+                string? fullName = null;
+                string? email = null;
+
+                if (p.Account != null)
+                {
+                    fullName = p.Account.FullName;
+                    email = p.Account.Email;
+                }
+                else if (p.Membership?.Account != null)
+                {
+                    fullName = p.Membership.Account.FullName;
+                    email = p.Membership.Account.Email;
+                }
+                else if (p.AccountId > 0)
+                {
+                    // Nếu Account navigation null nhưng AccountId > 0, query Account riêng
+                    var account = await _authRepo.GetAccountByIdAsync(p.AccountId);
+                    if (account != null)
+                    {
+                        fullName = account.FullName;
+                        email = account.Email;
+                    }
+                }
+
+                result.Add(new PaymentHistoryDto
+                {
+                    Id = p.Id,
+                    MembershipId = p.MembershipId,
+                    ClubId = p.ClubId,
+                    ClubName = p.Club?.Name ?? "",
+                    Amount = p.Amount,
+                    PaidDate = p.PaidDate,
+                    Method = p.Method ?? "",
+                    Status = p.Status ?? "",
+                    Description = p.Description ?? "",
+                    AccountId = p.AccountId,
+                    FullName = fullName ?? "",
+                    Email = email ?? ""
+                });
+            }
+
+            return result;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Repository.Models;
 using Repository.Repo.Interfaces;
@@ -239,6 +239,18 @@ namespace Repository.Repo.Implements
                 .Where(p => p.MembershipId == membershipId && p.Status == "pending")
                 .OrderByDescending(p => p.Id)
                 .FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Kiểm tra xem student có đang có payment pending cho một CLB cụ thể không.
+        /// </summary>
+        public async Task<bool> HasPendingPaymentByAccountAndClubAsync(int accountId, int clubId)
+        {
+            return await _db.Payments
+                .AnyAsync(p => p.AccountId == accountId
+                            && p.ClubId == clubId
+                            && p.Status != null
+                            && p.Status.ToLower() == "pending");
         }
 
     }

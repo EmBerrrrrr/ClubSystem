@@ -109,6 +109,10 @@ namespace Service.Service.Implements
             if (await _reqRepo.HasPendingRequestAsync(accountId, dto.ClubId))
                 throw new Exception("Bạn đã gửi yêu cầu và đang chờ duyệt.");
 
+            // Đang có payment pending cho CLB này chưa?
+            if (await _paymentRepo.HasPendingPaymentByAccountAndClubAsync(accountId, dto.ClubId))
+                throw new Exception("Bạn đang có đơn thanh toán chưa hoàn thành cho CLB này. Vui lòng hoàn thành thanh toán trước khi gửi yêu cầu mới.");
+
             // Lấy account để cập nhật thông tin nếu cần
             var account = await _authRepo.GetAccountByIdAsync(accountId);
             if (account == null)
@@ -171,8 +175,8 @@ namespace Service.Service.Implements
                 {
                     Id = x.Id,
                     ClubName = x.Club?.Name ?? "",
-                    Status = x.Status,
-                    Note = x.Note,
+                    Status = x.Status ?? "",
+                    Note = x.Note ?? "",
                     RequestDate = x.RequestDate,
                     Amount = x.Club?.MembershipFee ?? 0,
                     Major = x.Major,
@@ -188,13 +192,12 @@ namespace Service.Service.Implements
                     if (membership != null)
                     {
                         var payment = await _paymentRepo.GetByMembershipIdAsync(membership.Id);
-                        if (payment != null)
+                        if (payment != null && membership.Id > 0)
                         {
                             dto.PaymentId = payment.Id;
                             dto.Status = payment.Status ?? dto.Status;
                             dto.OrderCode = payment.OrderCode;
                             // nếu bạn muốn: dto.PaymentMethod = payment.Method;
-                            dto.Amount = payment.Amount;
                         }
                     }
                 }

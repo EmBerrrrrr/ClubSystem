@@ -29,6 +29,11 @@ namespace Repository.Repo.Interfaces
         Task<List<Payment>> GetPendingPaymentsByAccountIdAsync(int accountId);
         Task<List<Payment>> GetPaymentHistoryByAccountIdAsync(int accountId);
 
+        /// <summary>
+        /// Kiểm tra xem student có đang có payment pending cho một CLB cụ thể không.
+        /// </summary>
+        Task<bool> HasPendingPaymentByAccountAndClubAsync(int accountId, int clubId);
+
         Task UpdateAsync(Payment payment);
 
         Task SaveAsync();
