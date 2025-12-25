@@ -60,7 +60,7 @@ namespace Repository.Repo.Implements
         public async Task<List<Membership>> GetMembershipsAsync(int accountId)
         {
             return await _db.Memberships
-                .Where(x => x.AccountId == accountId && x.Status == "active")
+                .Where(x => x.AccountId == accountId && x.Status != null && x.Status.ToLower() == "active")
                 .Include(x => x.Club)
                 .ToListAsync();
         }
@@ -103,7 +103,7 @@ namespace Repository.Repo.Implements
                 return new Dictionary<int, int>();
 
             return await _db.Memberships  // Dùng đúng DbSet: Memberships (entity Membership)
-                .Where(m => clubIds.Contains(m.ClubId) && m.Status == "Active")
+                .Where(m => clubIds.Contains(m.ClubId) && m.Status != null && m.Status.ToLower() == "active")
                 .GroupBy(m => m.ClubId)
                 .ToDictionaryAsync(g => g.Key, g => g.Count());
         }

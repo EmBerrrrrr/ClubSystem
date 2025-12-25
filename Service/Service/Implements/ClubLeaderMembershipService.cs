@@ -224,7 +224,7 @@ namespace Service.Service.Implements
 
             var club = await _clubRepo.GetByIdAsync(req.ClubId)  // THÊM
                 ?? throw new Exception("Không tìm thấy CLB");
-            if (club.Status == "Locked") throw new Exception("Cannot reject request for locked club");  // THÊM
+            if (club.Status != null && club.Status.ToLower() == "locked") throw new Exception("Cannot reject request for locked club");  // THÊM
 
             req.Status = "Reject";
             req.ProcessedBy = leaderId;
@@ -254,7 +254,7 @@ namespace Service.Service.Implements
             if (!await _clubRepo.IsLeaderOfClubAsync(membership.ClubId, leaderId))
                 throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
 
-            if (membership.Status == "locked")
+            if (membership.Status != null && membership.Status.ToLower() == "locked")
                 throw new Exception("Thành viên đã bị khóa.");
 
             membership.Status = "locked";
@@ -272,7 +272,7 @@ namespace Service.Service.Implements
             if (club == null) throw new Exception("Không tìm thấy CLB.");
             if (club.Status == "Locked") throw new Exception("Cannot unlock member in locked club");  // THÊM
 
-            if (membership.Status != "locked")
+            if (membership.Status == null || membership.Status.ToLower() != "locked")
                 throw new Exception("Thành viên không ở trạng thái bị khóa.");
 
             membership.Status = "active";

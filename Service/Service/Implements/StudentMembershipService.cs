@@ -97,7 +97,7 @@ namespace Service.Service.Implements
             // Club tồn tại không?
             var club = await _clubRepo.GetByIdAsync(dto.ClubId);  // THÊM: Get club
             if (club == null) throw new Exception("Club not found");
-            if (club.Status == "Locked") throw new Exception("Cannot request to join locked club");  // THÊM: Check locked
+            if (club.Status != null && club.Status.ToLower() == "locked") throw new Exception("Cannot request to join locked club");  // THÊM: Check locked
 
             // Đã là member chưa?
             if (await _memberRepo.IsMemberAsync(accountId, dto.ClubId))
@@ -179,7 +179,7 @@ namespace Service.Service.Implements
                     Skills = x.Skills
                 };
 
-                if (x.Status == "Awaiting Payment")
+                if (x.Status != null && x.Status.ToLower() == "awaiting payment")
                 {
                     // Tìm membership tương ứng (pending_payment)
                     var membership = await _memberRepo
@@ -314,7 +314,7 @@ namespace Service.Service.Implements
             var club = await _clubRepo.GetByIdAsync(clubId);
             if (club == null)
                 throw new Exception("Không tìm thấy câu lạc bộ.");
-            if (club.Status == "Locked")
+            if (club.Status != null && club.Status.ToLower() == "locked")
                 throw new Exception("Câu lạc bộ đang bị khóa, bạn không thể rời lúc này.");
 
             // 3. Đảm bảo payments giữ được truy vết qua account khi xóa membership

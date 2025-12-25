@@ -85,7 +85,7 @@ namespace Service.Service.Implements
         {
             var club = await _clubRepo.GetByIdAsync(dto.ClubId);  
             if (club == null) throw new Exception("Club not found");
-            if (club.Status == "Locked") throw new Exception("Cannot create activity for locked club");  
+            if (club.Status != null && club.Status.ToLower() == "locked") throw new Exception("Cannot create activity for locked club");  
 
             if (!isAdmin)
             {
@@ -193,10 +193,10 @@ namespace Service.Service.Implements
             if (!await _repo.IsLeaderOfClubAsync(activity.ClubId, leaderId))
                 throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
 
-            if (activity.Status == "Active")
+            if (activity.Status != null && activity.Status.ToLower() == "active")
                 throw new Exception("Đăng ký đã được mở.");
 
-            if (activity.Status == "Cancelled" || activity.Status == "Completed")
+            if (activity.Status != null && (activity.Status.ToLower() == "cancelled" || activity.Status.ToLower() == "completed"))
                 throw new Exception("Không thể mở đăng ký cho activity đã bị hủy hoặc đã hoàn thành.");
 
             activity.Status = "Active";
@@ -220,7 +220,7 @@ namespace Service.Service.Implements
             if (!await _repo.IsLeaderOfClubAsync(activity.ClubId, leaderId))
                 throw new UnauthorizedAccessException("Bạn không phải leader của CLB này.");
 
-            if (activity.Status == "Active_Closed")
+            if (activity.Status != null && activity.Status.ToLower() == "active_closed")
                 throw new Exception("Đăng ký đã được đóng.");
 
             activity.Status = "Active_Closed";
@@ -265,10 +265,10 @@ namespace Service.Service.Implements
                 Id = a.Id,
                 ClubId = a.ClubId,
                 Title = a.Title,
-                Description = a.Description,
+                Description = a.Description ?? string.Empty,
                 StartTime = a.StartTime,
                 EndTime = a.EndTime,
-                Location = a.Location,
+                Location = a.Location ?? string.Empty,
                 Status = calculatedStatus,
                 CreatedBy = a.CreatedBy,
                 ImageActsUrl = a.ImageActsUrl,
@@ -280,8 +280,8 @@ namespace Service.Service.Implements
         {
             var now = DateTimeExtensions.NowVietnam();
 
-            if (a.Status == "Cancelled" || a.Status == "Completed")
-                return a.Status;
+            if (a.Status != null && (a.Status.ToLower() == "cancelled" || a.Status.ToLower() == "completed"))
+                return a.Status ?? string.Empty;
 
             if (a.StartTime.HasValue && a.EndTime.HasValue)
             {
@@ -296,11 +296,11 @@ namespace Service.Service.Implements
 
             if (a.EndTime.HasValue && now > a.EndTime.Value)
             {
-                if (a.Status == "Active" || a.Status == "Active_Closed" || a.Status == "Ongoing")
+                if (a.Status != null && (a.Status.ToLower() == "active" || a.Status.ToLower() == "active_closed" || a.Status.ToLower() == "ongoing"))
                     return "Completed";
             }
 
-            return a.Status;
+            return a.Status ?? string.Empty;
         }
     }
 }

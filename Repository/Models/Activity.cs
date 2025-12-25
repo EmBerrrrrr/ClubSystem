@@ -13,21 +13,21 @@ public partial class Activity
 
     public string Title { get; set; } = null!;
 
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
 
     public DateTime? StartTime { get; set; }
 
     public DateTime? EndTime { get; set; }
 
-    public string Location { get; set; } = null!;
+    public string? Location { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string? Status { get; set; }
 
     public int? CreatedBy { get; set; }
 
-    public string AvatarPublicId { get; set; } = null!;
+    public string? AvatarPublicId { get; set; }
 
-    public string ImageActsUrl { get; set; } = null!;
+    public string? ImageActsUrl { get; set; }
 
     public virtual ICollection<ActivityParticipant> ActivityParticipants { get; set; } = new List<ActivityParticipant>();
 

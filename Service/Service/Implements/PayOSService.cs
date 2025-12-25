@@ -182,7 +182,7 @@ namespace Service.Service.Implements
                 return;
 
             // 2️⃣ Nếu payment đã xử lý rồi → bỏ
-            if (payment.Status == "paid" || payment.Status == "failed")
+            if (payment.Status != null && (payment.Status.ToLower() == "paid" || payment.Status.ToLower() == "failed"))
                 return;
 
             // 3️⃣ Lấy membership
@@ -194,7 +194,7 @@ namespace Service.Service.Implements
                 return;
 
             // 🚨 CHẶN CỨNG: membership đã active thì KHÔNG cho payment nào nữa
-            if (membership.Status == "active")
+            if (membership.Status != null && membership.Status.ToLower() == "active")
             {
                 payment.Status = "cancelled";
                 await _paymentRepo.UpdateAsync(payment);
@@ -218,7 +218,7 @@ namespace Service.Service.Implements
                 var requestsOfAccount = await _membershipRequestRepo.GetRequestsOfAccountAsync(membership.AccountId);
                 var relatedRequest = requestsOfAccount
                     .FirstOrDefault(r => r.ClubId == membership.ClubId &&
-                                         (r.Status == "Awaiting Payment" || r.Status == "Pending"));
+                                         r.Status != null && (r.Status.ToLower() == "awaiting payment" || r.Status.ToLower() == "pending"));
                 if (relatedRequest != null)
                 {
                     relatedRequest.Status = "Paid";
@@ -234,7 +234,7 @@ namespace Service.Service.Implements
                 var requestsOfAccount = await _membershipRequestRepo.GetRequestsOfAccountAsync(membership.AccountId);
                 var relatedRequest = requestsOfAccount
                     .FirstOrDefault(r => r.ClubId == membership.ClubId &&
-                                         (r.Status == "Awaiting Payment" || r.Status == "Pending"));
+                                         r.Status != null && (r.Status.ToLower() == "awaiting payment" || r.Status.ToLower() == "pending"));
                 if (relatedRequest != null)
                 {
                     relatedRequest.Status = "Failed";
